@@ -29,9 +29,10 @@ class Game(object):
         '''infoScreen = pygame.display.Info()  
         self.screen = pygame.display.set_mode((infoScreen.current_w, infoScreen.current_h))'''
         
-        self.screen = pygame.display.set_mode((700, 600))  #Set display window size
+        self.screen = pygame.display.set_mode((800, 600))  #Set display window size
 
         self.gameActive = 0  #Is the game running or not
+        self.quitGame = False
         
     def start(self):
         pygame.display.set_caption("Mastering MSU")
@@ -95,25 +96,38 @@ class Game(object):
                             
                 if event.type == MOUSEMOTION:  #Highlight text on hover
                     mouseX,mouseY = pygame.mouse.get_pos() 
-                    if mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_start.get_width()+5 and mouseY > 195 and mouseY < 200+text_start.get_height():
+                    if mouseX > self.screen.get_width()/2-107\
+                       and mouseX < self.screen.get_width()/2-57+text_start.get_width()+5\
+                       and mouseY > 195 and mouseY < 200+text_start.get_height():
                         text_start = font_op(32,"berlin").render("New Game",True,(255,255,255))
                     elif self.gameActive == 1:
                         text_start = font_op(32,"berlin").render("New Game",True,(220,146,40)) 
-                        if mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_resume.get_width()+5 and mouseY > 270 and mouseY < 275+text_resume.get_height():
+                        if mouseX > self.screen.get_width()/2-107\
+                           and mouseX < self.screen.get_width()/2-57+text_resume.get_width()+5\
+                           and mouseY > 270 and mouseY < 275+text_resume.get_height():
                             text_resume = font_op(32,"berlin").render("Resume Game",True,(255,255,255))
                         else:
                             text_resume = font_op(32,"berlin").render("Resume Game",True,(220,146,40))
                     else:
                         text_start = font_op(32,"berlin").render("New Game",True,(220,146,40))    
-                    if mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_rules.get_width()+5 and mouseY > 270+75*self.gameActive and mouseY < 275+text_rules.get_height()+75*self.gameActive:
+                    if mouseX > self.screen.get_width()/2-107\
+                       and mouseX < self.screen.get_width()/2-57+text_rules.get_width()+5\
+                       and mouseY > 270+75*self.gameActive\
+                       and mouseY < 275+text_rules.get_height()+75*self.gameActive:
                         text_rules = font_op(32,"berlin").render("Rules",True,(255,255,255))
                     else:
                         text_rules = font_op(32,"berlin").render("Rules",True,(220,146,40))
-                    if mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_options.get_width()+5 and mouseY > 345+75*self.gameActive and mouseY < 350+text_options.get_height()+75*self.gameActive:
+                    if mouseX > self.screen.get_width()/2-107\
+                       and mouseX < self.screen.get_width()/2-57+text_options.get_width()+5\
+                       and mouseY > 345+75*self.gameActive\
+                       and mouseY < 350+text_options.get_height()+75*self.gameActive:
                         text_options = font_op(32,"berlin").render("Options",True,(255,255,255))
                     else:
                         text_options = font_op(32,"berlin").render("Options",True,(220,146,40))       
-                    if mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_exit.get_width()+5 and mouseY > 420+75*self.gameActive and mouseY < 425+text_exit.get_height()+75*self.gameActive:
+                    if mouseX > self.screen.get_width()/2-107\
+                       and mouseX < self.screen.get_width()/2-57+text_exit.get_width()+5\
+                       and mouseY > 420+75*self.gameActive\
+                       and mouseY < 425+text_exit.get_height()+75*self.gameActive:
                         text_exit = font_op(32,"berlin").render("Exit",True,(255,255,255))
                     else:
                         text_exit = font_op(32,"berlin").render("Exit",True,(220,146,40))
@@ -121,19 +135,33 @@ class Game(object):
                 if event.type == MOUSEBUTTONDOWN:  #Perform action on click
                     mouseX,mouseY = pygame.mouse.get_pos()
                     if rulesActive == True:
-                        if mouseX > self.screen.get_width()-106 and mouseX < self.screen.get_width()-46 and mouseY > 57 and mouseY < 117:
+                        if mouseX > self.screen.get_width()-156\
+                           and mouseX < self.screen.get_width()-96\
+                           and mouseY > 57 and mouseY < 117:
                             rulesActive = False
                         if self.rules_page > 1:
-                            if mouseX > self.screen.get_width()/2-310 and mouseX < self.screen.get_width()/2-254 and mouseY > 385 and mouseY < 428:
+                            if mouseX > self.screen.get_width()/2-310\
+                               and mouseX < self.screen.get_width()/2-254\
+                               and mouseY > 385 and mouseY < 428:
                                 self.rules_next_page(-1)
                         if self.rules_page < rules_count:
-                            if mouseX > self.screen.get_width()/2+245 and mouseX < self.screen.get_width()/2+320 and mouseY > 385 and mouseY < 428:
+                            if mouseX > self.screen.get_width()/2+245\
+                               and mouseX < self.screen.get_width()/2+320\
+                               and mouseY > 385 and mouseY < 428:
                                 self.rules_next_page(1)
-                    if mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_rules.get_width()+5 and mouseY > 270+75*self.gameActive and mouseY < 275+text_rules.get_height()+75*self.gameActive:
+                    if mouseX > self.screen.get_width()/2-107\
+                       and mouseX < self.screen.get_width()/2-57+text_rules.get_width()+5\
+                       and mouseY > 270+75*self.gameActive\
+                       and mouseY < 275+text_rules.get_height()+75*self.gameActive:
                         self.rules_next_page()
                         rulesActive = True
-                    elif mouseX > self.screen.get_width()/2-107 and mouseX < self.screen.get_width()/2-57+text_exit.get_width()+5 and mouseY > 420+75*self.gameActive and mouseY < 425+text_exit.get_height()+75*self.gameActive:
-                        exit()
+                    elif mouseX > self.screen.get_width()/2-107\
+                         and mouseX < self.screen.get_width()/2-57+text_exit.get_width()+5\
+                         and mouseY > 420+75*self.gameActive\
+                         and mouseY < 425+text_exit.get_height()+75*self.gameActive:
+                        self.quitGame = True
+                        menu = False
+                        
                         
             if rulesActive == True:
                 rules_count = 3  #Number of rules/rule pages
@@ -141,7 +169,7 @@ class Game(object):
                 pygame.draw.rect(self.screen,(255,255,255),Rect((self.screen.get_width()/2-300,75),(600,350)))
                 self.screen.blit(self.img_rules,(0,450))
                 pygame.draw.rect(self.screen,(0,0,0),Rect((self.screen.get_width()/2-300,75),(600,350)),1)
-                self.screen.blit(self.img_icon_exit_x,(self.screen.get_width()- 101,62))
+                self.screen.blit(self.img_icon_exit_x,(self.screen.get_width()- 151,62))
                 if self.rules_page < rules_count: 
                     self.screen.blit(self.img_arrow,(self.screen.get_width()/2+250,390))
                 if self.rules_page > 1:
@@ -180,6 +208,8 @@ class Game(object):
                 self.screen.blit(self.img_icon_resume,(self.screen.get_width()/2-112,270))
             
             pygame.display.update()
+        if self.quitGame:
+            pygame.quit()
 
 
 
@@ -202,7 +232,7 @@ class Game(object):
             self.rules_page = 1
         else:
             self.rules_page += pageNum
-        self.img_rules = pygame.Surface((700,150)).convert()
+        self.img_rules = pygame.Surface((800,150)).convert()
         bottom_image = "rulesBottom1.png"
 
         if self.rules_page == 1:
@@ -221,6 +251,6 @@ class Game(object):
             self.rules_header = "More Rules"
             self.rules_words = ["Here are some rules for you to look at and stuff.",
                                 "Here's some more info."]   
-        self.img_rules.blit(pygame.image.load(os.path.join("img",bottom_image)), (0, 0), Rect((0,0),(700,150)))                        
+        self.img_rules.blit(pygame.image.load(os.path.join("img",bottom_image)), (50, 0), Rect((0,0),(750,150)))                        
                                 
 Game().start()
