@@ -48,4 +48,5 @@ def main():
     windows["userinterface"] = userInterface(screen)
     game(windows)
 
-main()
+if __name__ == '__main__':
+    main()
