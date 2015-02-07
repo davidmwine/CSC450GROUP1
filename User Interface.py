@@ -38,6 +38,7 @@ def game(windows):
         chatbox.fill((255,255,255))
         UI.fill((255,255,255))
         pygame.display.flip()
+        screen.togglefullscreen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
