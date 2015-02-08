@@ -219,9 +219,10 @@ class Game(object):
                 self.screen.blit(self.img_icon_exit,(self.screen.get_width()/2-112,420+75*self.gameActive))
 
             if self.gameActive == 1:
-                self.screen.blit(text_resume_bg,(self.screen.get_width()/2-55,277))
-                self.screen.blit(text_resume,(self.screen.get_width()/2-57,275))
-                self.screen.blit(self.img_icon_resume,(self.screen.get_width()/2-112,270))
+                if rulesActive == False:
+                    self.screen.blit(text_resume_bg,(self.screen.get_width()/2-55,277))
+                    self.screen.blit(text_resume,(self.screen.get_width()/2-57,275))
+                    self.screen.blit(self.img_icon_resume,(self.screen.get_width()/2-112,270))
             
             pygame.display.update()
         if self.quitGame:
