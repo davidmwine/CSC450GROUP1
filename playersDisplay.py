@@ -9,13 +9,18 @@ from globals import Globals
 
 class PlayersDisplay(object):
 
-    def __init__(self, players):
+    def __init__(self, players, parent=None):
 
         self.players = players
-        
-        pygame.init()
-        
-        self.screen = pygame.display.set_mode((200, 510))
+
+        if(parent == None):
+            print("is main screen")
+            pygame.init()
+            self.screen = pygame.display.set_mode((200, 510))
+        else:
+            print("is subscreen")
+            size_rect = pygame.Rect((600,0), (200, 510))
+            self.screen = parent.subsurface(size_rect)
 
         self.background = pygame.Surface(self.screen.get_size())
         self.background = self.background.convert()

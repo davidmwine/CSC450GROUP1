@@ -1,4 +1,5 @@
-import pygame, sys
+import pygame, sys, playersDisplay
+from player import Player
 from pygame.locals import *
 
 
@@ -34,15 +35,37 @@ def game(windows):
     screen = windows["screen"]
     chatbox = windows["chatbox"]
     UI = windows["userinterface"]
+    UI.insert(0,0)
     while 1:
         chatbox.fill((255,255,255))
-        UI.fill((255,255,255))
         pygame.display.flip()
-        screen.togglefullscreen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return 0
+
+def players():
+    '''players test function'''
+    p1 = Player("player1", "Agriculture")
+    p2 = Player("player2", "Arts and Letters")
+    p3 = Player("player3", "Natural and Applied Sciences")
+    p4 = Player("player4", "Health and Human Services")
+    p5 = Player("player5", "Humanities and Public Affairs")
+    p6 = Player("player6", "Education")
+    
+    p1.addBuilding('Siceluff')
+    p1.addBuilding('Cheek')
+    p1.addBuilding('Plaster Student Union')
+    p1.addBuilding('Kemper')
+    p1.addBuilding('Glass')
+    p1.addBuilding('Strong')
+    p1.addBuilding('Karls')
+    p1.addBuilding('Ellis')
+    p1.addBuilding('JQH Arena')
+    p2.addBuilding('Temple')
+    
+    return [p1, p2, p3, p4, p5, p6]
+
     
 
 
@@ -51,8 +74,9 @@ def main():
     windows["screen"] = window()
     screen = windows["screen"]
     windows["chatbox"] = chatBox(screen)
-    windows["userinterface"] = userInterface(screen)
+    windows["userinterface"] = playersDisplay.PlayersDisplay(players(),screen)
     game(windows)
+    
 
 if __name__ == '__main__':
         main()
