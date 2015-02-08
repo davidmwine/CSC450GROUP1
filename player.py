@@ -1,3 +1,4 @@
+from globals import Globals
 
 class Player(object):
 
@@ -14,6 +15,9 @@ class Player(object):
 
     def getCollege(self):
         return self.college
+
+    def getCollegeAbbr(self):
+        return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
 
     def getDollars(self):
         return self.dollars
