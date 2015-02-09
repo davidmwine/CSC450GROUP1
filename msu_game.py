@@ -36,9 +36,9 @@ class Game(object):
 
     def font_op(self, size,fontName):  #Pick font size and type
         if fontName == "helvetica":
-            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.OTF"),size) # "font" is directory for the font file
+            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.otf"),size) # "font" is directory for the font file
         elif fontName == "berlin":
-            fontAndSize = pygame.font.Font(os.path.join("font","berlin.TTF"),size)
+            fontAndSize = pygame.font.Font(os.path.join("font","berlin.ttf"),size)
         return fontAndSize
         
     def start(self):
