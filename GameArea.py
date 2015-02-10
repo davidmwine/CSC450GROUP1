@@ -7,10 +7,11 @@ from player import Player
 class gameArea():
 
 
-    def __init__(self, scale, ischild=False):
+    def __init__(self, scale=.75, ischild=False):
 
-        self.width = int(scale*1980)
+        self.width = int(scale*1920)
         self.height = int(scale*1080)
+        self.scale = scale
 
         if ischild:
             self.area = pygame.Surface((self.width, self.height))
@@ -19,9 +20,9 @@ class gameArea():
             self.area = pygame.display.set_mode((self.width, self.height))
             
 
-        self.playersDisplay = PlayersDisplay(testplayers(), scale, 1)
+        self.playerDis = PlayersDisplay(testplayers(), scale, 1)
         
-        size_rect = pygame.Rect((0, 900), (1400,180))
+        size_rect = pygame.Rect((0*scale, 900*self.scale), (1400*self.scale,180*self.scale))
         self.chatbox = self.area.subsurface(size_rect)
         
         #self.controls
@@ -37,8 +38,8 @@ class gameArea():
 
 
     def play(self):
-        rect = pygame.Rect((1440,0), (480, 810))
-        self.area.blit(PlayersDisplay.getPD(), rect)
+        rect = pygame.Rect((1440*self.scale,0), (480*self.scale, 810*self.scale))
+        self.area.blit(self.playerDis.getPD(), rect)
         while 1:
             self.chatbox.fill((255,255,255))
             pygame.display.flip()
@@ -83,7 +84,7 @@ def testplayers():
 
     
 def main():
-    screen = gameArea(1)
+    screen = gameArea(.5)
     screen.play()
 
 
