@@ -58,20 +58,10 @@ class PlayersDisplay(object):
                   
 
     def printText(self, c, i):
-        if c >= 0.9:
-            font = pygame.font.Font(None, 30)
-            buildingFont = pygame.font.Font(None, 24)
-        elif c >= 0.75:    
-            font = pygame.font.Font(None, 24)
-            buildingFont = pygame.font.Font(None, 20)
-        elif c >= 0.6:
-            font = pygame.font.Font(None, 20)
-            buildingFont = pygame.font.Font(None, 16)
-        else:
-            font = pygame.font.Font(None, 16)
-            buildingFont = pygame.font.Font(None, 14)
-            
-                
+
+        font = pygame.font.Font(None, int(30*c))
+        buildingFont = pygame.font.Font(None, int(26*c))
+             
         text = font.render(self.players[i].getName(),
                            True, Color('black'))
         self.pd.blit(text, (2, self.playerHeight*i + 2))
@@ -149,7 +139,7 @@ def main():
     p2.addBuilding('Craig')
     p2.addBuilding('Ellis')
 
-    p2.addDollars(30000000)
+    p2.addDollars(120000000)
     
     players = [p1, p2, p3, p4, p5, p6]
     
