@@ -7,7 +7,7 @@ from player import Player
 class gameArea():
 
 
-    def __init__(self, scale=.75, ischild=False):
+    def __init__(self, scale=1, ischild=False):
 
         self.width = int(scale*1920)
         self.height = int(scale*1080)
@@ -22,11 +22,12 @@ class gameArea():
 
         self.playerDis = PlayersDisplay(testplayers(), scale, 1)
         
-        size_rect = pygame.Rect((0*scale, 900*self.scale), (1400*self.scale,180*self.scale))
+        size_rect = pygame.Rect((0*scale, 0*self.scale), (360*self.scale,1080*self.scale))
         self.chatbox = self.area.subsurface(size_rect)
-        
-        #self.controls
-        #self.board
+        size_rect = pygame.Rect((1440*scale, 810*self.scale), (480*self.scale,270*self.scale))
+        self.controls = self.area.subsurface(size_rect)
+        size_rect = pygame.Rect((360*scale, 0*self.scale), (1080*self.scale,1080*self.scale))
+        self.board   = self.area.subsurface(size_rect)
 
         
         
@@ -42,6 +43,8 @@ class gameArea():
         self.area.blit(self.playerDis.getPD(), rect)
         while 1:
             self.chatbox.fill((255,255,255))
+            self.controls.fill((0,0,255))
+            self.board.fill((255,0,0))
             pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
