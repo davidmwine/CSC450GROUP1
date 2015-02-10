@@ -3,7 +3,6 @@ class Globals(object):
     
     maroon = (80, 0, 0)
     lightGray = (200, 200, 200)
-    black = (0, 0, 0)
 
     collegeColors = {'Arts and Letters': (128, 0, 128),  # Purple
                    'Business': (255, 0, 0),           # Red
@@ -12,7 +11,7 @@ class Globals(object):
                    'Humanities and Public Affairs': (0, 128, 128),  # Peacock Blue
                    'Natural and Applied Sciences': (255, 215, 0),   # Golden Yellow
                    'Agriculture': (0, 128, 0)}         # Green
-    
+    '''
     collegeAbbr = {'Arts and Letters': 'AL',
                    'Business': 'Bus',
                    'Education': 'Ed',
@@ -20,6 +19,14 @@ class Globals(object):
                    'Humanities and Public Affairs': 'HPA',
                    'Natural and Applied Sciences': 'NAS',
                    'Agriculture': 'Ag'}
+    '''
+    collegeAbbr = {'Arts and Letters': 'Arts & Letters',
+                   'Business': 'Business',
+                   'Education': 'Education',
+                   'Health and Human Services': 'Health & Hum Serv',
+                   'Humanities and Public Affairs': 'Hum & Pub Affairs',
+                   'Natural and Applied Sciences': 'Nat & App Sci',
+                   'Agriculture': 'Agriculture'}
 
     buildings = ['Carrington', 'Siceluff', 'Cheek', 'Bookstore',
                  'Plaster Student Union', 'McDonald Arena', 'Meyer Library',
@@ -56,7 +63,7 @@ class Globals(object):
                     'Ellis': 'ELLIS',
                     'Hill': 'HILL'}
 
-    
+
 
     
 
