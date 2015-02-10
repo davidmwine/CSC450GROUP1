@@ -14,7 +14,10 @@ class Start(object):
         self.load_sounds()
         self.menuOn = True
         self.rulesOn = False
+<<<<<<< HEAD
         self.optionsOn = False
+=======
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b
         self.clock = pygame.time.Clock()
 
     def load_images(self):
@@ -117,12 +120,15 @@ class Start(object):
             self.menuOn = False
             self.rulesOn = True
         elif mouseX > self.screen.get_width()/2-107\
+<<<<<<< HEAD
            and mouseX < self.screen.get_width()/2-57+self.text_options.get_width()+5\
            and mouseY > 345+75*self.gameActive\
            and mouseY < 350+self.text_options.get_height()+75*self.gameActive:
             self.menuOn = False
             self.optionsOn = True
         elif mouseX > self.screen.get_width()/2-107\
+=======
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b
              and mouseX < self.screen.get_width()/2-57+self.text_exit.get_width()+5\
              and mouseY > 420+75*self.gameActive\
              and mouseY < 425+self.text_exit.get_height()+75*self.gameActive:
@@ -197,5 +203,8 @@ class Start(object):
             pygame.display.update()
         if self.rulesOn:
             return "rules"
+<<<<<<< HEAD
         if self.optionsOn:
             return "options"
+=======
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b

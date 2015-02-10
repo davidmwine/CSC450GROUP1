@@ -4,7 +4,10 @@ import os
 import sys
 from rulesMenu import Rules
 from startMenu import Start
+<<<<<<< HEAD
 from optionsMenu import Options
+=======
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
 pygame.init()
@@ -37,24 +40,39 @@ class Game(object):
 
     def font_op(self, size,fontName):  #Pick font size and type
         if fontName == "helvetica":
+<<<<<<< HEAD
             fontAndSize = pygame.font.Font(os.path.join("font","helvetica.OTF"),size) # "font" is directory for the font file
         elif fontName == "berlin":
             fontAndSize = pygame.font.Font(os.path.join("font","berlin.TTF"),size)
+=======
+            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.otf"),size) # "font" is directory for the font file
+        elif fontName == "berlin":
+            fontAndSize = pygame.font.Font(os.path.join("font","berlin.ttf"),size)
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b
         return fontAndSize
         
     def start(self):
         while True:
             if self.nextScreen == "start":
                 startMenu = Start(self.screen, self.font_op)
+<<<<<<< HEAD
                 '''if self.splashShow:
                     startMenu.splash()
                     self.splashShow = False'''
+=======
+                if self.splashShow:
+                    startMenu.splash()
+                    self.splashShow = False
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b
                 self.nextScreen = startMenu.menu()
             if self.nextScreen == "rules":
                 rulesMenu = Rules(self.screen, self.font_op)
                 self.nextScreen = rulesMenu.run()
+<<<<<<< HEAD
             if self.nextScreen == "options":
                 optionsMenu = Options(self.screen, self.font_op)
                 self.nextScreen = optionsMenu.run()
+=======
+>>>>>>> bf5c77f824575b93a3d33df5cd532e78e679fd4b
 
 Game().start()
