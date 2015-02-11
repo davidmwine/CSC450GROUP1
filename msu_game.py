@@ -52,9 +52,6 @@ class Game(object):
                 '''if self.splashShow:
                     startMenu.splash()
                     self.splashShow = False'''
-                if self.splashShow:
-                    startMenu.splash()
-                    self.splashShow = False
                 self.nextScreen = startMenu.menu()
             if self.nextScreen == "rules":
                 rulesMenu = Rules(self.screen, self.font_op)
