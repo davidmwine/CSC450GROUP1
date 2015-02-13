@@ -6,6 +6,7 @@ import os
 
 from player import Player
 from globals import Globals
+from building import Building
 
 
 
@@ -98,7 +99,7 @@ class PlayersDisplay(object):
         x = 2   # x position to place text of each building
         y = 60*c  # y position to place text (within player's section)
         for building in self.players[i].getBuildings():
-            text = buildingFont.render(Globals.buildingAbbr[building], True, Color('black'))
+            text = buildingFont.render(building.getAbbr(), True, Color('black'))
             self.pd.blit(text, (x, y + self.playerHeight*i))
             x += 75*c
             if x >= self.width - 60*c:
@@ -120,25 +121,24 @@ def main():
     p5 = Player("player5", "Health and Human Services")
     p6 = Player("player6", "Humanities and Public Affairs")
     
-    p1.addBuilding('Siceluff')
-    p1.addBuilding('Cheek')
-    p1.addBuilding('Plaster Student Union')
-    p1.addBuilding('Kemper')
-    p1.addBuilding('Strong')
-    p1.addBuilding('Karls')
-    p1.addBuilding('Glass')
-    p1.addBuilding('Ellis')
-    p1.addBuilding('JQH Arena')
-    p1.addBuilding('McDonald Arena')
-    p1.addBuilding('Meyer Library')
-    p1.addBuilding('Foster Recreation Center')
-    p1.addBuilding('Juanita K Hammons')
-    p1.addBuilding('Pummil')
-    p1.addBuilding('Plaster Stadium')
-    p1.addBuilding('Temple')
-    p2.addBuilding('Craig')
-    p2.addBuilding('Ellis')
-
+    p1.addBuilding( Building('Cheek', 'CHEEK', 2) )
+    p1.addBuilding( Building('Meyer Library', 'LIBR', 6) )
+    p1.addBuilding( Building('Plaster Student Union', 'PSU', 4) )
+    p1.addBuilding( Building('Siceluff', 'SICL', 1) )
+    p1.addBuilding( Building('Kemper', 'KEMP', 18) )
+    p1.addBuilding( Building('Strong', 'STRO', 16) )
+    p1.addBuilding( Building('Karls', 'KARL', 21) )
+    p1.addBuilding( Building('Glass', 'GLASS', 15) )
+    p1.addBuilding( Building('JQH Arena', 'JQH', 12) )
+    p1.addBuilding( Building('McDonald Arena', 'MCDA', 5) )
+    p1.addBuilding( Building('Foster Recreation Center', 'FRC', 7) )
+    p1.addBuilding( Building('Juanita K Hammons', 'JKH', 11) )
+    p1.addBuilding( Building('Pummil', 'PUMM', 22) )
+    p1.addBuilding( Building('Plaster Stadium', 'PLAS', 20) )
+    p1.addBuilding( Building('Temple', 'TEMP', 19) )
+    p2.addBuilding( Building('Ellis', 'ELLIS', 24) )
+    p2.addBuilding( Building('Craig', 'CRAIG', 23) )
+    
     p2.addDollars(120000000)
     
     players = [p1, p2, p3, p4, p5, p6]
