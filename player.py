@@ -1,4 +1,6 @@
 from globals import Globals
+from building import Building
+
 
 class Player(object):
 
@@ -45,14 +47,28 @@ class Player(object):
 
     def addPointsPerRound(self, pointsToAdd):
         self.pointsPerRound += pointsToAdd
+
         
     def addBuilding(self, building):
-        if building not in self.buildings:
-            self.buildings.append(building)
+        
+        if building in self.buildings:
+            return -1   # I'm not sure what we actually want to do here...
+
+        # Insert the building in the correct position in the list
+        # using one iteration of insertion sort.
+        i = len(self.buildings)
+        self.buildings.append(building)
+        while i>0 and building.getPosition() < self.buildings[i-1].getPosition():
+            self.buildings[i] = self.buildings[i-1]
+            i -= 1
+        self.buildings[i] = building    
+            
 
     def removeBuilding(self, building):
         if building in self.buildings:
             self.buildings.remove(building)
+        else:
+            return -1   # or whatever we want to do here...    
 
 
 
