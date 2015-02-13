@@ -1,3 +1,4 @@
+from building import Building
 
 class Globals(object):
     
@@ -11,15 +12,7 @@ class Globals(object):
                    'Humanities and Public Affairs': (0, 128, 128),  # Peacock Blue
                    'Natural and Applied Sciences': (255, 215, 0),   # Golden Yellow
                    'Agriculture': (0, 128, 0)}         # Green
-    '''
-    collegeAbbr = {'Arts and Letters': 'AL',
-                   'Business': 'Bus',
-                   'Education': 'Ed',
-                   'Health and Human Services': 'HHS',
-                   'Humanities and Public Affairs': 'HPA',
-                   'Natural and Applied Sciences': 'NAS',
-                   'Agriculture': 'Ag'}
-    '''
+
     collegeAbbr = {'Arts and Letters': 'Arts & Letters',
                    'Business': 'Business',
                    'Education': 'Education',
@@ -28,42 +21,34 @@ class Globals(object):
                    'Natural and Applied Sciences': 'Nat & App Sci',
                    'Agriculture': 'Agriculture'}
 
-    buildings = ['Carrington', 'Siceluff', 'Cheek', 'Bookstore',
-                 'Plaster Student Union', 'McDonald Arena', 'Meyer Library',
-                 'Foster Recreation Center', 'Hammons Field', 'Brick City',
-                 'Bear Park North', 'Juanita K Hammons', 'JQH Arena',
-                 'Hammons Student Center', 'Allison South', 'Glass', 'Strong',
-                 'Bear Park South', 'Kemper', 'Temple', 'Plaster Stadium',
-                 'Karl', 'Pummil', 'Craig', 'Ellis', 'Hill']
-
-    buildingAbbr = {'Carrington': 'CARR',
-                    'Siceluff': 'SICL',
-                    'Cheek': 'CHEEK',
-                    'Bookstore': 'BOOK',
-                    'Plaster Student Union': 'PSU',
-                    'McDonald Arena': 'MCDA',
-                    'Meyer Library': 'LIBR',
-                    'Foster Recreation Center': 'FRC',
-                    'Hammons Field': 'HAMM',
-                    'Brick City': 'BRICK',
-                    'Bear Park North': 'BPN',
-                    'Juanita K Hammons': 'JKH',
-                    'JQH Arena': 'JQH',
-                    'Hammons Student Center': 'HSC',
-                    'Allison South': 'ALL',
-                    'Glass': 'GLASS',
-                    'Strong': 'STRO',
-                    'Bear Park South': 'BPS',
-                    'Kemper': 'KEMP',
-                    'Temple': 'TEMP',
-                    'Plaster Stadium': 'PLAS',
-                    'Karls': 'KARL',
-                    'Pummil': 'PUMM',
-                    'Craig': 'CRAIG',
-                    'Ellis': 'ELLIS',
-                    'Hill': 'HILL'}
-
-
+    
+    buildings = []
+    buildings.append( Building('Carrington', 'CARR', 0) )
+    buildings.append( Building('Siceluff', 'SICL', 1) )
+    buildings.append( Building('Cheek', 'CHEEK', 2) )
+    buildings.append( Building('Bookstore', 'BOOK', 3) )
+    buildings.append( Building('Plaster Student Union', 'PSU', 4) )
+    buildings.append( Building('McDonald Arena', 'MCDA', 5) )
+    buildings.append( Building('Meyer Library', 'LIBR', 6) )
+    buildings.append( Building('Foster Recreation Center', 'FRC', 7) )
+    buildings.append( Building('Hammons Field', 'HAMM', 8) )
+    buildings.append( Building('Brick City', 'BRICK', 9) )
+    buildings.append( Building('Bear Park North', 'BPN', 10) )
+    buildings.append( Building('Juanita K Hammons', 'JKH', 11) )
+    buildings.append( Building('JQH Arena', 'JQH', 12) )
+    buildings.append( Building('Hammons Student Center', 'HSC', 13) )
+    buildings.append( Building('Allison South', 'ALL', 14) )
+    buildings.append( Building('Glass', 'GLASS', 15) )
+    buildings.append( Building('Strong', 'STRO', 16) )
+    buildings.append( Building('Bear Park South', 'BPS', 17) )
+    buildings.append( Building('Kemper', 'KEMP', 18) )
+    buildings.append( Building('Temple', 'TEMP', 19) )
+    buildings.append( Building('Plaster Stadium', 'PLAS', 20) )
+    buildings.append( Building('Karls', 'KARL', 21) )
+    buildings.append( Building('Pummil', 'PUMM', 22) )
+    buildings.append( Building('Craig', 'CRAIG', 23) )
+    buildings.append( Building('Ellis', 'ELLIS', 24) )
+    buildings.append( Building('Hill', 'HILL', 25) )
 
     
 
