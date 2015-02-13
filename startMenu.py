@@ -18,6 +18,10 @@ class Start(object):
         self.rulesOn = False
         self.clock = pygame.time.Clock()
 
+    def backToStart(self):
+        self.rulesOn = False
+        self.menuOn = True
+
     def load_images(self):
         self.img_logo = pygame.image.load(os.path.join("img","logo.png")).convert_alpha()
 

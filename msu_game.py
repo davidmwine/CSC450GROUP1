@@ -56,15 +56,17 @@ class Game(object):
         return fontAndSize
         
     def start(self):
+        startMenu = Start(self.screen, self.font_op, self.y_offset)
+        rulesMenu = Rules(self.screen, self.font_op, self.y_offset)
         while True:
             if self.nextScreen == "start":
-                startMenu = Start(self.screen, self.font_op, self.y_offset)
                 if self.splashShow:
                     startMenu.splash()
                     self.splashShow = False
                 self.nextScreen = startMenu.menu()
             if self.nextScreen == "rules":
-                rulesMenu = Rules(self.screen, self.font_op, self.y_offset)
                 self.nextScreen = rulesMenu.run()
+                if self.nextScreen == "start":
+                    startMenu.backToStart()
 
 Game().start()
