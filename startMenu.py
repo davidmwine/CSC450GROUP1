@@ -10,6 +10,7 @@ class Start(object):
         self.font_op = font_op
         self.y_offset = y_offset
         self.gameActive = 1  #Is the game running or not
+        self.percentOfMax = self.screen.get_height()/1080
         #self.quitGame = False
         self.soundRunning = 0
         self.load_images()
@@ -17,6 +18,7 @@ class Start(object):
         self.menuOn = True
         self.rulesOn = False
         self.clock = pygame.time.Clock()
+        self.extraPad = self.screen.get_height()/16
 
     def backToStart(self):
         self.rulesOn = False
@@ -83,13 +85,13 @@ class Start(object):
         mouseX,mouseY = pygame.mouse.get_pos() 
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_start.get_width()\
-           and mouseY > self.screen.get_height()/4+self.y_offset-5 and mouseY < self.screen.get_height()/4+self.y_offset+self.text_start.get_height()+5:
+           and mouseY > (self.screen.get_height()/4+self.y_offset-5)+self.extraPad and mouseY < (self.screen.get_height()/4+self.y_offset+self.text_start.get_height()+5)+self.extraPad:
             self.text_start = self.font_op(32,"berlin").render("Start Game",True,(255,255,255))
         elif self.gameActive == 1:
             self.text_start = self.font_op(32,"berlin").render("Start Game",True,(220,146,40))  
             if mouseX > self.screen.get_width()/2-117\
                and mouseX < self.screen.get_width()/2-52+self.text_resume.get_width()\
-               and mouseY > 70+self.screen.get_height()/4+self.y_offset and mouseY < 80+self.screen.get_height()/4+self.y_offset+self.text_resume.get_height():
+               and mouseY > (70+self.screen.get_height()/4+self.y_offset)+self.extraPad and mouseY < (80+self.screen.get_height()/4+self.y_offset+self.text_resume.get_height())+self.extraPad:
                 self.text_resume = self.font_op(32,"berlin").render("Resume Game",True,(255,255,255))
             else:
                 self.text_resume = self.font_op(32,"berlin").render("Resume Game",True,(220,146,40))
@@ -97,22 +99,22 @@ class Start(object):
             self.text_start = self.font_op(32,"berlin").render("Start Game",True,(220,146,40))    
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_rules.get_width()\
-           and mouseY > 70+self.screen.get_height()/4+self.y_offset+75*self.gameActive\
-           and mouseY < 80+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive:
+           and mouseY > (70+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
+           and mouseY < (80+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive)+self.extraPad:
             self.text_rules = self.font_op(32,"berlin").render("Rules",True,(255,255,255))
         else:
             self.text_rules = self.font_op(32,"berlin").render("Rules",True,(220,146,40))
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_options.get_width()\
-           and mouseY > 145+self.screen.get_height()/4+self.y_offset+75*self.gameActive\
-           and mouseY < 155+self.screen.get_height()/4+self.y_offset+self.text_options.get_height()+75*self.gameActive:
+           and mouseY > (145+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
+           and mouseY < (155+self.screen.get_height()/4+self.y_offset+self.text_options.get_height()+75*self.gameActive)+self.extraPad:
             self.text_options = self.font_op(32,"berlin").render("Options",True,(255,255,255))
         else:
             self.text_options = self.font_op(32,"berlin").render("Options",True,(220,146,40))       
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
-           and mouseY > 220+self.screen.get_height()/4+self.y_offset+75*self.gameActive\
-           and mouseY < 230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive:
+           and mouseY > (220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)\
+           and mouseY < (230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive)+self.extraPad:
             self.text_exit = self.font_op(32,"berlin").render("Exit",True,(255,255,255))
         else:
             self.text_exit = self.font_op(32,"berlin").render("Exit",True,(220,146,40))
@@ -122,15 +124,15 @@ class Start(object):
         #Rules
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_rules.get_width()\
-           and mouseY > 70+self.screen.get_height()/4+self.y_offset+75*self.gameActive\
-           and mouseY < 80+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive:
+           and mouseY > (70+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
+           and mouseY < (80+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive)+self.extraPad:
             self.menuOn = False
             self.rulesOn = True
         #Exit
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
-           and mouseY > 220+self.screen.get_height()/4+self.y_offset+75*self.gameActive\
-           and mouseY < 230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive:
+           and mouseY > (220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
+           and mouseY < (230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive)+self.extraPad:
             self.leaveGame()
 
     def imageDisplay(self):
@@ -138,22 +140,22 @@ class Start(object):
         self.screen.blit(pygame.transform.scale(self.img_menu_bg,(self.screen.get_width(),\
                         int(self.screen.get_height()-(2*self.y_offset)))),(0,self.y_offset))
         
-        self.screen.blit(self.text_header_bg,(self.screen.get_width()/2-3-0.5*self.text_header_bg.get_width()+4,4+self.screen.get_height()/30+self.y_offset))
-        self.screen.blit(self.text_header,(self.screen.get_width()/2-3-0.5*self.text_header.get_width(),self.screen.get_height()/30+self.y_offset))
+        self.screen.blit(self.text_header_bg,(self.screen.get_width()/2-3-0.5*self.text_header_bg.get_width()+4,(4+self.screen.get_height()/30+self.y_offset)+self.extraPad))
+        self.screen.blit(self.text_header,(self.screen.get_width()/2-3-0.5*self.text_header.get_width(),(self.screen.get_height()/30+self.y_offset)+self.extraPad))
 
-        self.screen.blit(self.text_start_bg,(self.screen.get_width()/2-55,2+self.screen.get_height()/4+self.y_offset))
-        self.screen.blit(self.text_start,(self.screen.get_width()/2-57,self.screen.get_height()/4+self.y_offset)) 
-        self.screen.blit(self.text_rules_bg,(self.screen.get_width()/2-55,77+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.text_rules,(self.screen.get_width()/2-57,75+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.text_options_bg,(self.screen.get_width()/2-55,152+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.text_options,(self.screen.get_width()/2-57,150+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.text_exit_bg,(self.screen.get_width()/2-55,227+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.text_exit,(self.screen.get_width()/2-57,225+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
+        self.screen.blit(self.text_start_bg,(self.screen.get_width()/2-55,(2+self.screen.get_height()/4+self.y_offset)+self.extraPad))
+        self.screen.blit(self.text_start,(self.screen.get_width()/2-57,(self.screen.get_height()/4+self.y_offset)+self.extraPad)) 
+        self.screen.blit(self.text_rules_bg,(self.screen.get_width()/2-55,(77+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.text_rules,(self.screen.get_width()/2-57,(75+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.text_options_bg,(self.screen.get_width()/2-55,(152+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.text_options,(self.screen.get_width()/2-57,(150+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.text_exit_bg,(self.screen.get_width()/2-55,(227+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.text_exit,(self.screen.get_width()/2-57,(225+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
 
-        self.screen.blit(self.img_icon_start,(self.screen.get_width()/2-112,self.screen.get_height()/4+self.y_offset-5))
-        self.screen.blit(self.img_icon_rules,(self.screen.get_width()/2-112,70+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.img_icon_options,(self.screen.get_width()/2-112,145+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
-        self.screen.blit(self.img_icon_exit,(self.screen.get_width()/2-112,220+self.screen.get_height()/4+self.y_offset+75*self.gameActive))
+        self.screen.blit(self.img_icon_start,(self.screen.get_width()/2-112,(self.screen.get_height()/4+self.y_offset-5)+self.extraPad))
+        self.screen.blit(self.img_icon_rules,(self.screen.get_width()/2-112,(70+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.img_icon_options,(self.screen.get_width()/2-112,(145+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
+        self.screen.blit(self.img_icon_exit,(self.screen.get_width()/2-112,(220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
 
     def menu(self):
         self.text_header = self.font_op(90,"berlin").render("Mastering MSU",True,(255,255,255))
@@ -198,9 +200,9 @@ class Start(object):
             self.imageDisplay()
 
             if self.gameActive == 1:
-                self.screen.blit(self.text_resume_bg,(self.screen.get_width()/2-55,77+self.screen.get_height()/4+self.y_offset))
-                self.screen.blit(self.text_resume,(self.screen.get_width()/2-57,75+self.screen.get_height()/4+self.y_offset))
-                self.screen.blit(self.img_icon_resume,(self.screen.get_width()/2-112,70+self.screen.get_height()/4+self.y_offset))
+                self.screen.blit(self.text_resume_bg,(self.screen.get_width()/2-55,(77+self.screen.get_height()/4+self.y_offset)+self.extraPad))
+                self.screen.blit(self.text_resume,(self.screen.get_width()/2-57,(75+self.screen.get_height()/4+self.y_offset)+self.extraPad))
+                self.screen.blit(self.img_icon_resume,(self.screen.get_width()/2-112,(70+self.screen.get_height()/4+self.y_offset)+self.extraPad))
             
             pygame.display.update()
         if self.rulesOn:
