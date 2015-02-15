@@ -42,20 +42,20 @@ class gameArea():
 
     def play(self):
         rect = pygame.Rect((1080*self.scale,0), (840*self.scale, 810*self.scale))
-        self.area.blit(self.playerDis.getPD(), rect)
+        #self.area.blit(self.playerDis.getPD(), rect)
         size_rect = pygame.Rect((0*self.scale, 0*self.scale), (360*self.scale,1080*self.scale))
         while 1:
             
             self.board.fill((255,0,0))
             self.controls.fill((0,0,255))
-            pygame.display.flip()
+            pygame.display.flip()   
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:           
                     pygame.quit()
                     return 0 
         
 
-def testplayers():
+def testplayers():  
     p1 = Player("player1", "Agriculture")
     p2 = Player("player2", "Arts and Letters")
     p3 = Player("player3", "Natural and Applied Sciences")
