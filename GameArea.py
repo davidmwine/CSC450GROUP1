@@ -42,7 +42,7 @@ class gameArea():
 
     def play(self):
         rect = pygame.Rect((1080*self.scale,0), (840*self.scale, 810*self.scale))
-        #self.area.blit(self.playerDis.getPD(), rect)
+        self.area.blit(self.playerDis.getPD(), rect)
         size_rect = pygame.Rect((0*self.scale, 0*self.scale), (360*self.scale,1080*self.scale))
         while 1:
             
