@@ -49,7 +49,7 @@ class Rules(object):
             self.screen.blit(pygame.transform.scale(self.img_menu_bg,(self.screen.get_width(),\
                             int(self.screen.get_height()-(2*self.y_offset)))),(0,self.y_offset))
             pygame.draw.rect(self.screen,(255,255,255),Rect((self.screen.get_width()/2-300,self.screen.get_height()/8+self.y_offset),\
-                                                            (600,+self.y_offset+5*self.screen.get_height()/8)))
+                                                            (600,self.y_offset+5*self.screen.get_height()/8)))
             #self.screen.blit(self.img_rules,((self.screen.get_width()/2)-(self.img_rules.get_width()/2),\
                                              #self.screen.get_height()-150-self.y_offset))
             pygame.draw.rect(self.screen,(0,0,0),Rect((self.screen.get_width()/2-300,self.screen.get_height()/8+self.y_offset),\
@@ -124,8 +124,3 @@ class Rules(object):
             
         #self.img_bottom = pygame.image.load(os.path.join("img",bottom_image)).convert()
         #self.img_rules.blit(pygame.transform.scale(self.img_bottom, (self.img_rules.get_width(),150)),(0,0))
-
-
-
-
-        
