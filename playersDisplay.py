@@ -31,7 +31,7 @@ class PlayersDisplay(object):
     def __init__(self, players, c, parent=False):
 
         self.players = players
-        self.width = int(c*480)
+        self.width = int(c*840)
         self.height = int(c*810)
         self.playerHeight = int(c*135)
 
