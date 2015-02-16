@@ -161,9 +161,9 @@ class Start(object):
             self.rulesOn = True
         #Options
         if mouseX > self.screen.get_width()/2-117\
-           and mouseX < self.screen.get_width()/2-52+self.text_rules.get_width()\
+           and mouseX < self.screen.get_width()/2-52+self.text_options.get_width()\
            and mouseY > (145+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
-           and mouseY < (155+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive)+self.extraPad:
+           and mouseY < (155+self.screen.get_height()/4+self.y_offset+self.text_options.get_height()+75*self.gameActive)+self.extraPad:
             self.menuOn = False
             self.optionsOn = True
         #Exit

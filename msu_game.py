@@ -16,12 +16,12 @@ class Game(object):
         #Get screen info and set window to full screen
         self.infoScreen = pygame.display.Info()
 
-        self.screen = pygame.display.set_mode((self.infoScreen.current_w, self.infoScreen.current_h),pygame.FULLSCREEN)
+        #self.screen = pygame.display.set_mode((self.infoScreen.current_w, self.infoScreen.current_h),pygame.FULLSCREEN)
         self.height_ratio_16x9 = .5625 #Number to multiply width by to get 16x9 ratio for height
         self.y_offset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.height_ratio_16x9))/2)
 
         #Temporary code to test multiple screen sizes 
-        '''#Comment self.screen above
+        #Comment self.screen above
         self.qHD = (960, 540)
         self.HD = (1280, 720)
         self.HDplus = (1600, 900)
@@ -35,7 +35,6 @@ class Game(object):
         else:
             self.screen = pygame.display.set_mode(self.screen_size[self.size]) #Select screen size
         self.y_offset = 0 #Set to 0 if not fullscreen, *set to .75 if four_three_ratio selected
-        '''
         
         pygame.display.set_caption("Mastering MSU")
         self.img_icon_small = pygame.image.load(os.path.join("img","icon_small.png")).convert_alpha()
