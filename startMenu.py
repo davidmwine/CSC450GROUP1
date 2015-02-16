@@ -26,6 +26,10 @@ class Start(object):
         self.optionsOn = False
         self.menuOn = True
 
+    def backToStart(self):
+        self.rulesOn = False
+        self.menuOn = True
+
     def load_images(self):
         self.img_logo = pygame.image.load(os.path.join("img","logo.png")).convert_alpha()
         self.img_menu_bg = pygame.image.load(os.path.join("img","menu_bg4.png")).convert()
