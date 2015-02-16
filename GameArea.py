@@ -3,6 +3,7 @@ from pygame.locals import *
 from playersDisplay import PlayersDisplay
 from player import Player
 from ChatBox import chatBox
+from Controls import Controls
 
 
 class gameArea():
@@ -26,10 +27,11 @@ class gameArea():
         
         size_rect = pygame.Rect((1080*scale, 810*self.scale), (840*self.scale,270*self.scale))
         self.chatbox = chatBox(1,self.area, size_rect)
-        size_rect = pygame.Rect((0*scale, 990*self.scale), (1080*self.scale,90*self.scale))
-        self.controls = self.area.subsurface(size_rect)
-        size_rect = pygame.Rect((0*scale, 0*self.scale), (1080*self.scale,1080*self.scale))
+        
+        size_rect = pygame.Rect((0*scale, 0*self.scale), (1080*self.scale,1020*self.scale))
         self.board   = self.area.subsurface(size_rect)
+        size_rect = pygame.Rect((0*scale, 1020*self.scale), (1080*self.scale,60*self.scale))
+        self.controls = Controls(self.area, size_rect)
 
         
         
@@ -47,7 +49,6 @@ class gameArea():
         while 1:
             
             self.board.fill((255,0,0))
-            self.controls.fill((0,0,255))
             pygame.display.flip()   
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:           

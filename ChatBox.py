@@ -11,31 +11,34 @@ class chatBox():
     
     def __init__(self, scale=1, parent=None , size_rect=None):
 
-        self.width = - size_rect.left + size_rect.right
-        self.height = size_rect.bottom - size_rect.top
-        self.line_width = self.width
-        self.line_height = self.height/9
-        self.scale = scale
-        self.chatlines = ["Hey Foo, I do think itsworking, but i know its a demo",
+        self._width = - size_rect.left + size_rect.right
+        self._height = size_rect.bottom - size_rect.top
+        self._line_width = self._width
+        self._line_height = self._height/9
+        self._scale = scale
+        self._chatlines = ["Hey Foo, I do think itsworking, but i know its a demo",
                           "There are apoximatelly {} characters in this line",
                           "bar"
             ]
         if parent != None:
-            self.area = parent.subsurface(size_rect)
-        self.area.fill((0,255,0))
+            self._area = parent.subsurface(size_rect)
+
         self.draw_chat()
 
 
     def draw_chat(self):
-        self.chatenter = chatEnter(self.area,Rect(0 , self.line_height*8,
-        self.line_width, self.line_height), None)
+        self._area.fill((255,255,255))
+        self._chatenter = chatEnter(self._area,Rect(0 , self._line_height*8,
+        self._line_width, self._line_height), None)
         for i in range(7,-1,-1):
-            line_rect = Rect(0, i*self.line_height,
-                        self.line_width, self.line_height)
+            line_rect = Rect(3, i*self._line_height+1,
+                        self._line_width-3, self._line_height-1)
             try:
-                chatLine( self.area, line_rect, self.chatlines[i])
+                chatLine( self._area, line_rect, self._chatlines[i])
             except IndexError:
-                chatLine(self.area, line_rect, "Line {}".format(i+1))
+                chatLine(self._area, line_rect, "Line {}".format(i+1))
+        pygame.draw.rect(self._area,(0,0,0), (0,0, self._area.get_width(),
+                                              self._area.get_height()), 2)
 
 class chatLine():
     def __init__(self, parent, rect ,string= " "):
