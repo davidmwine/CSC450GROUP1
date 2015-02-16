@@ -70,5 +70,4 @@ class Game(object):
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
-
 Game().start()
