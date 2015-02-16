@@ -9,7 +9,7 @@ class Start(object):
         self.screen = screen
         self.font_op = font_op
         self.y_offset = y_offset
-        self.gameActive = 1  #Is the game running or not
+        self.gameActive = 0  #Is the game running or not
         self.percentOfMax = self.screen.get_height()/1080
         #self.quitGame = False
         self.soundRunning = 0
@@ -17,11 +17,13 @@ class Start(object):
         self.load_sounds()
         self.menuOn = True
         self.rulesOn = False
+        self.optionsOn = False
         self.clock = pygame.time.Clock()
         self.extraPad = self.screen.get_height()/16
 
     def backToStart(self):
         self.rulesOn = False
+        self.optionsOn = False
         self.menuOn = True
 
     def load_images(self):
@@ -134,7 +136,7 @@ class Start(object):
             self.text_options = self.font_op(32,"berlin").render("Options",True,(220,146,40))       
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
-           and mouseY > (220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)\
+           and mouseY > (220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
            and mouseY < (230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive)+self.extraPad:
             self.text_exit = self.font_op(32,"berlin").render("Exit",True,(255,255,255))
         else:
@@ -149,6 +151,13 @@ class Start(object):
            and mouseY < (80+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive)+self.extraPad:
             self.menuOn = False
             self.rulesOn = True
+        #Options
+        if mouseX > self.screen.get_width()/2-117\
+           and mouseX < self.screen.get_width()/2-52+self.text_rules.get_width()\
+           and mouseY > (145+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
+           and mouseY < (155+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive)+self.extraPad:
+            self.menuOn = False
+            self.optionsOn = True
         #Exit
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
@@ -228,3 +237,5 @@ class Start(object):
             pygame.display.update()
         if self.rulesOn:
             return "rules"
+        if self.optionsOn:
+            return "options"
