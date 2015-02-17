@@ -7,7 +7,7 @@ from Controls import Controls
 from boardS import GameBoard
 
 
-class gameArea():
+class GameArea(object):
 
 
     def __init__(self, parent=False, scale=1):
@@ -25,7 +25,7 @@ class gameArea():
             self.area = pygame.display.set_mode((self.width, self.height))
 
         # Game Board    
-        rect = pygame.Rect((0*scale, 0*self.scale), (1080*self.scale, 1020*self.scale))
+        rect = pygame.Rect((0, 0), (1080*self.scale, 1020*self.scale))
         self.boardArea = self.area.subsurface(rect)
         self.boardArea.fill((80,0,0))
 
@@ -39,7 +39,7 @@ class gameArea():
         self.chatbox = chatBox(1,self.area, rect)
         
         # Controls
-        rect = pygame.Rect((0*scale, 1020*self.scale), (1080*self.scale,60*self.scale))
+        rect = pygame.Rect((0, 1020*self.scale), (1080*self.scale,60*self.scale))
         self.controls = Controls(self.area, rect)
 
 
@@ -48,27 +48,32 @@ class gameArea():
 
 
     def play(self):
+        game_exit = False
 
         # Insert Players Display
         rect = pygame.Rect((1080*self.scale,0), (840*self.scale, 810*self.scale))
         self.area.blit(self.playerDis.getPD(), rect)
         
         # Insert Game Board
-        rect = pygame.Rect((20*self.scale, 20*self.scale),
-                           (1040*self.scale, 980*self.scale))
+        rect = pygame.Rect((0, 0),
+                           (1080*self.scale, 1020*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
         
         if self.parent:
             self.parent.blit(self.area, (0,0))
         
-        while 1:
-            pygame.display.flip()   
+        while not game_exit: 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:           
+                if event.type == KEYDOWN: #TEMPORARY, will later replace with proper game exit
+                    if event.key == K_ESCAPE:
+                        game_exit = True
+                        break
+                elif event.type == pygame.QUIT:           
                     pygame.quit()
                     sys.exit()
                     return 0 
-        
+            pygame.display.update()
+        return "start"
 
 def testplayers():  
     p1 = Player("player1", "Agriculture")

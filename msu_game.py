@@ -6,9 +6,9 @@ from rulesMenu import Rules
 from startMenu import Start
 from optionsMenu import Options
 #Only leave one uncommented, each one is a current option
-from GameArea import gameArea #Main
+#from GameArea import GameArea #Main
 #from GameAreaJB import GameArea #Jennifer's Layout
-#from GameAreaS import gameArea #John's Layout
+from GameAreaS import GameArea #John's Layout
 #Jennifer and John's layouts don't currently cooperate with the rest
 #of the program so they are left commented out for now
 
@@ -34,7 +34,8 @@ class Game(object):
         self.fullHD = (1920, 1080)
         self.four_three_ratio = (960, 720)
         self.screen_size = [self.qHD, self.HD, self.HDplus, self.fullHD, self.four_three_ratio]
-        self.size = 0
+        self.size = 3
+        self.ratio = self.screen_size[self.size][0]/1920
         if self.infoScreen.current_h == self.screen_size[self.size][1]\
            and self.infoScreen.current_w == self.screen_size[self.size][0]:
             self.screen = pygame.display.set_mode(self.screen_size[self.size],pygame.FULLSCREEN)
@@ -61,7 +62,7 @@ class Game(object):
         startMenu = Start(self.screen, self.font_op, self.y_offset)
         rulesMenu = Rules(self.screen, self.font_op, self.y_offset)
         optionsMenu = Options(self.screen, self.font_op, self.y_offset)
-        Game = gameArea(self.screen, .5)
+        playGame = GameArea(self.screen, self.ratio)
         
         while True:
             if self.nextScreen == "start":
@@ -69,16 +70,16 @@ class Game(object):
                     startMenu.splash()
                     self.splashShow = False
                 self.nextScreen = startMenu.menu()
-            if self.nextScreen == "rules":
+            elif self.nextScreen == "rules":
                 self.nextScreen = rulesMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
-            if self.nextScreen == "options":
+            elif self.nextScreen == "options":
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
-            #if self.nextScreen == "game":
-                #self.nextScreen = Game.play()
+            elif self.nextScreen == "game":
+                self.nextScreen = playGame.play()
                 
                 
 Game().start()

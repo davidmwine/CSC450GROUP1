@@ -8,7 +8,7 @@ from Controls import Controls
 from ChatBox import chatBox
 
 
-class gameArea():
+class GameArea(object):
 
 
     def __init__(self, parent=False, scale=1):
@@ -50,6 +50,7 @@ class gameArea():
 
 
     def play(self):
+        game_exit = False
 
         # Insert Players Display
         rect = pygame.Rect((1440*self.scale, 0),
@@ -57,20 +58,25 @@ class gameArea():
         self.area.blit(self.playerDis.getPD(), rect)
 
         # Insert Game Board
-        rect = pygame.Rect((20*self.scale, 20*self.scale),
+        rect = pygame.Rect((0, 0),
                            (1400*self.scale, 980*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
 
         if self.parent:
             self.parent.blit(self.area, (0,0))
         
-        while 1:
-            pygame.display.flip()
+        while not game_exit:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == KEYDOWN: #TEMPORARY, will later replace with proper game exit
+                    if event.key == K_ESCAPE:
+                        game_exit = True
+                        break
+                elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                    return 0 
+                    return 0
+            pygame.display.update()
+        return "start"
         
 
 def testplayers():
@@ -88,7 +94,7 @@ def testplayers():
 
 
 def main():
-    screen = gameArea(False, 2/3)
+    screen = GameArea(False, 2/3)
     screen.play()
 
 

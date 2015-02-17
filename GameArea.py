@@ -6,7 +6,7 @@ from ChatBox import chatBox
 from Controls import Controls
 
 
-class gameArea():
+class GameArea(object):
 
 
     def __init__(self, parent=False, scale=1):
@@ -44,18 +44,25 @@ class gameArea():
 
 
     def play(self):
+        game_exit = False
         rect = pygame.Rect((1080*self.scale,0), (840*self.scale, 810*self.scale))
         self.area.blit(self.playerDis.getPD(), rect)
         size_rect = pygame.Rect((0*self.scale, 0*self.scale), (360*self.scale,1080*self.scale))
         self.board.fill((255,0,0))
         self.parent.blit(self.area, (0,0))
-        while 1:
-            pygame.display.flip()   
+        while not game_exit:
+            #pygame.display.flip()   
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:           
+                if event.type == KEYDOWN: #TEMPORARY, will later replace with proper game exit
+                    if event.key == K_ESCAPE:
+                        game_exit = True
+                        break
+                elif event.type == pygame.QUIT:           
                     pygame.quit()
                     sys.exit()
-                    return 0 
+                    return 0
+            pygame.display.update()
+        return "start"
         
 
 def testplayers():  
@@ -93,7 +100,7 @@ def testplayers():
 
     
 def main():
-        screen = gameArea(False,.5)
+        screen = GameArea(False,.5)
         screen.play()
 
 

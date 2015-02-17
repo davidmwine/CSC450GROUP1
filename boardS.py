@@ -69,7 +69,7 @@ class GameBoard(object):
     def __init__(self, scale, isSubscreen=False):
 
         # Width and height of each grid location
-        size = [int(1040*scale), int(980*scale)]           # set the overall size
+        size = [int(1080*scale), int(1020*scale)]           # set the overall size
         margin = 2                                          # sets the margin between each cell
         padding = 3                                         # sets the padding for text
         width  = (math.floor(size[0]/10)-margin)            # set the Width of each cell
