@@ -1,4 +1,3 @@
-from building import Building
 
 class Globals(object):
 

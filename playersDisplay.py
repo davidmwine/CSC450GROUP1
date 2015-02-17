@@ -6,8 +6,6 @@ import os
 
 from player import Player
 from globals import Globals
-from building import Building
-
 
 
 class PlayersDisplay(object):
@@ -75,7 +73,7 @@ class PlayersDisplay(object):
         # Player name  
         text = font.render(self.players[i].getName(),
                            True, Color('black'))
-        self.pd.blit(text, (2, self.playerHeight*i + 4))
+        self.pd.blit(text, (4, self.playerHeight*i + 4))
 
         # College name
         college = self.players[i].getCollege()

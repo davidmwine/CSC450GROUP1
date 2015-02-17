@@ -6,8 +6,6 @@ import os
 
 from player import Player
 from globals import Globals
-from building import Building
-
 
 
 class PlayersDisplay(object):
@@ -17,7 +15,7 @@ class PlayersDisplay(object):
 
     In the constructor, 'players' should be a list of Player objects;
     'c' is a scale factor indicating the size the panel should be displayed at
-    as a fraction of its maximum size, 480 x 810px (when the whole window
+    as a fraction of its maximum size, 840 x 810px (when the whole window
     is 1920 x 1080px);
     'parent' is a boolean value indicating whether this panel has a parent,
     i.e., whether it's being displayed as part of a larger screen.
@@ -25,7 +23,7 @@ class PlayersDisplay(object):
     Example usage:
     c = 1
     pd = PlayersDisplay(players, c, True)
-    rect = pygame.Rect((0,0), (c*480, c*810))
+    rect = pygame.Rect((0,0), (c*840, c*810))
     screen.blit(pd.getPD(), rect)
     """
 
@@ -79,18 +77,17 @@ class PlayersDisplay(object):
 
         # College name
         college = self.players[i].getCollege()
-        '''
+        
         # For the colleges with light colors, create a black outline.
         if college == 'Natural and Applied Sciences' \
            or college == 'Health and Human Services' \
            or college == 'Education' or college == 'Business':
-            textOutline = font.render(Globals.collegeAbbr[college],
-                           True, Color('black'))
-            self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 5))
-            self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 3))
-            self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 5))
-            self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 3))
-        '''
+            textOutline = font.render(college, True, Color('black'))
+            self.pd.blit(textOutline, (350*c - 1, self.playerHeight*i + 5))
+            self.pd.blit(textOutline, (350*c - 1, self.playerHeight*i + 3))
+            self.pd.blit(textOutline, (350*c + 1, self.playerHeight*i + 5))
+            self.pd.blit(textOutline, (350*c + 1, self.playerHeight*i + 3))
+        
         text = font.render(college, True, Globals.collegeColors[college])
         self.pd.blit(text, (350*c, self.playerHeight*i + 4))
 
