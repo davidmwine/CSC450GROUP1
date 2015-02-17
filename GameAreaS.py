@@ -9,14 +9,15 @@ from Controls import Controls
 class gameArea():
 
 
-    def __init__(self, scale=1, ischild=False):
+    def __init__(self, parent=False, scale=1):
         '''Inits a Game area object optional paramaters: float sclale and bool isChild'''
 
         self.width = int(scale*1920)
         self.height = int(scale*1080)
         self.scale = scale
+        self.parent = parent
 
-        if ischild:
+        if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
             pygame.init()
@@ -33,10 +34,6 @@ class gameArea():
         size_rect = pygame.Rect((0*scale, 1020*self.scale), (1080*self.scale,60*self.scale))
         self.controls = Controls(self.area, size_rect)
 
-        
-        
-
-
 
     def get_area(self):
         return self.area
@@ -46,13 +43,17 @@ class gameArea():
         rect = pygame.Rect((1080*self.scale,0), (840*self.scale, 810*self.scale))
         self.area.blit(self.playerDis.getPD(), rect)
         size_rect = pygame.Rect((0*self.scale, 0*self.scale), (360*self.scale,1080*self.scale))
+        self.board.fill((255,0,0))
+
+        if self.parent:
+            self.parent.blit(self.area, (0,0))
+        
         while 1:
-            
-            self.board.fill((255,0,0))
             pygame.display.flip()   
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:           
                     pygame.quit()
+                    sys.exit()
                     return 0 
         
 
@@ -72,13 +73,13 @@ def testplayers():
 
     
 def main():
-        screen = gameArea(.65)
-        screen.play()
+    screen = gameArea(False, 0.65)
+    screen.play()
 
 
 
 if __name__ == "__main__":
-        main()
+    main()
 
 
 
