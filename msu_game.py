@@ -5,7 +5,12 @@ import sys
 from rulesMenu import Rules
 from startMenu import Start
 from optionsMenu import Options
-from GameArea import gameArea
+#Only leave one uncommented, each one is a current option
+from GameArea import gameArea #Main
+#from GameAreaJB import GameArea #Jennifer's Layout
+#from GameAreaS import gameArea #John's Layout
+#Jennifer and John's layouts don't currently cooperate with the rest
+#of the program so they are left commented out for now
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
 pygame.init()
