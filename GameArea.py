@@ -2,18 +2,22 @@ import pygame, sys
 from pygame.locals import *
 from playersDisplay import PlayersDisplay
 from player import Player
+from ChatBox import chatBox
+from Controls import Controls
 
 
 class gameArea():
 
 
-    def __init__(self, scale=1, ischild=False):
+    def __init__(self, parent=False, scale=1):
+        '''Inits a Game area object optional paramaters: float sclale and bool isChild'''
 
         self.width = int(scale*1920)
         self.height = int(scale*1080)
         self.scale = scale
+        self.parent = parent
 
-        if ischild:
+        if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
             pygame.init()
@@ -22,12 +26,13 @@ class gameArea():
 
         self.playerDis = PlayersDisplay(testplayers(), scale, 1)
         
-        size_rect = pygame.Rect((0*scale, 0*self.scale), (360*self.scale,1080*self.scale))
-        self.chatbox = self.area.subsurface(size_rect)
-        size_rect = pygame.Rect((1440*scale, 810*self.scale), (480*self.scale,270*self.scale))
-        self.controls = self.area.subsurface(size_rect)
-        size_rect = pygame.Rect((360*scale, 0*self.scale), (1080*self.scale,1080*self.scale))
+        size_rect = pygame.Rect((1080*scale, 810*self.scale), (840*self.scale,270*self.scale))
+        self.chatbox = chatBox(1,self.area, size_rect)
+        
+        size_rect = pygame.Rect((0*scale, 0*self.scale), (1080*self.scale,1020*self.scale))
         self.board   = self.area.subsurface(size_rect)
+        size_rect = pygame.Rect((0*scale, 1020*self.scale), (1080*self.scale,60*self.scale))
+        self.controls = Controls(self.area, size_rect)
 
         
         
@@ -39,20 +44,21 @@ class gameArea():
 
 
     def play(self):
-        rect = pygame.Rect((1440*self.scale,0), (480*self.scale, 810*self.scale))
+        rect = pygame.Rect((1080*self.scale,0), (840*self.scale, 810*self.scale))
         self.area.blit(self.playerDis.getPD(), rect)
+        size_rect = pygame.Rect((0*self.scale, 0*self.scale), (360*self.scale,1080*self.scale))
+        self.board.fill((255,0,0))
+        self.parent.blit(self.area, (0,0))
         while 1:
-            self.chatbox.fill((255,255,255))
-            self.controls.fill((0,0,255))
-            self.board.fill((255,0,0))
-            pygame.display.flip()
+            pygame.display.flip()   
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:           
                     pygame.quit()
+                    sys.exit()
                     return 0 
         
 
-def testplayers():
+def testplayers():  
     p1 = Player("player1", "Agriculture")
     p2 = Player("player2", "Arts and Letters")
     p3 = Player("player3", "Natural and Applied Sciences")
@@ -87,13 +93,13 @@ def testplayers():
 
     
 def main():
-    screen = gameArea(.5)
-    screen.play()
+        screen = gameArea(False,.5)
+        screen.play()
 
 
 
 if __name__ == "__main__":
-    main()
+        main()
 
 
 

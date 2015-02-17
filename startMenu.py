@@ -166,12 +166,20 @@ class Start(object):
            and mouseY < (155+self.screen.get_height()/4+self.y_offset+self.text_options.get_height()+75*self.gameActive)+self.extraPad:
             self.menuOn = False
             self.optionsOn = True
+        #Game
+        if mouseX > self.screen.get_width()/2-117\
+           and mouseX < self.screen.get_width()/2-52+self.text_start.get_width()\
+           and mouseY > (self.screen.get_height()/4+self.y_offset-5)+self.extraPad \
+           and mouseY < (self.screen.get_height()/4+self.y_offset+self.text_start.get_height()+5)+self.extraPad:
+            self.menuOn = False
+            self.gameOn = True
         #Exit
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
            and mouseY > (220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
            and mouseY < (230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive)+self.extraPad:
             self.leaveGame()
+        
 
     def imageDisplay(self):
         self.screen.fill((0,0,0))
@@ -247,3 +255,5 @@ class Start(object):
             return "rules"
         if self.optionsOn:
             return "options"
+        if self.gameOn:
+            return "game"

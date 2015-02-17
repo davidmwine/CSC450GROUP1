@@ -5,6 +5,7 @@ import sys
 from rulesMenu import Rules
 from startMenu import Start
 from optionsMenu import Options
+from GameArea import gameArea
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
 pygame.init()
@@ -55,6 +56,8 @@ class Game(object):
         startMenu = Start(self.screen, self.font_op, self.y_offset)
         rulesMenu = Rules(self.screen, self.font_op, self.y_offset)
         optionsMenu = Options(self.screen, self.font_op, self.y_offset)
+        Game = gameArea(self.screen, .5)
+        
         while True:
             if self.nextScreen == "start":
                 if self.splashShow:
@@ -69,4 +72,8 @@ class Game(object):
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
+            if self.nextScreen == "game":
+                self.nextScreen = Game.play()
+                
+                
 Game().start()
