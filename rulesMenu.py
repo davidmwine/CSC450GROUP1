@@ -102,7 +102,7 @@ class Rules(object):
         else:
             self.rules_page += pageNum
         self.img_rules = pygame.Surface((self.screen.get_width(),150+self.y_offset)).convert()
-        bottom_image = "rulesBottom1.png"
+        #bottom_image = "rulesBottom1.png"
 
         if self.rules_page == 1:
             self.rules_header = "Introduction"
@@ -112,12 +112,12 @@ class Rules(object):
                                 "campus. The game is free to download and free",
                                 "to play."]
         if self.rules_page == 2:
-            bottom_image = "rulesBottom2.png"
+            #bottom_image = "rulesBottom2.png"
             self.rules_header = "Objective"
             self.rules_words = ["Here are some rules for you to look at and",
                                 "stuff. Here's some more info."]
         if self.rules_page == 3:
-            bottom_image = "rulesBottom3.png"
+            #bottom_image = "rulesBottom3.png"
             self.rules_header = "General Rules"
             self.rules_words = ["Here are some rules for you to look at and",
                                 "stuff. Here's some more info."]

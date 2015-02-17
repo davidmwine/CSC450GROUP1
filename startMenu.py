@@ -222,7 +222,7 @@ class Start(object):
 
         while self.menuOn:
             self.clock.tick(30)
-            self.screen.fill((240,240,240))
+            #self.screen.fill((240,240,240))
 
             if self.soundRunning == 0:
                 self.sound_start_menu.play(-1) 

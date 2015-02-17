@@ -8,7 +8,7 @@ class Controls:
 
     def __init__(self, parent, rect):
         self._area = parent.subsurface(rect)
-        print(rect, parent)
+        #print(rect, parent)
         self._width = self._area.get_width()
         self._height = self._area.get_height()
         button_w_h = (self._width/4, self._height)
