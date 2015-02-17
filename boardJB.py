@@ -66,10 +66,10 @@ buildings.append( Building('', nullspace, 'nullspace') )            # Null Space
 
 class GameBoard(object):
 
-    def __init__(self, isSubscreen=False):
+    def __init__(self, scale, isSubscreen=False):
 
         # Width and height of each grid location
-        size = [800, 600]                                   # set the overall size
+        size = [int(1400*scale), int(980*scale)]           # set the overall size
         margin = 2                                          # sets the margin between each cell
         padding = 3                                         # sets the padding for text
         width  = (math.floor(size[0]/10)-margin)            # set the Width of each cell
@@ -111,7 +111,7 @@ class GameBoard(object):
 
 def main():
     
-    gb = GameBoard()
+    gb = GameBoard(0.5)
 
     #pd.screen.blit(pd.getPD(), (0, 0))
     pygame.display.flip()                           #Updates the screen
