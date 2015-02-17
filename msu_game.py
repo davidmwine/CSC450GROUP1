@@ -77,8 +77,8 @@ class Game(object):
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
-            if self.nextScreen == "game":
-                self.nextScreen = Game.play()
+            #if self.nextScreen == "game":
+                #self.nextScreen = Game.play()
                 
                 
 Game().start()

@@ -167,12 +167,12 @@ class Start(object):
             self.menuOn = False
             self.optionsOn = True
         #Game
-        if mouseX > self.screen.get_width()/2-117\
-           and mouseX < self.screen.get_width()/2-52+self.text_start.get_width()\
-           and mouseY > (self.screen.get_height()/4+self.y_offset-5)+self.extraPad \
-           and mouseY < (self.screen.get_height()/4+self.y_offset+self.text_start.get_height()+5)+self.extraPad:
-            self.menuOn = False
-            self.gameOn = True
+        #if mouseX > self.screen.get_width()/2-117\
+        #   and mouseX < self.screen.get_width()/2-52+self.text_start.get_width()\
+        #   and mouseY > (self.screen.get_height()/4+self.y_offset-5)+self.extraPad \
+        #   and mouseY < (self.screen.get_height()/4+self.y_offset+self.text_start.get_height()+5)+self.extraPad:
+        #    self.menuOn = False
+        #    self.gameOn = True
         #Exit
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
