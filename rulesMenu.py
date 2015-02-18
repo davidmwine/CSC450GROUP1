@@ -49,7 +49,7 @@ class Rules(object):
             self.screen.blit(pygame.transform.scale(self.img_menu_bg,(self.screen.get_width(),\
                             int(self.screen.get_height()-(2*self.y_offset)))),(0,self.y_offset))
             pygame.draw.rect(self.screen,(255,255,255),Rect((self.screen.get_width()/2-300,self.screen.get_height()/8+self.y_offset),\
-                                                            (600,+self.y_offset+5*self.screen.get_height()/8)))
+                                                            (600,self.y_offset+5*self.screen.get_height()/8)))
             #self.screen.blit(self.img_rules,((self.screen.get_width()/2)-(self.img_rules.get_width()/2),\
                                              #self.screen.get_height()-150-self.y_offset))
             pygame.draw.rect(self.screen,(0,0,0),Rect((self.screen.get_width()/2-300,self.screen.get_height()/8+self.y_offset),\
@@ -102,7 +102,7 @@ class Rules(object):
         else:
             self.rules_page += pageNum
         self.img_rules = pygame.Surface((self.screen.get_width(),150+self.y_offset)).convert()
-        bottom_image = "rulesBottom1.png"
+        #bottom_image = "rulesBottom1.png"
 
         if self.rules_page == 1:
             self.rules_header = "Introduction"
@@ -112,20 +112,15 @@ class Rules(object):
                                 "campus. The game is free to download and free",
                                 "to play."]
         if self.rules_page == 2:
-            bottom_image = "rulesBottom2.png"
+            #bottom_image = "rulesBottom2.png"
             self.rules_header = "Objective"
             self.rules_words = ["Here are some rules for you to look at and",
                                 "stuff. Here's some more info."]
         if self.rules_page == 3:
-            bottom_image = "rulesBottom3.png"
+            #bottom_image = "rulesBottom3.png"
             self.rules_header = "General Rules"
             self.rules_words = ["Here are some rules for you to look at and",
                                 "stuff. Here's some more info."]
             
         #self.img_bottom = pygame.image.load(os.path.join("img",bottom_image)).convert()
         #self.img_rules.blit(pygame.transform.scale(self.img_bottom, (self.img_rules.get_width(),150)),(0,0))
-
-
-
-
-        
