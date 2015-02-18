@@ -24,14 +24,7 @@ class Start(object):
     def backToStart(self):
         self.rulesOn = False
         self.optionsOn = False
-        self.menuOn = True
-
-    def backToStart(self):
-        self.rulesOn = False
-        self.menuOn = True
-
-    def backToStart(self):
-        self.rulesOn = False
+        self.gameOn = False
         self.menuOn = True
 
     def load_images(self):
@@ -158,6 +151,8 @@ class Start(object):
            and mouseY > (70+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
            and mouseY < (80+self.screen.get_height()/4+self.y_offset+self.text_rules.get_height()+75*self.gameActive)+self.extraPad:
             self.menuOn = False
+            self.gameOn = False
+            self.optionsOn = False
             self.rulesOn = True
         #Options
         if mouseX > self.screen.get_width()/2-117\
@@ -165,13 +160,25 @@ class Start(object):
            and mouseY > (145+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
            and mouseY < (155+self.screen.get_height()/4+self.y_offset+self.text_options.get_height()+75*self.gameActive)+self.extraPad:
             self.menuOn = False
+            self.rulesOn = False
+            self.gameOn = False
             self.optionsOn = True
+        #Game
+        if mouseX > self.screen.get_width()/2-117\
+           and mouseX < self.screen.get_width()/2-52+self.text_start.get_width()\
+           and mouseY > (self.screen.get_height()/4+self.y_offset-5)+self.extraPad \
+           and mouseY < (self.screen.get_height()/4+self.y_offset+self.text_start.get_height()+5)+self.extraPad:
+            self.menuOn = False
+            self.rulesOn = False
+            self.optionsOn = False
+            self.gameOn = True
         #Exit
         if mouseX > self.screen.get_width()/2-117\
            and mouseX < self.screen.get_width()/2-52+self.text_exit.get_width()\
            and mouseY > (220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad\
            and mouseY < (230+self.screen.get_height()/4+self.y_offset+self.text_exit.get_height()+75*self.gameActive)+self.extraPad:
             self.leaveGame()
+        
 
     def imageDisplay(self):
         self.screen.fill((0,0,0))
@@ -196,6 +203,7 @@ class Start(object):
         self.screen.blit(self.img_icon_exit,(self.screen.get_width()/2-112,(220+self.screen.get_height()/4+self.y_offset+75*self.gameActive)+self.extraPad))
 
     def menu(self):
+        self.backToStart()
         self.text_header = self.font_op(90,"berlin").render("Mastering MSU",True,(255,255,255))
         self.text_header_bg = self.font_op(90,"berlin").render("Mastering MSU",True,(0,0,0))
         self.text_start = self.font_op(32,"berlin").render("Start Game",True,(220,146,40))
@@ -214,7 +222,7 @@ class Start(object):
 
         while self.menuOn:
             self.clock.tick(30)
-            self.screen.fill((240,240,240))
+            #self.screen.fill((240,240,240))
 
             if self.soundRunning == 0:
                 self.sound_start_menu.play(-1) 
@@ -247,3 +255,5 @@ class Start(object):
             return "rules"
         if self.optionsOn:
             return "options"
+        if self.gameOn:
+            return "game"

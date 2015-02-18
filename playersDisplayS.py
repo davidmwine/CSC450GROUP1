@@ -15,7 +15,7 @@ class PlayersDisplay(object):
 
     In the constructor, 'players' should be a list of Player objects;
     'c' is a scale factor indicating the size the panel should be displayed at
-    as a fraction of its maximum size, 480 x 810px (when the whole window
+    as a fraction of its maximum size, 840 x 810px (when the whole window
     is 1920 x 1080px);
     'parent' is a boolean value indicating whether this panel has a parent,
     i.e., whether it's being displayed as part of a larger screen.
@@ -23,14 +23,14 @@ class PlayersDisplay(object):
     Example usage:
     c = 1
     pd = PlayersDisplay(players, c, True)
-    rect = pygame.Rect((0,0), (c*480, c*810))
+    rect = pygame.Rect((0,0), (c*840, c*810))
     screen.blit(pd.getPD(), rect)
     """
 
     def __init__(self, players, c, parent=False):
 
         self.players = players
-        self.width = int(c*480)
+        self.width = int(c*840)
         self.height = int(c*810)
         self.playerHeight = int(c*135)
 
@@ -82,33 +82,31 @@ class PlayersDisplay(object):
         if college == 'Natural and Applied Sciences' \
            or college == 'Health and Human Services' \
            or college == 'Education' or college == 'Business':
-            textOutline = font.render(Globals.collegeAbbr[college],
-                           True, Color('black'))
-            self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 5))
-            self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 3))
-            self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 5))
-            self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 3))
+            textOutline = font.render(college, True, Color('black'))
+            self.pd.blit(textOutline, (350*c - 1, self.playerHeight*i + 5))
+            self.pd.blit(textOutline, (350*c - 1, self.playerHeight*i + 3))
+            self.pd.blit(textOutline, (350*c + 1, self.playerHeight*i + 5))
+            self.pd.blit(textOutline, (350*c + 1, self.playerHeight*i + 3))
         
-        text = font.render(Globals.collegeAbbr[college],
-                           True, Globals.collegeColors[college])
-        self.pd.blit(text, (220*c, self.playerHeight*i + 4))
-
-        # Points
-        text = font.render(str(self.players[i].getPoints()) + ' pts',
-                           True, Color('black'))
-        self.pd.blit(text, (20*c, self.playerHeight*i + 50*c))
-        
-        # Points per round
-        text = font.render(str(self.players[i].getPointsPerRound()) + ' pts/round',
-                           True, Color('black'))
-        self.pd.blit(text, (250*c, self.playerHeight*i + 50*c))
+        text = font.render(college, True, Globals.collegeColors[college])
+        self.pd.blit(text, (350*c, self.playerHeight*i + 4))
 
         # Dollars
         text = font.render('${:,d}'.format(self.players[i].getDollars()),
                            True, Color('black'))
-        self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
+        self.pd.blit(text, (20*c, self.playerHeight*i + 50*c))
 
-              
+        # Points
+        text = font.render(str(self.players[i].getPoints()) + ' pts',
+                           True, Color('black'))
+        self.pd.blit(text, (400*c, self.playerHeight*i + 50*c))
+        
+        # Points per round
+        text = font.render(str(self.players[i].getPointsPerRound()) + ' pts/round',
+                           True, Color('black'))
+        self.pd.blit(text, (650*c, self.playerHeight*i + 50*c))
+
+        
     def getPD(self):
         return self.pd
     
