@@ -46,6 +46,9 @@ class GameArea(object):
     def get_area(self):
         return self.area
 
+    def getScale(self):
+        return self.scale
+
 
     def play(self):
         game_exit = False

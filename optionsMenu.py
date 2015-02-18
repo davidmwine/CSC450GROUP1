@@ -8,8 +8,9 @@ from startMenu import Start
 
 
 class Options(object):
-    def __init__(self, screen, font_op, y_offset):
+    def __init__(self, screen, infoScreen, font_op, y_offset):
         self.screen = screen
+        self.infoScreen = infoScreen
         self.font_op = font_op
         self.y_offset = y_offset
         self.res_opt = 0
@@ -26,7 +27,7 @@ class Options(object):
         self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 34 + self.y_offset, 5)
         self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 14 + self.y_offset, 5)
         self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 54 + self.y_offset, 5)
-        self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 34 + self.y_offset, 5)
+        #self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 34 + self.y_offset, 5) #4:3 not supported yet
         # CHECKBOXES
         self.checkbox_soundeffects = CheckBox(self.screen, self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 + 58 + self.y_offset, 10)
         self.checkbox_music = CheckBox(self.screen, self.screen.get_width() / 2 - 80, self.screen.get_height()/2 + 78 + self.y_offset, 10)
@@ -63,7 +64,11 @@ class Options(object):
 
         if self.resolution_radio_buttons.checkButton(mouseX, mouseY):
             self.res_opt = self.resolution_radio_buttons.getCurrent()
-            self.screen = pygame.display.set_mode(self.screen_modes[self.resolution_radio_buttons.getCurrent()])
+            if self.infoScreen.current_h == self.screen_modes[self.resolution_radio_buttons.getCurrent()][1]\
+               and self.infoScreen.current_w == self.screen_modes[self.resolution_radio_buttons.getCurrent()][0]:
+                self.screen = pygame.display.set_mode(self.screen_modes[self.resolution_radio_buttons.getCurrent()], pygame.FULLSCREEN)
+            else:
+                self.screen = pygame.display.set_mode(self.screen_modes[self.resolution_radio_buttons.getCurrent()])
 
         self.checkbox_soundeffects.setChecked(mouseX, mouseY)
         self.soundeffectsOff = self.checkbox_soundeffects.getChecked()
@@ -104,7 +109,7 @@ class Options(object):
             self.screen.blit(self.resoultion_text_2, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 40 + self.y_offset))
             self.screen.blit(self.resoultion_text_3, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 20 + self.y_offset))
             self.screen.blit(self.resoultion_text_4, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 60 + self.y_offset))
-            self.screen.blit(self.resoultion_text_5, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 40 + self.y_offset))
+            #self.screen.blit(self.resoultion_text_5, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 40 + self.y_offset)) #4:3 not supported yet
             self.resolution_radio_buttons.draw()
 
             # audio option
