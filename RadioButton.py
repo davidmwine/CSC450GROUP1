@@ -46,7 +46,7 @@ class RadioGroup(object):
         return self.current
 
     def setCurrent(self, i):
-        if len(self.buttons)-1 > i:
+        if len(self.buttons)-1 >= i:
             self.current = i
             self.buttons[self.current].set()
 
@@ -66,3 +66,5 @@ class RadioGroup(object):
             for i in range(len(self.buttons)):
                 if i != self.current:
                     self.buttons[i].unSet()
+            return True
+        return False
