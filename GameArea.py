@@ -1,8 +1,9 @@
 import pygame, sys
 from pygame.locals import *
-from playersDisplay import PlayersDisplay
 from player import Player
 from building import Building
+from globals import Globals
+from playersDisplay import PlayersDisplay
 from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
@@ -27,7 +28,7 @@ class GameArea(object):
         # Game Board
         rect = pygame.Rect((0, 0), (1440*self.scale, 1020*self.scale))
         self.boardArea = self.area.subsurface(rect)
-        self.boardArea.fill((94, 0, 9)) # official MSU maroon
+        self.boardArea.fill(Globals.maroon) 
 
         self.gameBoard = GameBoard(self.scale, True)
             
