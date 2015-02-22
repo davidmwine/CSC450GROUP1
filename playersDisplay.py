@@ -33,11 +33,6 @@ class PlayersDisplay(object):
         self.width = int(c*840)
         self.height = int(c*810)
         self.playerHeight = int(c*135)
-
-        # Colors
-        maroon = (80, 0, 0)
-        lightGray = (200, 200, 200)
-        medGray = (180, 180, 180)
         
         # If this isn't called by another screen, make this the main screen.
         if parent == False:
@@ -47,16 +42,16 @@ class PlayersDisplay(object):
         # The main Surface for the PlayersDisplay, which we'll keep adding to
         self.pd = pygame.Surface((self.width, self.height))
         self.pd = self.pd.convert()
-        self.pd.fill(maroon)
+        self.pd.fill(Globals.maroon)
 
         # Add gray background for player data & separate with lines.
         totalPlayersHeight = self.playerHeight * len(players)
-        pygame.draw.rect(self.pd, lightGray,
+        pygame.draw.rect(self.pd, Globals.lightGray,
                          (0, 0, self.width, totalPlayersHeight), 0)
         for i in range(0, len(players)):
-            pygame.draw.rect(self.pd, medGray,
+            pygame.draw.rect(self.pd, Globals.medGray,
                          (0, i*self.playerHeight, self.width, 45*c), 0)
-            pygame.draw.lines(self.pd, maroon, False,
+            pygame.draw.lines(self.pd, Globals.maroon, False,
                               [(0, self.playerHeight*i),
                                (self.width, self.playerHeight*i)], 2)
 

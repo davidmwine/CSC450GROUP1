@@ -5,12 +5,7 @@ import sys
 from rulesMenu import Rules
 from startMenu import Start
 from optionsMenu import Options
-#Only leave one uncommented, each one is a current option
-#from GameArea import GameArea #Main
-#from GameAreaJB import GameArea #Jennifer's Layout
-from GameAreaS import GameArea #John's Layout
-#Jennifer and John's layouts don't currently cooperate with the rest
-#of the program so they are left commented out for now
+from GameArea import GameArea 
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
 pygame.init()
@@ -47,7 +42,7 @@ class Game(object):
         self.img_icon_small = pygame.image.load(os.path.join("img","icon_small.png")).convert_alpha()
         pygame.display.set_icon(self.img_icon_small)
         self.nextScreen = "start"
-        self.splashShow = False
+        self.splashShow = True
 
         #self.round_number = 1
 
