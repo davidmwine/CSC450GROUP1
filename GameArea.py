@@ -55,7 +55,6 @@ class GameArea(object):
 
     def play(self):
         game_exit = False
-
         # Insert Players Display
         rect = pygame.Rect((1440*self.scale, 0),
                            (480*self.scale, 810*self.scale))
