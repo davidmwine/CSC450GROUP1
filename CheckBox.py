@@ -15,12 +15,14 @@ class CheckBox(object):
     def draw(self):
         pygame.draw.rect(self.screen, (255, 255, 255), Rect((self.x, self.y), (self.w, self.w)), 0)
         if self.checked:
-            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y), (self.x+self.w, self.y+self.w))
-            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y+self.w), (self.x+self.w, self.y))
+            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y), (self.x + self.w, self.y + self.w))
+            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y + self.w), (self.x + self.w, self.y))
 
     def setChecked(self, x, y):
-        if x > self.x and y > self.y and x < self.x+self.w and y < self.y+self.w:
+        if x > self.x and y > self.y and x < self.x + self.w and y < self.y + self.w:
             self.checked = not self.checked
+            return True
+        return False
 
     def getChecked(self):
         return self.checked
