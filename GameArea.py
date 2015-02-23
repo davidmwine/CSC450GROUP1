@@ -7,6 +7,7 @@ from playersDisplay import PlayersDisplay
 from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
+from Dice import Dice
 
 
 class GameArea(object):
@@ -18,6 +19,9 @@ class GameArea(object):
         self.height = int(scale*1080)
         self.scale = scale
         self.parent = parent
+        self.clock = pygame.time.Clock()
+        self.roll = (0,0)
+        self.roll_time = 501
 
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
@@ -45,6 +49,9 @@ class GameArea(object):
                            (1440*self.scale, 60*self.scale))
         self.controls = Controls(self.area, rect)
 
+        #Dice
+        self.dice = Dice(self.area)
+
 
     def get_area(self):
         return self.area
@@ -52,6 +59,14 @@ class GameArea(object):
     def getScale(self):
         return self.scale
 
+    def mouseClick(self):
+        mouseX,mouseY = pygame.mouse.get_pos()
+        if mouseX > self.controls.get_width()/4\
+        and mouseX < self.controls.get_width()/2\
+        and mouseY > self.height-self.controls.get_height():
+            self.roll = (1,0)
+        
+        
 
     def play(self):
         game_exit = False
@@ -65,19 +80,29 @@ class GameArea(object):
                            (1400*self.scale, 980*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
 
-        if self.parent:
-            self.parent.blit(self.area, (0,0))
+        
+            
         
         while not game_exit:
+            self.clock.tick(30)
             for event in pygame.event.get():
+                if event.type == MOUSEBUTTONDOWN:
+                    self.mouseClick()
                 if event.type == KEYDOWN: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
                         game_exit = True
                         break
-                elif event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                     return 0
+            self.roll_time += self.clock.get_time()
+            if self.roll[0]>0 and self.roll_time>250:
+                self.roll = self.dice.roll()
+                print(self.dice.rect())
+                #self.area.blit(self.roll[2], self.dice.rect())
+                self.roll_time = 0
+            self.parent.blit(self.area, (0,0))
             pygame.display.update()
         return "start"
         
@@ -97,7 +122,7 @@ def testplayers():
 
 
 def main():
-    screen = GameArea(False, 2/3)
+    screen = GameArea(False, 1/3)
     screen.play()
 
 
