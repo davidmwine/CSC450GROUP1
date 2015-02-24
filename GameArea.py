@@ -20,6 +20,7 @@ class GameArea(object):
         self.scale = scale
         self.parent = parent
         self.clock = pygame.time.Clock()
+        self.typing = False
         self.roll = (0,0)
         self.roll_time = 501
 
@@ -42,7 +43,7 @@ class GameArea(object):
         # Chat Box
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
                            (480*self.scale, 270*self.scale))
-        self.chatbox = chatBox(1,self.area, rect)
+        self.chatbox = chatBox(self.scale,self.area, rect)
         
         # Controls
         rect = pygame.Rect((0, 1020*self.scale),
@@ -50,7 +51,7 @@ class GameArea(object):
         self.controls = Controls(self.area, rect)
 
         #Dice
-        self.dice = Dice(self.area)
+        self.dice = Dice(self.boardArea)
 
 
     def get_area(self):
@@ -65,6 +66,10 @@ class GameArea(object):
         and mouseX < self.controls.get_width()/2\
         and mouseY > self.height-self.controls.get_height():
             self.roll = (1,0)
+        if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
+           and mouseY > self.chatbox.getTopType()\
+           and mouseY < self.chatbox.getBottomType():
+            self.typing = True
         
         
 
@@ -82,24 +87,34 @@ class GameArea(object):
 
         
             
-        
+        pygame.key.set_repeat(75, 75)
         while not game_exit:
             self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.mouseClick()
-                if event.type == KEYDOWN: #TEMPORARY, will later replace with proper game exit
+                elif event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
                         game_exit = True
                         break
-                if event.type == pygame.QUIT:
+                elif event.type == KEYDOWN and self.typing:
+                    if event.key == K_ESCAPE:
+                        self.typing = False
+                    elif event.key == K_RETURN:
+                        self.chatbox.submitText()
+                    elif event.key == K_BACKSPACE:
+                        self.chatbox.deleteText()
+                    else:
+                        self.chatbox.typeText(pygame.key.name(event.key))
+                        
+                elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                     return 0
             self.roll_time += self.clock.get_time()
             if self.roll[0]>0 and self.roll_time>250:
                 self.roll = self.dice.roll()
-                print(self.dice.rect())
+                #print(self.dice.rect())
                 #self.area.blit(self.roll[2], self.dice.rect())
                 self.roll_time = 0
             self.parent.blit(self.area, (0,0))
