@@ -8,7 +8,7 @@ class Controls:
 
     def __init__(self, parent, rect):
         self._area = parent.subsurface(rect)
-        #print(rect, parent)
+        print(rect, parent)
         self._width = self._area.get_width()
         self._height = self._area.get_height()
         button_w_h = (self._width/4, self._height)
@@ -17,7 +17,11 @@ class Controls:
         self._roll = Button(self._area, Rect((self._width/4,0,)+button_w_h), "Roll")
         self._trade = Button(self._area, Rect((self._width*2/4,0)+button_w_h), "Trade")
         self._help = Button(self._area, Rect((self._width*3/4,0)+button_w_h), "Help") 
-    
+
+    def get_width(self):
+        return self._width
+
+    def get_height(self): return self._height   
 
 
 class Button:
