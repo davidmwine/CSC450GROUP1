@@ -13,6 +13,7 @@ class Building(object):
         self.owner = 'Unowned'          # Which dean 'owns' building (initially unowned)
         self.renovation = False         # Under Renovation (similar to mortgage)
         self.degreeLvl = 'Associate'    # Current degree level building grants
+        self.costNonAcademic = 100      # Cost to other deans for non-academic building fees
         self.costAssociate = 100        # Cost to other deans for associate lvl classes
         self.costBachelor = 200         # Cost to other deans for bachelor lvl classes
         self.costMaster = 300           # Cost to other deans for master lvl classes
@@ -74,3 +75,15 @@ class Building(object):
         
     def setDegreeLvl(self, degLvl):
         self.degreeLvl = degLvl
+
+    def getFeeAmount(self):
+        if self.purpose != 'academic':
+            return self.costNonAcademic
+        elif self.degreeLvl == 'Associate':
+            return self.costAssociate
+        elif self.degreeLvl == 'Bachelor':
+            return self.costBachelor
+        elif self.degreeLvl == 'Master':
+            return self.costMaster
+        elif self.degreeLvl == 'Doctorate':
+            return self.costDoctorate

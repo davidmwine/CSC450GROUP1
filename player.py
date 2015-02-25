@@ -1,5 +1,6 @@
 from globals import Globals
 from building import Building
+from buildings import Buildings
 
 
 class Player(object):
@@ -11,6 +12,7 @@ class Player(object):
         self.points = 0
         self.pointsPerRound = 0
         self.buildings = []     # buildings that the player owns
+        self.position = 0
 
     def getName(self):
         return self.name
@@ -20,6 +22,9 @@ class Player(object):
 
     def getCollegeAbbr(self):
         return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
+
+    def getColor(self):
+        return Globals.collegeColors.get(self.college, "")
 
     def getDollars(self):
         return self.dollars
@@ -32,6 +37,12 @@ class Player(object):
 
     def getBuildings(self):
         return self.buildings
+
+    def getBuildingNames(self):
+        return [building.getName() for building in self.buildings]
+
+    def getPosition(self):
+        return self.position
 
     def addDollars(self, dollarsToAdd):
         self.dollars += dollarsToAdd
@@ -68,6 +79,14 @@ class Player(object):
         if building in self.buildings:
             self.buildings.remove(building)
         else:
-            return -1   # or whatever we want to do here...    
+            return -1   # or whatever we want to do here...
+
+    def increasePosition(self, spaces):
+        self.position += spaces
+        numBuildings = Buildings().getNumBuildings()
+        if self.position > numBuildings:    # if we've passed Carrington
+            self.points += self.pointsPerRound
+            self.dollars += 200000
+        self.position %= numBuildings
 
 

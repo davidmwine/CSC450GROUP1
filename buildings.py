@@ -125,6 +125,17 @@ class Buildings(object):
     def getBuildingList(self):
         return self.buildings
 
+    def getNumBuildings(self):
+        return len(self.buildings)
+
+
+
+
+def main():
+    # Testing
+    buildings = Buildings().getBuildingList()
+    print(buildings[2].getName())
+    print(Buildings().getNumBuildings())
 
 
 
