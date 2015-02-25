@@ -97,7 +97,7 @@ class Dice():
         self._numbers[r1](0)
         self._numbers[r2](1)
         self._roll_count -= 1
-        return (self._roll_count>0,r2+r1, self._area)
+        return (self._roll_count>0,r2+r1+2)
 
 
 def main():

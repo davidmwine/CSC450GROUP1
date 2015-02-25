@@ -112,12 +112,11 @@ class GameArea(object):
                     sys.exit()
                     return 0
             self.roll_time += self.clock.get_time()
-            if self.roll[0]>0 and self.roll_time>250:
+            if self.roll[0] and self.roll_time>250:
                 self.roll = self.dice.roll()
-                #print(self.dice.rect())
-                #self.area.blit(self.roll[2], self.dice.rect())
                 self.roll_time = 0
-            self.parent.blit(self.area, (0,0))
+            if self.parent:
+                self.parent.blit(self.area, (0,0))
             pygame.display.update()
         return "start"
         
