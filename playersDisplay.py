@@ -30,6 +30,7 @@ class PlayersDisplay(object):
     def __init__(self, players, c, parent=False):
 
         self.players = players
+        self.scale = c
         self.width = int(c*480)
         self.height = int(c*810)
         self.playerHeight = int(c*135)
@@ -52,8 +53,8 @@ class PlayersDisplay(object):
             pygame.draw.rect(self.pd, Globals.medGray,
                          (0, i*self.playerHeight, self.width, 45*c), 0)
             pygame.draw.lines(self.pd, Globals.maroon, False,
-                              [(0, self.playerHeight*i),
-                               (self.width, self.playerHeight*i)], 2)
+                              [(0, i*self.playerHeight),
+                               (self.width, i*self.playerHeight)], 2)
 
         # Add text.
         if pygame.font:
@@ -103,6 +104,15 @@ class PlayersDisplay(object):
                            True, Color('black'))
         self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
 
+
+    def selectPlayer(self, playerNum):
+        pygame.draw.rect(self.pd, (238, 180, 180),
+            (0, playerNum * self.playerHeight + 2, self.width,
+             self.playerHeight - 2), 0)
+        pygame.draw.rect(self.pd, (205, 155, 155),
+            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerNum)
+        
               
     def getPD(self):
         return self.pd
@@ -123,6 +133,8 @@ def main():
     players = [p1, p2, p3, p4, p5, p6]
     
     pd = PlayersDisplay(players, 0.7)
+
+    pd.selectPlayer(1)
 
     pd.screen.blit(pd.getPD(), (0, 0))
     pygame.display.flip()
