@@ -2,11 +2,11 @@
 import pygame
 from pygame.locals import *
 import sys
-import math
-from building import Building
+from building import *
 
 class Buildings(object):
     """ This class contains a definitive list of the buildings """
+    # These still need to be reordered to reflect the new board layout.
 
     def __init__(self):
 
@@ -15,106 +15,106 @@ class Buildings(object):
         self.buildings.append( Building('Carrington Hall',
                                         len(self.buildings), 'special') )
         
-        self.buildings.append( Building('Siceluff Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Siceluff Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Cheek Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Cheek Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Wells House',
+        self.buildings.append( NonAcademicBuilding('Wells House',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('University Bookstore',
+        self.buildings.append( NonAcademicBuilding('University Bookstore',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Hammons Field',
+        self.buildings.append( NonAcademicBuilding('Hammons Field',
                                         len(self.buildings), 'sports') )
         
-        self.buildings.append( Building('Greenwood Lab School',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Greenwood Lab School',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Blair-Shannon House',
+        self.buildings.append( NonAcademicBuilding('Blair-Shannon House',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Foster Recreation Center',
+        self.buildings.append( NonAcademicBuilding('Foster Recreation Center',
                                         len(self.buildings), 'support') )
         
         self.buildings.append( Building('Bear Park North',
                                         len(self.buildings), 'special') )
         
-        self.buildings.append( Building('Pummill Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Pummill Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Juanita K Hammons',
+        self.buildings.append( NonAcademicBuilding('Juanita K Hammons',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Hill Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Hill Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('JQH Arena',
+        self.buildings.append( NonAcademicBuilding('JQH Arena',
                                         len(self.buildings), 'sports') )
         
-        self.buildings.append( Building('Ellis Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Ellis Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Hammons Student Center',
+        self.buildings.append( NonAcademicBuilding('Hammons Student Center',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Craig Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Craig Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Allison South Stadium',
+        self.buildings.append( NonAcademicBuilding('Allison South Stadium',
                                         len(self.buildings), 'sports') )
         
-        self.buildings.append( Building('Art Annex',
+        self.buildings.append( NonAcademicBuilding('Art Annex',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Brick City',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Brick City',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Karls Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Karls Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Kings St Annex',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Kings St Annex',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Meyer Library',
+        self.buildings.append( NonAcademicBuilding('Meyer Library',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Forsythe Athletics Center',
+        self.buildings.append( NonAcademicBuilding('Forsythe Athletics Center',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Power House',
+        self.buildings.append( NonAcademicBuilding('Power House',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Freudenberger House',
+        self.buildings.append( NonAcademicBuilding('Freudenberger House',
                                         len(self.buildings), 'support') )
         
         self.buildings.append( Building('Bear Park South',
                                         len(self.buildings), 'special') )
         
-        self.buildings.append( Building('Plaster Sports Complex',
+        self.buildings.append( NonAcademicBuilding('Plaster Sports Complex',
                                         len(self.buildings), 'sports') )
         
-        self.buildings.append( Building('Central Stores & Maintenance',
+        self.buildings.append( NonAcademicBuilding('Central Stores & Maintenance',
                                         len(self.buildings), 'support') )
         
-        self.buildings.append( Building('Temple Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Temple Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Kemper Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Kemper Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Strong Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Strong Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Glass Hall',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('Glass Hall',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('McDonald Arena',
-                                        len(self.buildings), 'academic') )
+        self.buildings.append( AcademicBuilding('McDonald Arena',
+                                        len(self.buildings)) )
         
-        self.buildings.append( Building('Plaster Student Union',
+        self.buildings.append( NonAcademicBuilding('Plaster Student Union',
                                         len(self.buildings), 'support') )
         
         self.buildings.append( Building('Accreditation Review',
