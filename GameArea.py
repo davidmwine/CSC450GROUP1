@@ -8,7 +8,7 @@ from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
 from Dice import Dice
-
+from cards import Cards
 
 class GameArea(object):
 
@@ -23,6 +23,7 @@ class GameArea(object):
         self.typing = False
         self.roll = (0,0)
         self.roll_time = 501
+        self.card_draw = False
 
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
@@ -53,6 +54,9 @@ class GameArea(object):
         #Dice
         self.dice = Dice(self.boardArea)
 
+        #Cards
+        self.cards = Cards(self.boardArea)
+
 
     def get_area(self):
         return self.area
@@ -70,6 +74,16 @@ class GameArea(object):
            and mouseY > self.chatbox.getTopType()\
            and mouseY < self.chatbox.getBottomType():
             self.typing = True
+
+        #############################################
+        #Temp cards demo - click the cards to go through them    
+        if mouseX > self.area.get_width()/7 \
+        and mouseX < 2*self.area.get_width()/7 \
+        and mouseY > self.area.get_height()/5 \
+        and mouseY < 2*self.area.get_height()/5:
+            self.card_draw = True
+            self.cards.draw_card(self.scale)
+        #############################################
         
         
 
@@ -117,6 +131,9 @@ class GameArea(object):
                 self.roll_time = 0
             if self.parent:
                 self.parent.blit(self.area, (0,0))
+                
+            if self.card_draw == False:
+                self.cards.display_card("back", self.scale)
             pygame.display.update()
         return "start"
         
