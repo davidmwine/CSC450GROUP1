@@ -344,8 +344,33 @@ class GameArea(object):
         owner.addDollars(feeAmt)
         self.displayMsgOK("You pay $" + str(feeAmt) + " to " + owner.getName() + ".")
         # Update owner's dollars in playersDisplay.
-        self.playersDisplay.unselectPlayer(self.players.index(owner))        
-        
+        self.playersDisplay.unselectPlayer(self.players.index(owner))
+
+    def chatting(self, event):
+        if event.key == K_ESCAPE:
+            self.typing = False
+        elif event.key == K_RETURN:
+            self.chatbox.submitText()
+        elif event.key == K_BACKSPACE:
+            self.chatbox.deleteText()
+        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
+            #self.chatbox.typeText(pygame.key.name(event.key))
+            #self.chatbox.typeText(chr(event.key))
+            checkCaps = pygame.key.get_pressed()
+            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in self.chars:
+                index = self.chars.index(chr(event.key))
+                if self.charsCaps[index] not in ['{', '}']:
+                    self.chatbox.typeText(self.charsCaps[index])
+                else:
+                    self.chatbox.typeText(self.charsCaps[index] + self.charsCaps[index])
+            elif checkCaps[K_CAPSLOCK]:
+                index = self.chars.index(chr(event.key))
+                if index < 26: #Only caps lock regular alphabet
+                    self.chatbox.typeText(self.charsCaps[index])
+                else:
+                    self.chatbox.typeText(chr(event.key))
+            else:
+                self.chatbox.typeText(chr(event.key))
 
     def play(self):
 
@@ -371,32 +396,27 @@ class GameArea(object):
         self.refreshGameBoard()
         self.refreshDisplay()
 
-        turn = -1   # This will be incremented to reference player 0.
-
+        #turn = -1   # This will be incremented to reference player 0.
+        self.gameExit = False #Must be reset each time play is
+        self.chars = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+        self.charsCaps = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         pygame.key.set_repeat(75, 75)
         while not self.gameExit:
             self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.mouseClick()
-                elif event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
+                if event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
-                elif event.type == KEYDOWN and self.typing:
-                    if event.key == K_ESCAPE:
-                        self.typing = False
-                    elif event.key == K_RETURN:
-                        self.chatbox.submitText()
-                    elif event.key == K_BACKSPACE:
-                        self.chatbox.deleteText()
-                    else:
-                        self.chatbox.typeText(pygame.key.name(event.key))    
-                elif event.type == pygame.QUIT:
+                if event.type == KEYDOWN and self.typing:
+                    self.chatting(event)
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                    return 0 
-            if not self.midTurn:    # If it's a new player's turn...
+                    return 0
+            '''if not self.midTurn:    # If it's a new player's turn...
                 self.playersDisplay.unselectPlayer(turn % len(self.players))
                 turn += 1
                 playerIndex = turn % len(self.players)
@@ -411,9 +431,9 @@ class GameArea(object):
                 self.roll = self.dice.roll()
                 self.roll_time = 0
             if self.parent:
-                self.parent.blit(self.area, (0,0))
+                self.parent.blit(self.area, (0,0))'''
             pygame.display.update()
-            next(self.sequence)     # Perform next action in player's turn       
+            #next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
             
         return "start"
