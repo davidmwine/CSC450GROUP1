@@ -11,7 +11,6 @@ from Dice import Dice
 from textWrap import *
 
 
-
 class GameArea(object):
 
 
@@ -38,7 +37,9 @@ class GameArea(object):
         self.okMsgDisplayed = False     # True if any OK message is displayed
         self.clickedButton = False      # True if OK or Yes or No has been clicked
         self.gameExit = False
-
+        self.typing = False
+        self.roll = (0,0)
+        self.roll_time = 501
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -73,12 +74,23 @@ class GameArea(object):
     def getScale(self):
         return self.scale
 
+    def mouseClick(self):
+        mouseX,mouseY = pygame.mouse.get_pos()
+        if mouseX > self.controls.get_width()/4\
+        and mouseX < self.controls.get_width()/2\
+        and mouseY > self.height-self.controls.get_height():
+            self.roll = (1,0)
+        if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
+           and mouseY > self.chatbox.getTopType()\
+           and mouseY < self.chatbox.getBottomType():
+            self.typing = True
+        
+        
 
     def refreshGameBoard(self):
         rect = pygame.Rect((20*self.scale, 20*self.scale),
                            (1400*self.scale, 980*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
-
 
     def refreshPlayersDisplay(self):
         rect = pygame.Rect((1440*self.scale, 0),
@@ -383,9 +395,7 @@ class GameArea(object):
                 elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                    return 0
-  
-     
+                    return 0 
             if not self.midTurn:    # If it's a new player's turn...
                 self.playersDisplay.unselectPlayer(turn % len(self.players))
                 turn += 1
@@ -396,9 +406,14 @@ class GameArea(object):
                 self.refreshDisplay()
                 self.sequence = self.turnSequence()
                 self.midTurn = True
-        
-            next(self.sequence)     # Perform next action in player's turn
-                
+            self.roll_time += self.clock.get_time()
+            if self.roll[0] and self.roll_time>250:
+                self.roll = self.dice.roll()
+                self.roll_time = 0
+            if self.parent:
+                self.parent.blit(self.area, (0,0))
+            pygame.display.update()
+            next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
             
         return "start"
