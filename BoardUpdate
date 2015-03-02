@@ -8,7 +8,7 @@ from pygame.locals import *
 pygame.init()
 
 size = [720, 540]
-margin = 5 
+#size = [1440, 1080]
 WIDTH = size[0]
 HEIGHT = size[1]
 
@@ -80,17 +80,12 @@ class GameBoard(object):
 
     def __init__(self, scale, isSubscreen=False):
         # game variables
-        corner_width = size[0]/7
-        corner_height = size[1]/6
-        side_height = (size[1] -corner_height*2)/7
+        corner_width = size[0]/7                                            #The width of the corner squares
+        corner_height = size[1]/6                                           #The height of the corner squares                  
         width=(size[0]-corner_width*2)/9                                    #the width of the top squares
         height =(size[1] -(corner_height*2))/7                              #the height of the top squares
         margin =((size[0]-(corner_width*2)-(width*9))/10)+1                 #top margin
-        margin_side =((size[1]-(corner_height*2)-(height*7))/10)+1
-        
-        
-        #85,140,195,250,305,360,415,470, 525
-        #example (SCREEN, (Color), (x, y, width, height))
+        margin_side =((size[1]-(corner_height*2)-(height*7))/10)+1          #side margin
         SCREEN = pygame.display.get_surface()
         background = pygame.Surface(SCREEN.get_size())
         background.fill((MAROON))
@@ -104,6 +99,8 @@ class GameBoard(object):
         label = myfont.render("Mastering MSU", 1, GOLDEN)
         SCREEN.blit(label, (size[0]/2, size[1]/2))
 
+        #example (SCREEN, (Color), (x, y, width, height))
+        
         #top
         rect11 = pygame.draw.rect(SCREEN, (WHITE), ((corner_width+margin), 0, width, corner_height))
         rect12 = pygame.draw.rect(SCREEN, (WHITE), ((corner_width+width+(margin*2)),0, width, corner_height))
@@ -196,6 +193,8 @@ class GameBoard(object):
 
     def getGB(self):
         return self.board
+
+
 
 def main():
     
