@@ -8,12 +8,8 @@ from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
 from Dice import Dice
-<<<<<<< HEAD
 from cards import Cards
-=======
 from textWrap import *
-
->>>>>>> origin/Josh
 
 class GameArea(object):
 
@@ -44,11 +40,8 @@ class GameArea(object):
         self.typing = False
         self.roll = (0,0)
         self.roll_time = 501
-<<<<<<< HEAD
         self.card_draw = False
 
-=======
->>>>>>> origin/Josh
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -432,6 +425,11 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
+                    ###Cards demo - Remove Later ###
+                    if event.key == K_c:
+                        self.card_draw = True
+                        self.cards.draw_card(self.scale)
+                    ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
                 if event.type == pygame.QUIT:
@@ -473,14 +471,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-        
-        
-            
