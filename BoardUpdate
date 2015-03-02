@@ -7,8 +7,8 @@ from building import Building
 from pygame.locals import *
 pygame.init()
 
-size = [720, 540]
-#size = [1440, 1080]
+#size = [720, 540]
+size = [1440, 1080]
 WIDTH = size[0]
 HEIGHT = size[1]
 
