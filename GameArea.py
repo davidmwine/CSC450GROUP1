@@ -24,7 +24,6 @@ class GameArea(object):
         self.roll = (0,0)   # self.roll[1] is the value of the roll
         self.roll_time = 501
         
-        self.sequence = self.turnSequence()
         self.players = []       # List of players will be added in play()
         self.buildings = None   # List of buildings will be added in play()
         self.player = None      # Holds player whose turn it is
@@ -32,14 +31,10 @@ class GameArea(object):
                 
         self.typing = False     # True if user is typing in chat box
         self.midTurn = False    # True if it's the middle of a player's turn
-        self.rollingDice = False
         self.buyMsgDisplayed = False
         self.okMsgDisplayed = False     # True if any OK message is displayed
-        self.clickedButton = False      # True if OK or Yes or No has been clicked
         self.gameExit = False
-        self.typing = False
-        self.roll = (0,0)
-        self.roll_time = 501
+        
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -72,19 +67,7 @@ class GameArea(object):
 
 
     def getScale(self):
-        return self.scale
-
-    def mouseClick(self):
-        mouseX,mouseY = pygame.mouse.get_pos()
-        if mouseX > self.controls.get_width()/4\
-        and mouseX < self.controls.get_width()/2\
-        and mouseY > self.height-self.controls.get_height():
-            self.roll = (1,0)
-        if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
-           and mouseY > self.chatbox.getTopType()\
-           and mouseY < self.chatbox.getBottomType():
-            self.typing = True
-        
+        return self.scale        
         
 
     def refreshGameBoard(self):
@@ -92,11 +75,16 @@ class GameArea(object):
                            (1400*self.scale, 980*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
 
+
     def refreshPlayersDisplay(self):
         rect = pygame.Rect((1440*self.scale, 0),
                            (480*self.scale, 810*self.scale))
         self.area.blit(self.playersDisplay.getPD(), rect)
-        
+
+
+    def redrawBoard(self):    
+        self.area.blit(self.gameBoard.getGB(), (20*self.scale, 20*self.scale))
+
 
     def refreshDisplay(self):
         if self.parent:    
@@ -107,18 +95,18 @@ class GameArea(object):
     def mouseClick(self):
         """Takes action based on when and where mouse has been clicked"""
         mouseX,mouseY = pygame.mouse.get_pos()
-        if mouseX > self.controls.get_width()/4\
-        and mouseX < self.controls.get_width()/2\
-        and mouseY > self.height-self.controls.get_height():
-            self.roll = (1,0)
-            self.area.blit(self.gameBoard.getGB(),
-                               (20*self.scale, 20*self.scale))  # redraw board
-            self.rollingDice = True     # triggers self.rollDice()
             
         if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
            and mouseY > self.chatbox.getTopType()\
            and mouseY < self.chatbox.getBottomType():
             self.typing = True
+
+        if mouseX > self.controls.get_width()/4\
+        and mouseX < self.controls.get_width()/2\
+        and mouseY > self.height-self.controls.get_height():
+            self.roll = (1,0)
+            self.redrawBoard()
+            self.rollDice()    
 
         if self.okMsgDisplayed:
             okRect = pygame.Rect(self.msgRect.x + self.okRect.x,
@@ -126,9 +114,8 @@ class GameArea(object):
                                  self.okRect.width, self.okRect.height)
             if okRect.collidepoint(pygame.mouse.get_pos()):
                 self.okMsgDisplayed = False
-                self.clickedButton = True
-                self.area.blit(self.gameBoard.getGB(),
-                               (20*self.scale, 20*self.scale))  # redraw board
+                self.redrawBoard()
+                self.endTurn()
 
         if self.buyMsgDisplayed:
             yesRect = pygame.Rect(self.msgRect.x + self.yesRect.x,
@@ -140,36 +127,17 @@ class GameArea(object):
             if yesRect.collidepoint(pygame.mouse.get_pos()):
                 self.buy()
                 self.buyMsgDisplayed = False
-                self.clickedButton = True
-                self.area.blit(self.gameBoard.getGB(),
-                               (20*self.scale, 20*self.scale))  # redraw board
+                self.redrawBoard()
+                self.endTurn()
             elif noRect.collidepoint(pygame.mouse.get_pos()):
                 self.buyMsgDisplayed = False
-                self.clickedButton = True
-                self.area.blit(self.gameBoard.getGB(),
-                               (20*self.scale, 20*self.scale))  # redraw board
-
-
-
-    def turnSequence(self):
-        """A generator for the sequence of events during a player's turn."""
-        yield self.beginTurn()
-        yield self.rollDice()
-        yield self.moveToken()
-        yield self.handleLanding()
+                self.redrawBoard()
+                self.endTurn()
 
 
     def beginTurn(self):
         print("------- " + self.player.getName() + "'s turn -------")
         self.displayMsg(self.player.getName() + "'s turn. Click 'Roll'")
-        # Wait for user to click the Roll Dice button
-        while not self.rollingDice:
-            event = pygame.event.wait()
-            if event.type == MOUSEBUTTONDOWN:
-                self.mouseClick()
-            elif event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()    
 
 
     def rollDice(self):
@@ -181,8 +149,8 @@ class GameArea(object):
                 self.roll_time = 0
                 self.refreshDisplay()
         print("Dice Rolled:", self.roll[1])
-        self.rollingDice = False
-
+        self.moveToken()
+        
 
     def moveToken(self):
         pygame.time.wait(1000)
@@ -190,6 +158,7 @@ class GameArea(object):
         position = self.player.getPosition()
         self.building = self.buildings[position]
         print("Token landed on", self.building.getName())
+        self.handleLanding()
 
 
     def handleLanding(self):
@@ -206,26 +175,37 @@ class GameArea(object):
                 self.displayMsgOK("You already own " + self.building.getName() + ".")
                 self.okMsgDisplayed = True
             elif owner == None:
-                choice = self.displayBuyChoice()  
+                self.displayMsgYN("Do you want to buy " + self.building.getName() + "?")
+                self.buyMsgDisplayed = True  
             elif owner != self.player:
                 self.chargeFees(owner)
 
-        self.refreshDisplay()        
-                
-        # Wait for user to click a button.
-        while not self.clickedButton:
-            event = pygame.event.wait()
-            if event.type == MOUSEBUTTONDOWN:
-                self.mouseClick()
-            elif event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
+        
+    def endTurn(self):
         print("End of turn")
-        self.clickedButton = False
         self.midTurn = False
         self.refreshPlayersDisplay()
         self.refreshGameBoard()
+
+
+    def buy(self):
+        """Takes care of bookkeeping once player clicked Yes to buy building"""
+        self.player.subtractDollars(self.building.getPrice())
+        self.player.addBuilding(self.building)
+        self.building.setOwner(self.player)
+        self.building.setColor(self.player.getColor())
+        self.gameBoard.colorBuilding(self.building)
+
+
+    def chargeFees(self, owner):
+        """If building is already owned, fees are paid to owner."""
+        self.okMsgDisplayed = True
+        feeAmt = self.building.getFeeAmount()
+        self.player.subtractDollars(feeAmt)
+        owner.addDollars(feeAmt)
+        self.displayMsgOK("You pay $" + str(feeAmt) + " to " + owner.getName() + ".")
+        # Update owner's dollars in playersDisplay.
+        self.playersDisplay.unselectPlayer(self.players.index(owner))
 
 
     def displayMsg(self, msg):
@@ -318,34 +298,36 @@ class GameArea(object):
         # Position message box on the screen.
         self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
                         560*self.scale, 392*self.scale)
-        self.area.blit(msgBox, self.msgRect)    
-
-
-    def displayBuyChoice(self):
-        """Gives player the choice whether to buy the building he/she landed on"""
-        self.buyMsgDisplayed = True
-        self.displayMsgYN("Do you want to buy " + self.building.getName() + "?")
-
-
-    def buy(self):
-        """Takes care of bookkeeping once player clicked Yes to buy building"""
-        self.player.subtractDollars(self.building.getPrice())
-        self.player.addBuilding(self.building)
-        self.building.setOwner(self.player)
-        self.building.setColor(self.player.getColor())
-        self.gameBoard.colorBuilding(self.building)
-
-
-    def chargeFees(self, owner):
-        """If building is already owned, fees are paid to owner."""
-        self.okMsgDisplayed = True
-        feeAmt = self.building.getFeeAmount()
-        self.player.subtractDollars(feeAmt)
-        owner.addDollars(feeAmt)
-        self.displayMsgOK("You pay $" + str(feeAmt) + " to " + owner.getName() + ".")
-        # Update owner's dollars in playersDisplay.
-        self.playersDisplay.unselectPlayer(self.players.index(owner))        
+        self.area.blit(msgBox, self.msgRect) 
         
+
+    def chatting(self, event):
+        if event.key == K_ESCAPE:
+            self.typing = False
+            self.gameExit = True
+        elif event.key == K_RETURN:
+            self.chatbox.submitText()
+        elif event.key == K_BACKSPACE:
+            self.chatbox.deleteText()
+        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
+            #self.chatbox.typeText(pygame.key.name(event.key))
+            #self.chatbox.typeText(chr(event.key))
+            checkCaps = pygame.key.get_pressed()
+            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in self.chars:
+                index = self.chars.index(chr(event.key))
+                if self.charsCaps[index] not in ['{', '}']:
+                    self.chatbox.typeText(self.charsCaps[index])
+                else:
+                    self.chatbox.typeText(self.charsCaps[index] + self.charsCaps[index])
+            elif checkCaps[K_CAPSLOCK]:
+                index = self.chars.index(chr(event.key))
+                if index < 26: #Only caps lock regular alphabet
+                    self.chatbox.typeText(self.charsCaps[index])
+                else:
+                    self.chatbox.typeText(chr(event.key))
+            else:
+                self.chatbox.typeText(chr(event.key))
+
 
     def play(self):
 
@@ -372,30 +354,27 @@ class GameArea(object):
         self.refreshDisplay()
 
         turn = -1   # This will be incremented to reference player 0.
-
+        self.chars = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+        self.charsCaps = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         pygame.key.set_repeat(75, 75)
+        self.gameExit = False #Must be reset each time play is
+        
         while not self.gameExit:
             self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.mouseClick()
-                elif event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
+                if event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
-                elif event.type == KEYDOWN and self.typing:
-                    if event.key == K_ESCAPE:
-                        self.typing = False
-                    elif event.key == K_RETURN:
-                        self.chatbox.submitText()
-                    elif event.key == K_BACKSPACE:
-                        self.chatbox.deleteText()
-                    else:
-                        self.chatbox.typeText(pygame.key.name(event.key))    
-                elif event.type == pygame.QUIT:
+                if event.type == KEYDOWN and self.typing:
+                    self.chatting(event)
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                    return 0 
+                    return 0
+                
             if not self.midTurn:    # If it's a new player's turn...
                 self.playersDisplay.unselectPlayer(turn % len(self.players))
                 turn += 1
@@ -403,17 +382,9 @@ class GameArea(object):
                 self.player = self.players[playerIndex]
                 self.playersDisplay.selectPlayer(playerIndex)
                 self.refreshPlayersDisplay()
-                self.refreshDisplay()
-                self.sequence = self.turnSequence()
                 self.midTurn = True
-            self.roll_time += self.clock.get_time()
-            if self.roll[0] and self.roll_time>250:
-                self.roll = self.dice.roll()
-                self.roll_time = 0
-            if self.parent:
-                self.parent.blit(self.area, (0,0))
-            pygame.display.update()
-            next(self.sequence)     # Perform next action in player's turn       
+                self.beginTurn()
+                   
             self.refreshDisplay()
             
         return "start"
