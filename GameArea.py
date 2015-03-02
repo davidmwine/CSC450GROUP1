@@ -425,13 +425,13 @@ class GameArea(object):
                 self.refreshPlayersDisplay()
                 self.refreshDisplay()
                 self.sequence = self.turnSequence()
-                self.midTurn = True
+                self.midTurn = True'''
             self.roll_time += self.clock.get_time()
             if self.roll[0] and self.roll_time>250:
                 self.roll = self.dice.roll()
                 self.roll_time = 0
             if self.parent:
-                self.parent.blit(self.area, (0,0))'''
+                self.parent.blit(self.area, (0,0))
             pygame.display.update()
             #next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
