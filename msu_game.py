@@ -29,7 +29,7 @@ class Game(object):
         self.fullHD = (1920, 1080)
         self.four_three_ratio = (960, 720)
         self.screen_size = [self.qHD, self.HD, self.HDplus, self.fullHD, self.four_three_ratio]
-        self.size = 0
+        self.size = 1
         self.ratio = self.screen_size[self.size][0]/1920
         if self.infoScreen.current_h == self.screen_size[self.size][1]\
            and self.infoScreen.current_w == self.screen_size[self.size][0]:
@@ -42,7 +42,6 @@ class Game(object):
         self.img_icon_small = pygame.image.load(os.path.join("img","icon_small.png")).convert_alpha()
         pygame.display.set_icon(self.img_icon_small)
         self.nextScreen = "start"
-        #self.splashShow = True
         self.splashShow = False
 
         #self.round_number = 1

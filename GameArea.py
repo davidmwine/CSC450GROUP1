@@ -8,8 +8,8 @@ from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
 from Dice import Dice
+from cards import Cards
 from textWrap import *
-
 
 class GameArea(object):
 
@@ -37,9 +37,8 @@ class GameArea(object):
         self.okMsgDisplayed = False     # True if any OK message is displayed
         self.clickedButton = False      # True if OK or Yes or No has been clicked
         self.gameExit = False
-        self.typing = False
-        self.roll = (0,0)
-        self.roll_time = 501
+        self.card_draw = False
+
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -66,6 +65,9 @@ class GameArea(object):
         #Dice
         self.dice = Dice(self.boardArea)
 
+        #Cards
+        self.cards = Cards(self.boardArea)
+
 
     def getArea(self):
         return self.area
@@ -83,9 +85,7 @@ class GameArea(object):
         if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
            and mouseY > self.chatbox.getTopType()\
            and mouseY < self.chatbox.getBottomType():
-            self.typing = True
-        
-        
+            self.typing = True        
 
     def refreshGameBoard(self):
         rect = pygame.Rect((20*self.scale, 20*self.scale),
@@ -410,6 +410,11 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
+                    ###Cards demo - Remove Later ###
+                    if event.key == K_c:
+                        self.card_draw = True
+                        self.current_card = self.cards.draw_card(self.scale)
+                    ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
                 if event.type == pygame.QUIT:
@@ -426,12 +431,18 @@ class GameArea(object):
                 self.refreshDisplay()
                 self.sequence = self.turnSequence()
                 self.midTurn = True'''
+            if self.card_draw == False:
+                self.cards.display_card("back", self.scale)
+            else:
+                self.cards.display_card(self.current_card, self.scale)
+                
             self.roll_time += self.clock.get_time()
             if self.roll[0] and self.roll_time>250:
                 self.roll = self.dice.roll()
                 self.roll_time = 0
             if self.parent:
                 self.parent.blit(self.area, (0,0))
+                
             pygame.display.update()
             #next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
@@ -448,14 +459,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-        
-        
-            
