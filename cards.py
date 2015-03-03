@@ -9,13 +9,13 @@ class Cards():
                 (self.parent.get_height()//5), self.width, self.height)
         self.card_deck = []
         self.cards_in_deck = 6  #Number of cards in the deck
-        self.card_pos = 0
+        self.card_pos = 0  #Card position(index) in the deck
         self.init_deck()
         self.load_images()
         
     def init_deck(self):
-        for i in range(self.cards_in_deck):
-            self.card_deck.append(i)
+        for card in range(self.cards_in_deck):
+            self.card_deck.append(card)
         random.shuffle(self.card_deck)
         
     def font_op(self, size, fontName):  #Duplicated from msu_game.py
@@ -62,28 +62,31 @@ class Cards():
             character_counter = 0 
             font_size = int(27*scale)
             padding = 0
+            padding_increment = int(30*scale)
+            margin = 7
+            text_color = (35,35,35)
             for character in self.card_text:
                 character_counter += 1
                 if character_counter == len(self.card_text):
                     if len(line_text + word + character) >= text_edge:
-                        text_out = self.font_op(font_size, "berlin").render(line_text, True, (35,35,35))
-                        self.area.blit(text_out,(7,7 + padding))
+                        text_out = self.font_op(font_size, "berlin").render(line_text, True, text_color)
+                        self.area.blit(text_out,(margin,margin + padding))
                         line_text = word + character
-                        padding += int(30*scale)
-                        text_out = self.font_op(font_size, "berlin").render(line_text, True, (35,35,35))
-                        self.area.blit(text_out,(7,7 + padding))
+                        padding += padding_increment
+                        text_out = self.font_op(font_size, "berlin").render(line_text, True, text_color)
+                        self.area.blit(text_out,(margin,margin + padding))
                     else:
                         line_text += word + character
-                        text_out = self.font_op(font_size, "berlin").render(line_text, True, (35,35,35))
-                        self.area.blit(text_out,(7,7 + padding))
+                        text_out = self.font_op(font_size, "berlin").render(line_text, True, text_color)
+                        self.area.blit(text_out,(margin,margin + padding))
                 if character != " ":
                     word += character
                 if character == " ":
                     if len(line_text + word + character) >= text_edge:
-                        text_out = self.font_op(font_size, "berlin").render(line_text, True, (35,35,35))
-                        self.area.blit(text_out,(7,7 + padding))
+                        text_out = self.font_op(font_size, "berlin").render(line_text, True, text_color)
+                        self.area.blit(text_out,(margin,margin + padding))
                         line_text = word + character
-                        padding += int(30*scale)
+                        padding += padding_increment
                     else:
                         line_text += word + character
                     word = ""
@@ -95,3 +98,5 @@ class Cards():
         card = self.card_deck[self.card_pos]
         self.card_pos += 1
         self.display_card(card, scale)
+        return card
+        
