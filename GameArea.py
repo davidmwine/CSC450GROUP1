@@ -8,6 +8,7 @@ from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
 from Dice import Dice
+from popupMenu import popupMenu
 from cards import Cards
 from textWrap import *
 
@@ -61,6 +62,9 @@ class GameArea(object):
         #Dice
         self.dice = Dice(self.boardArea)
 
+        # Popup options menu
+        self.popupMenu = popupMenu(self.boardArea)
+
         #Cards
         self.cards = Cards(self.boardArea)
 
@@ -74,6 +78,76 @@ class GameArea(object):
 
     def mouseClick(self):
         mouseX,mouseY = pygame.mouse.get_pos()
+
+        # menu not open
+        if not self.popupMenu.getPopupActive():
+            if mouseX > self.controls.get_width()/4\
+            and mouseX < self.controls.get_width()/2\
+            and mouseY > self.height-self.controls.get_height():
+                self.roll = (1,0)
+            if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
+            and mouseY > self.chatbox.getTopType()\
+            and mouseY < self.chatbox.getBottomType():
+                self.typing = True
+            if mouseX > 0 and mouseX < self.controls.get_width() / 4 and mouseY > self.height - self.controls.get_height():
+                self.popupMenu.setPopupActive(True)
+                self.popupMenu.make_popup_menu()
+
+        # menu open
+        else:
+            # not in game options
+            if not self.popupMenu.getOptionsActive():
+                # not exiting game
+                if not self.popupMenu.getExitCheckActive():
+                    # resume game
+                    if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                        and mouseY > self.boardArea.get_height() / 2 - 80 and mouseY < self.boardArea.get_height() / 2 - 50:
+                        self.popupMenu.setPopupActive(False)
+                        rect = pygame.Rect((20*self.scale, 20*self.scale),
+                                (1400*self.scale, 980*self.scale))
+                        self.area.blit(self.gameBoard.getGB(), rect)
+                    # save game
+                    if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                        and mouseY > self.boardArea.get_height() / 2 - 40 and mouseY < self.boardArea.get_height() / 2 - 10:
+                        pass # NEED TO IMPLEMENT
+                    # game options
+                    if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                        and mouseY > self.boardArea.get_height() / 2 and mouseY < self.boardArea.get_height() / 2 + 30:
+                        self.popupMenu.setOptionsActive(True)
+                        self.popupMenu.game_options()
+                    # exit game
+                    if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                        and mouseY > self.boardArea.get_height() / 2 + 40 and mouseY < self.boardArea.get_height() / 2 + 70:
+                        self.popupMenu.setExitCheckActive(True)
+                        self.popupMenu.exit_check()
+                # exit double check
+                else:
+                    # yes - exit
+                    if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                        and mouseY > self.boardArea.get_height() / 2 - 60 and mouseY < self.boardArea.get_height() / 2 - 30:
+                        pygame.quit()
+                        sys.exit()
+                    # no - go back to menu
+                    if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                        and mouseY > self.boardArea.get_height() / 2 - 20 and mouseY < self.boardArea.get_height() / 2 + 10:
+                        self.popupMenu.setExitCheckActive(False)
+                        self.popupMenu.make_popup_menu()
+
+            # in game options
+            else:
+                # change resolution (NOT WORKING)
+                # problem is either
+                #   1. Program not recognizing the radio button being checked
+                #   2. Not changing resolution with the returned value
+                change = self.popupMenu.change_resolution(mouseX, mouseY)
+                if change != None:
+                    self.area = pygame.display.set_mode(change)
+                    self.popupMenu.load_buttons()
+                # back to menu
+                if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
+                    and mouseY > self.boardArea.get_height() / 2 - 80 and mouseY < self.boardArea.get_height() / 2 - 50:
+                    self.popupMenu.setOptionsActive(False)
+                    self.popupMenu.make_popup_menu()
         if mouseX > self.controls.get_width()/4\
         and mouseX < self.controls.get_width()/2\
         and mouseY > self.height-self.controls.get_height():
@@ -312,7 +386,6 @@ class GameArea(object):
         self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
                         560*self.scale, 392*self.scale)
         self.area.blit(msgBox, self.msgRect) 
-        
 
     def chatting(self, event):
         if event.key == K_ESCAPE:
