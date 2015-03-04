@@ -8,8 +8,8 @@ from board import GameBoard
 from Controls import Controls
 from ChatBox import chatBox
 from Dice import Dice
+from cards import Cards
 from textWrap import *
-
 
 class GameArea(object):
 
@@ -34,7 +34,7 @@ class GameArea(object):
         self.buyMsgDisplayed = False
         self.okMsgDisplayed = False     # True if any OK message is displayed
         self.gameExit = False
-        
+        self.card_draw = False
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -61,14 +61,27 @@ class GameArea(object):
         #Dice
         self.dice = Dice(self.boardArea)
 
+        #Cards
+        self.cards = Cards(self.boardArea)
+
 
     def getArea(self):
         return self.area
 
 
     def getScale(self):
-        return self.scale        
-        
+        return self.scale
+
+    def mouseClick(self):
+        mouseX,mouseY = pygame.mouse.get_pos()
+        if mouseX > self.controls.get_width()/4\
+        and mouseX < self.controls.get_width()/2\
+        and mouseY > self.height-self.controls.get_height():
+            self.roll = (1,0)
+        if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
+           and mouseY > self.chatbox.getTopType()\
+           and mouseY < self.chatbox.getBottomType():
+            self.typing = True        
 
     def refreshGameBoard(self):
         rect = pygame.Rect((20*self.scale, 20*self.scale),
@@ -327,7 +340,42 @@ class GameArea(object):
                     self.chatbox.typeText(chr(event.key))
             else:
                 self.chatbox.typeText(chr(event.key))
+                
+    def chargeFees(self, owner):
+        """If building is already owned, fees are paid to owner."""
+        self.okMsgDisplayed = True
+        feeAmt = self.building.getFeeAmount()
+        self.player.subtractDollars(feeAmt)
+        owner.addDollars(feeAmt)
+        self.displayMsgOK("You pay $" + str(feeAmt) + " to " + owner.getName() + ".")
+        # Update owner's dollars in playersDisplay.
+        self.playersDisplay.unselectPlayer(self.players.index(owner))
 
+    def chatting(self, event):
+        if event.key == K_ESCAPE:
+            self.typing = False
+        elif event.key == K_RETURN:
+            self.chatbox.submitText()
+        elif event.key == K_BACKSPACE:
+            self.chatbox.deleteText()
+        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
+            #self.chatbox.typeText(pygame.key.name(event.key))
+            #self.chatbox.typeText(chr(event.key))
+            checkCaps = pygame.key.get_pressed()
+            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in self.chars:
+                index = self.chars.index(chr(event.key))
+                if self.charsCaps[index] not in ['{', '}']:
+                    self.chatbox.typeText(self.charsCaps[index])
+                else:
+                    self.chatbox.typeText(self.charsCaps[index] + self.charsCaps[index])
+            elif checkCaps[K_CAPSLOCK]:
+                index = self.chars.index(chr(event.key))
+                if index < 26: #Only caps lock regular alphabet
+                    self.chatbox.typeText(self.charsCaps[index])
+                else:
+                    self.chatbox.typeText(chr(event.key))
+            else:
+                self.chatbox.typeText(chr(event.key))
 
     def play(self):
 
@@ -352,8 +400,8 @@ class GameArea(object):
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
         self.refreshGameBoard()
         self.refreshDisplay()
-
-        turn = -1   # This will be incremented to reference player 0.
+        #turn = -1   # This will be incremented to reference player 0.
+        self.gameExit = False #Must be reset each time play is
         self.chars = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
         self.charsCaps = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         pygame.key.set_repeat(75, 75)
@@ -368,6 +416,11 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
+                    ###Cards demo - Remove Later ###
+                    if event.key == K_c:
+                        self.card_draw = True
+                        self.current_card = self.cards.draw_card(self.scale)
+                    ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
                 if event.type == pygame.QUIT:
@@ -384,7 +437,20 @@ class GameArea(object):
                 self.refreshPlayersDisplay()
                 self.midTurn = True
                 self.beginTurn()
-                   
+            if self.card_draw == False:
+                self.cards.display_card("back", self.scale)
+            else:
+                self.cards.display_card(self.current_card, self.scale)
+                
+            self.roll_time += self.clock.get_time()
+            if self.roll[0] and self.roll_time>250:
+                self.roll = self.dice.roll()
+                self.roll_time = 0
+            if self.parent:
+                self.parent.blit(self.area, (0,0))
+                
+            pygame.display.update()
+            #next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
             
         return "start"
@@ -399,14 +465,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-        
-        
-            
