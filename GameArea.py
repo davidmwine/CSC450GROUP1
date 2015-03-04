@@ -103,28 +103,35 @@ class GameArea(object):
                         and mouseY > self.boardArea.get_height() / 2 and mouseY < self.boardArea.get_height() / 2 + 30:
                         self.popupMenu.setOptionsActive(True)
                         self.popupMenu.game_options()
-                    # exit game (maybe implement a double check?)
+                    # exit game
                     if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
                         and mouseY > self.boardArea.get_height() / 2 + 40 and mouseY < self.boardArea.get_height() / 2 + 70:
                         self.popupMenu.setExitCheckActive(True)
                         self.popupMenu.exit_check()
                 # exit double check
                 else:
+                    # yes - exit
                     if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
                         and mouseY > self.boardArea.get_height() / 2 - 60 and mouseY < self.boardArea.get_height() / 2 - 30:
                         pygame.quit()
                         sys.exit()
+                    # no - go back to menu
                     if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
                         and mouseY > self.boardArea.get_height() / 2 - 20 and mouseY < self.boardArea.get_height() / 2 + 10:
                         self.popupMenu.setExitCheckActive(False)
                         self.popupMenu.make_popup_menu()
 
-
             # in game options
             else:
+                # change resolution (NOT WORKING)
+                # problem is either
+                #   1. Program not recognizing the radio button being checked
+                #   2. Not changing resolution with the returned value
                 change = self.popupMenu.change_resolution(mouseX, mouseY)
-                if not change == None:
+                if change != None:
                     self.area = pygame.display.set_mode(change)
+                    self.popupMenu.load_buttons()
+                # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 and mouseX < self.boardArea.get_width() / 2 + 100\
                     and mouseY > self.boardArea.get_height() / 2 - 80 and mouseY < self.boardArea.get_height() / 2 - 50:
                     self.popupMenu.setOptionsActive(False)

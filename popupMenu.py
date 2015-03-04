@@ -14,7 +14,7 @@ class popupMenu(object):
         self._height = self._parent.get_height() / 2
         self._area = parent.subsurface((self._parent.get_width() / 4), (self._parent.get_height() / 4), self._width, self._height)
         self.screen_modes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]
-        self.res_opt = self.screen_modes.index((self.displayInfo.current_w, self.displayInfo.current_h))
+        self.res_opt = self.screen_modes.index((self.displayInfo.current_w, self.displayInfo.current_h)) # current resolution option
         self.popupActive = False
         self.optionActive = False
         self.exitCheckActive = False
@@ -29,11 +29,10 @@ class popupMenu(object):
         #self.resolution_radio_buttons.newButton(self._area.get_width() / 2 + 20, self._area.get_height() / 2 + 25, 5) #4:3 not supported yet
         self.resolution_radio_buttons.setCurrent(self.res_opt)
 
-    def change_resolution(self, x, y):
-        mouseX = x
-        mouseY = y
-
-        if self.resolution_radio_buttons.checkButton(mouseX, mouseY):
+    def change_resolution(self, X, Y):
+        # supposed to check radio button and return whichever resolution was selected
+        if self.resolution_radio_buttons.checkButton(X, Y):
+            self.res_opt = self.resolution_radio_buttons.getCurrent()
             return self.screen_modes[self.resolution_radio_buttons.getCurrent()]
         else:
             return None
