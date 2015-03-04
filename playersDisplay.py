@@ -30,14 +30,10 @@ class PlayersDisplay(object):
     def __init__(self, players, c, parent=False):
 
         self.players = players
+        self.scale = c
         self.width = int(c*480)
         self.height = int(c*810)
         self.playerHeight = int(c*135)
-
-        # Colors
-        maroon = (80, 0, 0)
-        lightGray = (200, 200, 200)
-        medGray = (180, 180, 180)
         
         # If this isn't called by another screen, make this the main screen.
         if parent == False:
@@ -47,18 +43,18 @@ class PlayersDisplay(object):
         # The main Surface for the PlayersDisplay, which we'll keep adding to
         self.pd = pygame.Surface((self.width, self.height))
         self.pd = self.pd.convert()
-        self.pd.fill(maroon)
+        self.pd.fill(Globals.maroon)
 
         # Add gray background for player data & separate with lines.
         totalPlayersHeight = self.playerHeight * len(players)
-        pygame.draw.rect(self.pd, lightGray,
+        pygame.draw.rect(self.pd, Globals.lightGray,
                          (0, 0, self.width, totalPlayersHeight), 0)
         for i in range(0, len(players)):
-            pygame.draw.rect(self.pd, medGray,
+            pygame.draw.rect(self.pd, Globals.medGray,
                          (0, i*self.playerHeight, self.width, 45*c), 0)
-            pygame.draw.lines(self.pd, maroon, False,
-                              [(0, self.playerHeight*i),
-                               (self.width, self.playerHeight*i)], 2)
+            pygame.draw.lines(self.pd, Globals.maroon, False,
+                              [(0, i*self.playerHeight),
+                               (self.width, i*self.playerHeight)], 2)
 
         # Add text.
         if pygame.font:
@@ -67,7 +63,8 @@ class PlayersDisplay(object):
                   
 
     def printText(self, c, i):
-
+        """Prints the appropriate text in the i^th player's section."""
+        
         font = pygame.font.Font(None, int(40*c))
 
         # Player name  
@@ -108,6 +105,28 @@ class PlayersDisplay(object):
                            True, Color('black'))
         self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
 
+
+    def selectPlayer(self, playerNum):
+        """Uses light maroon to highlight a player's section
+        (for indicating it's his/her turn).
+        """
+        pygame.draw.rect(self.pd, (238, 180, 180),
+            (0, playerNum * self.playerHeight + 2, self.width,
+             self.playerHeight - 2), 0)
+        pygame.draw.rect(self.pd, (205, 155, 155),
+            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerNum)
+
+
+    def unselectPlayer(self, playerNum):
+        """Returns a player's section to gray after it has been selected."""
+        pygame.draw.rect(self.pd, Globals.lightGray,
+            (0, playerNum * self.playerHeight + 2, self.width,
+             self.playerHeight - 2), 0)
+        pygame.draw.rect(self.pd, Globals.medGray,
+            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerNum)    
+        
               
     def getPD(self):
         return self.pd
@@ -128,6 +147,10 @@ def main():
     players = [p1, p2, p3, p4, p5, p6]
     
     pd = PlayersDisplay(players, 0.7)
+
+    pd.selectPlayer(0)
+    pd.unselectPlayer(0)
+    pd.selectPlayer(1)
 
     pd.screen.blit(pd.getPD(), (0, 0))
     pygame.display.flip()

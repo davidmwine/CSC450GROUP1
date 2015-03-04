@@ -1,5 +1,6 @@
 from globals import Globals
 from building import Building
+from buildings import Buildings
 
 
 class Player(object):
@@ -10,7 +11,8 @@ class Player(object):
         self.dollars = 1500000
         self.points = 0
         self.pointsPerRound = 0
-        self.buildings = []
+        self.buildings = []     # buildings that the player owns
+        self.position = 0
 
     def getName(self):
         return self.name
@@ -20,6 +22,9 @@ class Player(object):
 
     def getCollegeAbbr(self):
         return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
+
+    def getColor(self):
+        return Globals.collegeColors.get(self.college, "")
 
     def getDollars(self):
         return self.dollars
@@ -33,6 +38,12 @@ class Player(object):
     def getBuildings(self):
         return self.buildings
 
+    def getBuildingNames(self):
+        return [building.getName() for building in self.buildings]
+
+    def getPosition(self):
+        return self.position
+
     def addDollars(self, dollarsToAdd):
         self.dollars += dollarsToAdd
 
@@ -43,7 +54,7 @@ class Player(object):
         self.points += pointsToAdd
 
     def subtractPoints(self, pointsToSubtract):
-        self.points += pointsToSubtract   
+        self.points -= pointsToSubtract   
 
     def addPointsPerRound(self, pointsToAdd):
         self.pointsPerRound += pointsToAdd
@@ -58,7 +69,7 @@ class Player(object):
         # using one iteration of insertion sort.
         i = len(self.buildings)
         self.buildings.append(building)
-        while i>0 and building.getPosition() < self.buildings[i-1].getPosition():
+        while i>0 and building.getSequence() < self.buildings[i-1].getSequence():
             self.buildings[i] = self.buildings[i-1]
             i -= 1
         self.buildings[i] = building    
@@ -68,115 +79,14 @@ class Player(object):
         if building in self.buildings:
             self.buildings.remove(building)
         else:
-            return -1   # or whatever we want to do here...    
+            return -1   # or whatever we want to do here...
+
+    def increasePosition(self, spaces):
+        self.position += spaces
+        numBuildings = Buildings().getNumBuildings()
+        if self.position > numBuildings:    # if we've passed Carrington
+            self.points += self.pointsPerRound
+            self.dollars += 200000
+        self.position %= numBuildings
 
 
-
-class Player(object):
-
-    def __init__(self, name, college):
-        self.name = name
-        self.college = college
-        self.dollars = 1500000
-        self.points = 0
-        self.pointsPerRound = 0
-        self.buildings = []
-
-    def getName(self):
-        return self.name
-
-    def getCollege(self):
-        return self.college
-
-    def getCollegeAbbr(self):
-        return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
-
-    def getDollars(self):
-        return self.dollars
-
-    def getPoints(self):
-        return self.points
-
-    def getPointsPerRound(self):
-        return self.pointsPerRound
-
-    def getBuildings(self):
-        return self.buildings
-
-    def addDollars(self, dollarsToAdd):
-        self.dollars += dollarsToAdd
-
-    def subtractDollars(self, dollarsToSubtract):
-        self.dollars -= dollarsToSubtract
-
-    def addPoints(self, pointsToAdd):
-        self.points += pointsToAdd
-
-    def subtractPoints(self, pointsToSubtract):
-        self.points += pointsToSubtract   
-
-    def addPointsPerRound(self, pointsToAdd):
-        self.pointsPerRound += pointsToAdd
-        
-    def addBuilding(self, building):
-        if building not in self.buildings:
-            self.buildings.append(building)
-
-    def removeBuilding(self, building):
-        if building in self.buildings:
-            self.buildings.remove(building)
-
-
-class Player(object):
-
-    def __init__(self, name, college):
-        self.name = name
-        self.college = college
-        self.dollars = 1500000
-        self.points = 0
-        self.pointsPerRound = 0
-        self.buildings = []
-
-    def getName(self):
-        return self.name
-
-    def getCollege(self):
-        return self.college
-
-    def getCollegeAbbr(self):
-        return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
-
-    def getDollars(self):
-        return self.dollars
-
-    def getPoints(self):
-        return self.points
-
-    def getPointsPerRound(self):
-        return self.pointsPerRound
-
-    def getBuildings(self):
-        return self.buildings
-
-    def addDollars(self, dollarsToAdd):
-        self.dollars += dollarsToAdd
-
-    def subtractDollars(self, dollarsToSubtract):
-        self.dollars -= dollarsToSubtract
-
-    def addPoints(self, pointsToAdd):
-        self.points += pointsToAdd
-
-    def subtractPoints(self, pointsToSubtract):
-        self.points += pointsToSubtract   
-
-    def addPointsPerRound(self, pointsToAdd):
-        self.pointsPerRound += pointsToAdd
-        
-    def addBuilding(self, building):
-        if building not in self.buildings:
-            self.buildings.append(building)
-
-    def removeBuilding(self, building):
-        if building in self.buildings:
-            self.buildings.remove(building)
