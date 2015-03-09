@@ -21,31 +21,41 @@ class Lobby(object):
 
     def buttonClick(self):
         mouseX,mouseY = pygame.mouse.get_pos()
-        #Game start
+        #Create start
         if mouseX > self.screen.get_width()/2-310\
             and mouseX < self.screen.get_width()/2-190\
-            and mouseY > self.y_offset+5.8*self.screen.get_height()/7 and mouseY < self.y_offset+5.8*self.screen.get_height()/7+30:
+            and mouseY > self.y_offset+5.8*self.screen.get_height()/7\
+            and mouseY < self.y_offset+5.8*self.screen.get_height()/7+30:
             self.game_start = True
             return True
+        #Join game
+        if mouseX > self.screen.get_width()/2-50\
+            and mouseX < self.screen.get_width()/2+50\
+            and mouseY > self.y_offset+5.8*self.screen.get_height()/7\
+            and mouseY < self.y_offset+5.8*self.screen.get_height()/7+30:
+            self.game_start = False
+            return True        
         #Exit lobby
         if mouseX > self.screen.get_width()/2+194\
             and mouseX < self.screen.get_width()/2+295\
-            and mouseY > self.screen.get_height()/1.2+self.y_offset-5 and mouseY < self.screen.get_height()/1.2+self.y_offset+self.text_exit_lobby.get_height()+5:
+            and mouseY > self.screen.get_height()/1.2+self.y_offset-5\
+            and mouseY < self.screen.get_height()/1.2+self.y_offset+self.text_exit_lobby.get_height()+5:
             return False
         return True
 
     def run(self):
         self.rules_header = "Lobby"
         lobby_exit = False
+        self.text_join_game = self.font_op(22,"berlin").render("Join Game",True,(220,146,40))
         self.text_exit_lobby = self.font_op(22,"berlin").render("Exit Lobby",True,(220,146,40))
-        self.text_game_start = self.font_op(22,"berlin").render("Game Start",True,(220,146,40))
-        p1 = Player("player1", "Agriculture")
-        p2 = Player("player2", "Arts and Letters")
-        p3 = Player("player3", "Natural and Applied Sciences")
-        p4 = Player("player4", "Education")
-        p5 = Player("player5", "Health and Human Services")
-        p6 = Player("player6", "Humanities and Public Affairs")
-        players = [p1, p2, p3, p4, p5, p6]
+        self.text_create_game = self.font_op(22,"berlin").render("Create Game",True,(220,146,40))
+        #p1 = Player("player1", "Agriculture")
+        #p2 = Player("player2", "Arts and Letters")
+        #p3 = Player("player3", "Natural and Applied Sciences")
+        #p4 = Player("player4", "Education")
+        #p5 = Player("player5", "Health and Human Services")
+        #p6 = Player("player6", "Humanities and Public Affairs")
+        #players = [p1, p2, p3, p4, p5, p6]
         #self.text_exit_rules_bg = self.font_op(22,"berlin").render("Exit Rules",True,(75,75,75))
         while not lobby_exit:
             self.screen.blit(pygame.transform.scale(self.img_menu_bg,(self.screen.get_width(),\
@@ -64,7 +74,8 @@ class Lobby(object):
             pygame.draw.rect(self.screen,(255,255,255),Rect((self.screen.get_width()/2+10,3*self.screen.get_height()/8+100),\
                                                             (290,20+self.screen.get_height()/8)))
 
-            self.screen.blit(self.text_game_start,(self.screen.get_width()/2-300,self.screen.get_height()/1.2+self.y_offset))
+            self.screen.blit(self.text_create_game,(self.screen.get_width()/2-300,self.screen.get_height()/1.2+self.y_offset))
+            self.screen.blit(self.text_join_game,(self.screen.get_width()/2-50,self.screen.get_height()/1.2+self.y_offset))
             self.screen.blit(self.text_exit_lobby,(self.screen.get_width()/2+198,self.screen.get_height()/1.2+self.y_offset))
             
             header = self.font_op(50,"berlin").render(self.rules_header,True,(255,255,255))
