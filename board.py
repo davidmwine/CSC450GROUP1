@@ -4,13 +4,12 @@ import pygame
 from pygame.locals import *
 import sys
 import math
-from buildings import Buildings
 from globals import Globals
  
 
 class GameBoard(object):
 
-    def __init__(self, scale, isSubscreen=False):
+    def __init__(self, scale, buildings, isSubscreen=False):
 
         # Width and height of each grid location
         self.scale = scale
@@ -20,7 +19,7 @@ class GameBoard(object):
         width  = (math.floor(size[0]/10)-margin)            # set the Width of each cell
         height = (math.floor(size[1]/10)-margin)            # set the Height of each cell
 
-        buildings = Buildings().buildings       # Get the list of buildings from the Buildings class
+        self.buildings = buildings
 
         if isSubscreen == False:
             pygame.init()
@@ -29,7 +28,7 @@ class GameBoard(object):
         else:
             self.board = pygame.Surface(size)
             
-        boardfont = pygame.font.Font(None, 16)
+        self.boardfont = pygame.font.Font(None, 16)
 
         boardSpace = 0
         # Create a 2 dimensional array/list of lists.
@@ -41,29 +40,40 @@ class GameBoard(object):
             grid.append([])
             for column in range(10):
                 if row == 0 or row == 9 or column == 0 or column == 9:
-                    grid[row].append(buildings[boardSpace])
+                    grid[row].append(self.buildings[boardSpace])
                     mine = grid[row][column]
                     grid[row][column].setPosition([row, column])
                     color = grid[row][column].getColor()
-                    boardSpace += 1
                 else:
                     grid[row].append('')
                     color = Globals.maroon
-                pygame.draw.rect(self.board, color,
-                                 [(margin+width)*column+margin,(margin+height)*row+margin, width,height])
-                # Put names on the rectangles which represent buildings
+                rect = pygame.Rect((margin+width)*column+margin, (margin+height)*row+margin, width, height)    
+                pygame.draw.rect(self.board, color, rect)
+                # Put names on the rectangles which represent buildings, store a Rect in each building object
                 if color != Globals.maroon:
-                    self.board.blit(boardfont.render(mine.getName(), True, Color('black')),
+                    self.buildings[boardSpace].setRect(rect)
+                    self.board.blit(self.boardfont.render(mine.getName(), True, Color('black')),
                                     [(margin+width)*column+margin,((margin+height)+1)*row+margin, width,height])
+                    boardSpace += 1
+
 
     def getGB(self):
         return self.board
 
 
+    def colorBuilding(self, building):
+        color = building.getColor()
+        rect = building.getRect()
+        name = building.getName()
+        pygame.draw.rect(self.board, color, rect)
+        self.board.blit(self.boardfont.render(name, True, Color('black')), rect)
+        
+
+
 def main():
     
     gb = GameBoard(0.65)
-
+    
     pygame.display.flip()                           #Updates the screen
     
     gameActive = True

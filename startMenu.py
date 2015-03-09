@@ -241,7 +241,7 @@ class Start(object):
                 if event.type == MOUSEMOTION:  #Highlight text on hover
                     self.highlight()
                         
-                if event.type == MOUSEBUTTONUP:  #Perform action on click
+                if event.type == MOUSEBUTTONDOWN:  #Perform action on click
                     self.buttonClick()
             self.imageDisplay()
 
