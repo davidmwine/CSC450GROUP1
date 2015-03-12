@@ -84,6 +84,7 @@ class GameArea(object):
 
 
     def mouseClick(self):
+        """Takes action based on when and where mouse has been clicked"""
         mouseX,mouseY = pygame.mouse.get_pos()
 
         # menu not open
@@ -100,8 +101,7 @@ class GameArea(object):
 
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.get_width() / 4 \
-            and mouseY > self.height - self.controls.get_height() \
-            and not self.diceRolled:
+            and mouseY > self.height - self.controls.get_height():
                 self.popupMenu.setPopupActive(True)
                 self.popupMenu.make_popup_menu()
 
@@ -119,10 +119,12 @@ class GameArea(object):
                                  Turn.msgRect.y + self.turn.okRect.y,
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
-                    # If applicable, update owner's dollars in playersDisplay.
-                    if self.turn.owner:
+                    # If applicable, charge fees and update playersDisplay.
+                    if self.turn.feeMsgDisplayed:
+                        self.turn.chargeFees()
                         self.playersDisplay.updatePlayer(
                             self.players.index(self.turn.owner))
+                        self.turn.feeMsgDisplayed = False
                     self.turn.okMsgDisplayed = False
                     self.endTurn()
 
@@ -155,11 +157,12 @@ class GameArea(object):
                     and mouseY > self.boardArea.get_height() / 2 - 80 \
                     and mouseY < self.boardArea.get_height() / 2 - 50:
                         self.popupMenu.setPopupActive(False)
-                        rect = pygame.Rect((20*self.scale, 20*self.scale),
-                                (1400*self.scale, 980*self.scale))
-                        self.area.blit(self.gameBoard.getGB(), rect)
+                        self.refreshGameBoard()
                         if not self.diceRolled:
-                            self.midTurn = False
+                            self.turn.beginTurn()
+                        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
+                            self.turn.handleLanding()
+                        
                     # save game
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
@@ -226,10 +229,6 @@ class GameArea(object):
         rect = pygame.Rect((1440*self.scale, 0),
                            (480*self.scale, 810*self.scale))
         self.area.blit(self.playersDisplay.getPD(), rect)
-
-
-    def redrawBoard(self):    
-        self.area.blit(self.gameBoard.getGB(), (20*self.scale, 20*self.scale))
 
 
     def refreshDisplay(self):

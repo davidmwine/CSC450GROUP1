@@ -23,8 +23,10 @@ class Turn(object):
         self.roll = 0
         self.building = None    # Will hold building space that is landed on
         self.owner = None   # Will hold the owner of the building landed on
+        self.feeAmt = None  # Will hold the fee for landing on a building
         self.buyMsgDisplayed = False
         self.okMsgDisplayed = False     # True if any OK message is displayed
+        self.feeMsgDisplayed = False    
         
 
     def beginTurn(self):
@@ -52,7 +54,7 @@ class Turn(object):
     def handleLanding(self):
         """
         This method handles what comes next after a player lands on a space,
-        (e.g., buying the building or paying fees to another player)
+        (e.g., buying the building or paying fees to another player).
         """
         if self.building.getPurpose() == "special":
             (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
@@ -73,7 +75,13 @@ class Turn(object):
                 Turn.msgSurface.blit(msgBox, (0, 0))
                 self.buyMsgDisplayed = True  
             elif self.owner != self.player:
-                self.chargeFees()
+                self.feeAmt = self.building.getFeeAmount()
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, "You pay $" + str(self.feeAmt) + " to " +
+                                self.owner.getName() + ".")
+                Turn.msgSurface.blit(msgBox, (0, 0))
+                self.okMsgDisplayed = True
+                self.feeMsgDisplayed = True
 
 
     def buy(self):
@@ -86,11 +94,7 @@ class Turn(object):
 
     def chargeFees(self):
         """If building is already owned, fees are paid to owner."""
-        feeAmt = self.building.getFeeAmount()
-        self.player.subtractDollars(feeAmt)
-        self.owner.addDollars(feeAmt)
-        (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-            Turn.font, "You pay $" + str(feeAmt) + " to " + self.owner.getName() + ".")
-        Turn.msgSurface.blit(msgBox, (0, 0))
-        self.okMsgDisplayed = True
+        self.player.subtractDollars(self.feeAmt)
+        self.owner.addDollars(self.feeAmt)
+        
 
