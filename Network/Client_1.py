@@ -38,7 +38,7 @@ def send(command):
     sock.sendto(command.encode(), (HOST, PORT))
     print("Sent: ", command)
     # Client loop
-    while(True):
+    while(True):## will need to connecto to client side game board
         try:
             data = sock.recvfrom(BUFFER)
             reply = data[0]
