@@ -88,13 +88,6 @@ class GameArea(object):
 
         # menu not open
         if not self.popupMenu.getPopupActive():             
-            if mouseX > self.controls.get_width()/4\
-            and mouseX < self.controls.get_width()/2\
-            and mouseY > self.height-self.controls.get_height():
-                self.roll = (1,0)
-                self.diceRolled = True
-                #self.redrawBoard()
-                self.rollDice()
             #Chatbox
             if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
             and mouseY > self.chatbox.getTopType()\
@@ -147,19 +140,10 @@ class GameArea(object):
                     self.endTurn()
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buyMsgDisplayed = False
-                    self.redrawBoard()
                     self.endTurn()
             if mouseX > 0 and mouseX < self.controls.get_width() / 4 and mouseY > self.height - self.controls.get_height() and not self.diceRolled:
                 self.popupMenu.setPopupActive(True)
                 self.popupMenu.make_popup_menu()
-            if self.okMsgDisplayed:
-                okRect = pygame.Rect(self.msgRect.x + self.okRect.x,
-                                 self.msgRect.y + self.okRect.y,
-                                 self.okRect.width, self.okRect.height)
-                if okRect.collidepoint(pygame.mouse.get_pos()):
-                    self.okMsgDisplayed = False
-                    self.redrawBoard()
-                    self.endTurn()
 
         # menu open
         else:
@@ -251,10 +235,6 @@ class GameArea(object):
             self.parent.blit(self.area, (0,0))
         pygame.display.update()
 
-    '''def beginTurn(self):
-        print("------- " + self.player.getName() + "'s turn -------")
-        self.displayMsg(self.player.getName() + "'s turn. Click 'Roll'")'''
-
 
     def rollDice(self):
         while self.roll[0]>0:
@@ -267,40 +247,12 @@ class GameArea(object):
         self.turn.setDiceRoll(self.roll[1])
         
         
-    '''def endTurn(self):
+    def endTurn(self):
         print("End of turn")
         self.midTurn = False
         self.diceRolled = False
         self.refreshPlayersDisplay()
         self.refreshGameBoard()
-
-        # Create and position Yes and No buttons.
-        yesButton = pygame.Surface((100*self.scale, 50*self.scale))
-        yesButton.fill(Globals.medGray)
-        self.yesRect = yesButton.get_rect()
-        text = self.font.render("Yes", True, Color("black"))
-        textPos = text.get_rect()
-        textPos.center = self.yesRect.center
-        yesButton.blit(text, textPos)
-        self.yesRect.bottom = msgBox.get_rect().height - 10
-        self.yesRect.left = 125*self.scale
-        msgBox.blit(yesButton, self.yesRect)
-
-        noButton = pygame.Surface((100*self.scale, 50*self.scale))
-        noButton.fill(Globals.medGray)
-        self.noRect = noButton.get_rect()
-        text = self.font.render("No", True, Color("black"))
-        textPos = text.get_rect()
-        textPos.center = self.noRect.center
-        noButton.blit(text, textPos)
-        self.noRect.bottom = msgBox.get_rect().height - 10
-        self.noRect.right = msgBox.get_rect().width - 125*self.scale
-        msgBox.blit(noButton, self.noRect)
-        
-        # Position message box on the screen.
-        self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
-                        560*self.scale, 392*self.scale)
-        self.area.blit(msgBox, self.msgRect)'''
         
      
     def displayMsgOK(self, msg):
