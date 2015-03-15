@@ -67,10 +67,12 @@ class chatBox(object):
         for i in newText:
             self._chatlines.append(i)
         self._chatenter.setText("")
-        for i in range(len(self._chatlines)):
-            line_rect = Rect(7, i*self._line_height+5,
+        lineNum = 0
+        for i in range(max(len(self._chatlines)-7, 0), len(self._chatlines)):
+            line_rect = Rect(7, lineNum*self._line_height+5,
                         self._line_width-15, self._line_height-1)
             chatLine( self._area, line_rect, self._chatlines[i])
+            lineNum += 1
 
 class chatLine(object):
     def __init__(self, parent, rect ,string= " "):

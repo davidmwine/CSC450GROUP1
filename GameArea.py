@@ -37,7 +37,6 @@ class GameArea(object):
         self.gameExit = False
         self.card_draw = False
         self.diceRolled = False
-
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -67,7 +66,7 @@ class GameArea(object):
         # Popup options menu
         self.popupMenu = popupMenu(self.boardArea)
 
-        # Cards
+        #Cards
         self.cards = Cards(self.boardArea)
 
         # Message Rectangle
@@ -88,11 +87,16 @@ class GameArea(object):
         mouseX,mouseY = pygame.mouse.get_pos()
 
         # menu not open
-        if not self.popupMenu.getPopupActive():
-
-            # Chatbox                
-            if mouseX > self.chatbox.getLeft() \
-            and mouseX < self.chatbox.getRight()\
+        if not self.popupMenu.getPopupActive():             
+            if mouseX > self.controls.get_width()/4\
+            and mouseX < self.controls.get_width()/2\
+            and mouseY > self.height-self.controls.get_height():
+                self.roll = (1,0)
+                self.diceRolled = True
+                #self.redrawBoard()
+                self.rollDice()
+            #Chatbox
+            if mouseX > self.chatbox.getLeft() and mouseX < self.chatbox.getRight()\
             and mouseY > self.chatbox.getTopType()\
             and mouseY < self.chatbox.getBottomType():
                 self.typing = True
@@ -143,6 +147,18 @@ class GameArea(object):
                     self.endTurn()
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buyMsgDisplayed = False
+                    self.redrawBoard()
+                    self.endTurn()
+            if mouseX > 0 and mouseX < self.controls.get_width() / 4 and mouseY > self.height - self.controls.get_height() and not self.diceRolled:
+                self.popupMenu.setPopupActive(True)
+                self.popupMenu.make_popup_menu()
+            if self.okMsgDisplayed:
+                okRect = pygame.Rect(self.msgRect.x + self.okRect.x,
+                                 self.msgRect.y + self.okRect.y,
+                                 self.okRect.width, self.okRect.height)
+                if okRect.collidepoint(pygame.mouse.get_pos()):
+                    self.okMsgDisplayed = False
+                    self.redrawBoard()
                     self.endTurn()
 
         # menu open
@@ -217,7 +233,6 @@ class GameArea(object):
                 and mouseY < self.boardArea.get_height() / 2 - 50:
                     self.popupMenu.setOptionsActive(False)
                     self.popupMenu.make_popup_menu()
-                    
 
     def refreshGameBoard(self):
         rect = pygame.Rect((20*self.scale, 20*self.scale),
@@ -236,6 +251,10 @@ class GameArea(object):
             self.parent.blit(self.area, (0,0))
         pygame.display.update()
 
+    '''def beginTurn(self):
+        print("------- " + self.player.getName() + "'s turn -------")
+        self.displayMsg(self.player.getName() + "'s turn. Click 'Roll'")'''
+
 
     def rollDice(self):
         while self.roll[0]>0:
@@ -248,14 +267,72 @@ class GameArea(object):
         self.turn.setDiceRoll(self.roll[1])
         
         
-    def endTurn(self):
+    '''def endTurn(self):
         print("End of turn")
         self.midTurn = False
         self.diceRolled = False
         self.refreshPlayersDisplay()
         self.refreshGameBoard()
 
-    
+        # Create and position Yes and No buttons.
+        yesButton = pygame.Surface((100*self.scale, 50*self.scale))
+        yesButton.fill(Globals.medGray)
+        self.yesRect = yesButton.get_rect()
+        text = self.font.render("Yes", True, Color("black"))
+        textPos = text.get_rect()
+        textPos.center = self.yesRect.center
+        yesButton.blit(text, textPos)
+        self.yesRect.bottom = msgBox.get_rect().height - 10
+        self.yesRect.left = 125*self.scale
+        msgBox.blit(yesButton, self.yesRect)
+
+        noButton = pygame.Surface((100*self.scale, 50*self.scale))
+        noButton.fill(Globals.medGray)
+        self.noRect = noButton.get_rect()
+        text = self.font.render("No", True, Color("black"))
+        textPos = text.get_rect()
+        textPos.center = self.noRect.center
+        noButton.blit(text, textPos)
+        self.noRect.bottom = msgBox.get_rect().height - 10
+        self.noRect.right = msgBox.get_rect().width - 125*self.scale
+        msgBox.blit(noButton, self.noRect)
+        
+        # Position message box on the screen.
+        self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
+                        560*self.scale, 392*self.scale)
+        self.area.blit(msgBox, self.msgRect)'''
+        
+     
+    def displayMsgOK(self, msg):
+        """Displays msg with OK button in the center of the game board."""        
+        # Create message box as a surface and display text.
+        msgBox = pygame.Surface((560*self.scale, 392*self.scale))
+        msgBox.fill(Globals.lightGray)
+        lines = wrapline(msg, self.font, 440*self.scale)
+        i = 0
+        for line in lines:
+            lineYpos = 50*i*self.scale + 2
+            line = self.font.render(line, True, Color("black"))
+            msgBox.blit(line, (2, lineYpos))
+            i += 1
+
+        # Create and position OK button.
+        okButton = pygame.Surface((100*self.scale, 50*self.scale))
+        self.okRect = okButton.get_rect()
+        okButton.fill(Globals.medGray)
+        text = self.font.render("OK", True, Color("black"))
+        textPos = text.get_rect()
+        textPos.center = self.okRect.center
+        okButton.blit(text, textPos)
+        self.okRect.bottom = msgBox.get_rect().height - 10
+        self.okRect.centerx = msgBox.get_rect().centerx
+        msgBox.blit(okButton, self.okRect)
+        
+        # Position message box on the screen.
+        self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
+                        560*self.scale, 392*self.scale)
+        self.area.blit(msgBox, self.msgRect) 
+
     def chatting(self, event):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
         charsCaps = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
@@ -286,7 +363,6 @@ class GameArea(object):
             else:
                 self.chatbox.typeText(chr(event.key))
 
-
     def play(self):
 
         # This data will eventually be obtained from the lobby / setup menu.
@@ -310,11 +386,9 @@ class GameArea(object):
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
         self.refreshGameBoard()
         self.refreshDisplay()
-
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
         Turn.setStaticVariables(self.scale, self.area, self.buildings)
-        
         pygame.key.set_repeat(75, 75)
         self.gameExit = False #Must be reset each time play is
         
@@ -354,7 +428,16 @@ class GameArea(object):
                 self.midTurn = True
                 self.turn = Turn(self.player)
                 self.turn.beginTurn()        
-                  
+                
+            self.roll_time += self.clock.get_time()
+            if self.roll[0] and self.roll_time>250:
+                self.roll = self.dice.roll()
+                self.roll_time = 0
+            if self.parent:
+                self.parent.blit(self.area, (0,0))
+                
+            pygame.display.update()
+            #next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
             
         return "start"

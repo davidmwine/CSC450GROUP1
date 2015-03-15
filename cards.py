@@ -5,8 +5,8 @@ class Cards():
         self.parent = parent
         self.width = self.parent.get_width()//7
         self.height = self.parent.get_height()//4
-        self.area = parent.subsurface((self.parent.get_width()//5), 
-                (self.parent.get_height()//5), self.width, self.height)
+        self.area = parent.subsurface((self.parent.get_width()//7), 
+                (self.parent.get_height()//2 - self.height//2), self.width, self.height)
         self.card_deck = []
         self.cards_in_deck = 6  #Number of cards in the deck
         self.card_pos = 0  #Card position(index) in the deck

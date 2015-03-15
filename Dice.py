@@ -13,7 +13,7 @@ class Dice():
         self._parent = parent
         self._width = self._parent.get_width()//8
         self._height = self._parent.get_width()//16
-        self._area = parent.subsurface((self._parent.get_width()//2) - (self._width//2), (self._parent.get_height()//2) - (self._height//2),
+        self._area = parent.subsurface((self._parent.get_width()//2) - (self._width//2), (3*self._parent.get_height()//4) - (self._height//2),
                     self._width,self._height)
         #self._width = int(self._area.get_width())
         self._half_width = self._width//2

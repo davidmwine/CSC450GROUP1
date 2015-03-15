@@ -17,10 +17,10 @@ class Options(object):
         self.soundeffectsOff = False
         self.musicOff = False
         self.load_images()
-        self.load_buttons(self.res_opt, self.soundeffectsOff, self.musicOff)
+        self.load_buttons(self.res_opt)
         self.screen_modes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]
 
-    def load_buttons(self, res_opt, soundeffectsOn, musicOn):
+    def load_buttons(self, res_opt):
         # RADIO BUTTON GROUP
         self.resolution_radio_buttons = RadioGroup(self.screen)
         self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 54 + self.y_offset, 5)
@@ -138,6 +138,6 @@ class Options(object):
                 elif event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-            self.load_buttons(self.res_opt, self.soundeffectsOff, self.musicOff)
+            self.load_buttons(self.res_opt)
             pygame.display.update()
         return "start"
