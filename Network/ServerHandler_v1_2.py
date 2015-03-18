@@ -80,6 +80,7 @@ class ServerHandler(object):
         args = cmdList[1:-1]
         try:
             result = getattr(self, myCmd)(args)## pass string to function call form
+            return result
         except:
             return myCmd
         
