@@ -106,26 +106,30 @@ class PlayersDisplay(object):
         self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
 
 
-    def selectPlayer(self, playerNum):
-        """Uses light maroon to highlight a player's section
+    def selectPlayer(self, playerIndex):
+        """
+        Uses light maroon to highlight a player's section
         (for indicating it's his/her turn).
         """
         pygame.draw.rect(self.pd, (238, 180, 180),
-            (0, playerNum * self.playerHeight + 2, self.width,
+            (0, playerIndex * self.playerHeight + 2, self.width,
              self.playerHeight - 2), 0)
         pygame.draw.rect(self.pd, (205, 155, 155),
-            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
-        self.printText(self.scale, playerNum)
+            (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerIndex)
 
 
-    def unselectPlayer(self, playerNum):
-        """Returns a player's section to gray after it has been selected."""
+    def updatePlayer(self, playerIndex):
+        """
+        Updates a player's displayed information to reflect current data.
+        Also used to return a player's section to gray after it has been selected.
+        """
         pygame.draw.rect(self.pd, Globals.lightGray,
-            (0, playerNum * self.playerHeight + 2, self.width,
+            (0, playerIndex * self.playerHeight + 2, self.width,
              self.playerHeight - 2), 0)
         pygame.draw.rect(self.pd, Globals.medGray,
-            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
-        self.printText(self.scale, playerNum)    
+            (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerIndex)    
         
               
     def getPD(self):
