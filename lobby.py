@@ -59,7 +59,8 @@ class Lobby():
         self.host_screen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
         self.host_screen.fill((255,255,255))
         text1 = self.font_op(20, 'berlin').render("Please select game attributes.",1,(0,0,0))
-        #playersnumber
+        players_num_text = self.font_op(10, 'berlin').render("Number of Players'"),1,(0,0,0))
+
         text_rect = (((self.host_screen.get_width() - text1.get_width())/2, self.host_screen.get_height()/10))
         self.host_screen.blit(text1, text_rect)
         
@@ -101,7 +102,7 @@ class Lobby():
             self.game_type[self.game_opt]()
             self.parent.blit(self.screen, (0,0))
             pygame.display.update()
-            
+        return 'start'  
             
 
         
