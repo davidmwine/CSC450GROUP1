@@ -62,8 +62,10 @@ class Game(object):
         while True:
             if playGame.getScale() != self.screen.get_height()/1080:
                 self.ratio = self.screen.get_height()/1080
-                playGame = GameArea(self.screen, self.ratio)
-            if self.nextScreen == "start":
+                playGame = GameArea(self.screen, self.ratio)   
+            if self.nextScreen == "game":
+                self.nextScreen = playGame.play()
+            elif self.nextScreen == "start":
                 if self.splashShow:
                     startMenu.splash()
                     self.splashShow = False
@@ -76,8 +78,7 @@ class Game(object):
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
-            elif self.nextScreen == "game":
-                self.nextScreen = playGame.play()
+            
                 
                 
 Game().start()
