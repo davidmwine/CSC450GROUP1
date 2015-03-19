@@ -28,13 +28,13 @@ collegeColors = {'Arts and Letters': purple,
                'Natural and Applied Sciences': golden,
                'Agriculture': medGreen}         
 
-##    collegeAbbr = {'Arts and Letters': 'Arts & Letters',
-##                   'Business': 'Business',
-##                   'Education': 'Education',
-##                   'Health and Human Services': 'Health & Hum Serv',
-##                   'Humanities and Public Affairs': 'Hum & Pub Affairs',
-##                   'Natural and Applied Sciences': 'Nat & App Sci',
-##                   'Agriculture': 'Agriculture'}
+collegeAbbr = {'Arts and Letters': 'Arts & Letters',
+               'Business': 'Business',
+               'Education': 'Education',
+               'Health and Human Services': 'Health & Hum Serv',
+               'Humanities and Public Affairs': 'Hum & Pub Affairs',
+               'Natural and Applied Sciences': 'Nat & App Sci',
+               'Agriculture': 'Agriculture'}
 
     
 

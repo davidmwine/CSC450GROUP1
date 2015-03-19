@@ -1,4 +1,4 @@
-from globals import Globals
+import globals
 from building import Building
 from buildings import Buildings
 
