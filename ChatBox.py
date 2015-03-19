@@ -1,12 +1,6 @@
 import pygame, sys
 from pygame.locals import *
 
-
-
-
-
-
-
 class chatBox(object):
     
     def __init__(self, scale=1, parent=None , size_rect=None):
