@@ -1,4 +1,4 @@
-from globals import Globals
+import Colors
 from building import Building
 from buildings import Buildings
 
@@ -21,10 +21,10 @@ class Player(object):
         return self.college
 
     def getCollegeAbbr(self):
-        return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
+        return Colors.COLLEGEABBR.get(self.college, "")    # look up in dictionary
 
     def getColor(self):
-        return Globals.collegeColors.get(self.college, "")
+        return Colors.COLLEGECOLORS.get(self.college, "")
 
     def getDollars(self):
         return self.dollars
