@@ -72,7 +72,7 @@ class Dice():
 
     def six(self, side):
         self.four(side)
-        pygame.draw.circle(self._area,(0,0,0),
+        pygame.draw.circle(self.area,(0,0,0),
                            (self.halfWidth*side + self.halfWidth*3//10 ,self.height*5//10),
                            int(self.height//10))
         pygame.draw.circle(self.area,(0,0,0),

@@ -20,7 +20,7 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)         
 
 
-collegeColors = {'Arts and Letters': PURPLE,
+COLLEGECOLORS = {'Arts and Letters': PURPLE,
                'Business': RED,
                'Education': LIGHTBLUE,
                'Health and Human Services': ORANGE,
@@ -28,7 +28,7 @@ collegeColors = {'Arts and Letters': PURPLE,
                'Natural and Applied Sciences': GOLDEN,
                'Agriculture': MEDGREEN}         
 
-collegeAbbr = {'Arts and Letters': 'Arts & Letters',
+COLLEGEABBR = {'Arts and Letters': 'Arts & Letters',
                'Business': 'Business',
                'Education': 'Education',
                'Health and Human Services': 'Health & Hum Serv',

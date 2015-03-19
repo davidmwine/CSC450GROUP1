@@ -43,7 +43,7 @@ class PlayersDisplay(object):
         # The main Surface for the PlayersDisplay, which we'll keep adding to
         self.pd = pygame.Surface((self.width, self.height))
         self.pd = self.pd.convert()
-        self.pd.fill(Globals.maroon)
+        self.pd.fill(Colors.MAROON)
 
         # Add gray background for player data & separate with lines.
         totalPlayersHeight = self.playerHeight * len(players)
@@ -127,7 +127,7 @@ class PlayersDisplay(object):
         pygame.draw.rect(self.pd, Colors.LIGHTGRAY,
             (0, playerIndex * self.playerHeight + 2, self.width,
              self.playerHeight - 2), 0)
-        pygame.draw.rect(self.pd, COLORS.MEDGRAY,
+        pygame.draw.rect(self.pd, Colors.MEDGRAY,
             (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
         self.printText(self.scale, playerIndex)    
         

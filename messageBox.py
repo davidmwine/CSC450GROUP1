@@ -14,8 +14,8 @@ def displayMsg(scale, rect, font, msg):
     'rect' should be a pygame Rect object in the desired position.
     """        
     msgBox = pygame.Surface((rect.width, rect.height))
-    msgBox.fill(Globals.lightGray)
-    lines = wrapline(msg, font, rect.x)
+    msgBox.fill(Colors.LIGHTGRAY)
+    lines = wrapLine(msg, font, rect.x)
     i = 0
     for line in lines:
         lineYpos = 50*i*scale + 2
@@ -35,8 +35,8 @@ def displayMsgOK(scale, rect, font, msg):
     """      
     # Create message box as a surface and display text.
     msgBox = pygame.Surface((rect.width, rect.height))
-    msgBox.fill(Globals.lightGray)
-    lines = wrapline(msg, font, rect.x)
+    msgBox.fill(Colors.LIGHTGRAY)
+    lines = wrapLine(msg, font, rect.x)
     i = 0
     for line in lines:
         lineYpos = 50*i*scale + 2
@@ -47,7 +47,7 @@ def displayMsgOK(scale, rect, font, msg):
     # Create and position OK button.
     okButton = pygame.Surface((100*scale, 50*scale))
     okRect = okButton.get_rect()
-    okButton.fill(Globals.medGray)
+    okButton.fill(Colors.MEDGRAY)
     text = font.render("OK", True, Color("black"))
     textPos = text.get_rect()
     textPos.center = okRect.center
@@ -69,8 +69,8 @@ def displayMsgYN(scale, rect, font, msg):
     """          
     # Create message box as a surface and display text.
     msgBox = pygame.Surface((rect.width, rect.height))
-    msgBox.fill(Globals.lightGray)
-    lines = wrapline(msg, font, rect.x)
+    msgBox.fill(Colors.LIGHTGRAY)
+    lines = wrapLine(msg, font, rect.x)
     i = 0
     for line in lines:
         lineYpos = 50*i*scale + 2
@@ -80,7 +80,7 @@ def displayMsgYN(scale, rect, font, msg):
 
     # Create and position Yes and No buttons.
     yesButton = pygame.Surface((100*scale, 50*scale))
-    yesButton.fill(Globals.medGray)
+    yesButton.fill(Colors.MEDGRAY)
     yesRect = yesButton.get_rect()
     text = font.render("Yes", True, Color("black"))
     textPos = text.get_rect()
@@ -91,7 +91,7 @@ def displayMsgYN(scale, rect, font, msg):
     msgBox.blit(yesButton, yesRect)
 
     noButton = pygame.Surface((100*scale, 50*scale))
-    noButton.fill(Globals.medGray)
+    noButton.fill(Colors.MEDGRAY)
     noRect = noButton.get_rect()
     text = font.render("No", True, Color("black"))
     textPos = text.get_rect()

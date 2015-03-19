@@ -72,7 +72,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         self.dice = Dice(self.boardarea)
 
         # Popup options menu
-        self.popupMenu = PopupMenu(self.boardarea)
+        self.popupmenu = PopupMenu(self.boardarea)
 
         #Cards
         self.cards = Cards(self.boardarea)
@@ -105,15 +105,15 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 self.typing = False
 
             # Menu Button
-            if mousex > 0 and mousex < self.controls.get_width() / 4 \
-            and mousey > self.height - self.controls.get_height():
+            if mousex > 0 and mousex < self.controls.getWidth() / 4 \
+            and mousey > self.height - self.controls.getHeight():
                 self.popupmenu.setPopupActive(True)
                 self.popupmenu.makePopupMenu()
 
             # Roll Button
-            if mousex > self.controls.get_width()/4\
-            and mousex < self.controls.get_width()/2\
-            and mousey > self.height-self.controls.get_height():
+            if mousex > self.controls.getWidth()/4\
+            and mousex < self.controls.getWidth()/2\
+            and mousey > self.height-self.controls.getHeight():
                 self.roll = (1,0)
                 self.dicerolled = True
                 self.rollDice()
@@ -149,7 +149,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 elif norect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buymsgdisplayed = False
                     self.endTurn()
-            if mousex > 0 and mousex < self.controls.get_width() / 4 and mousey > self.height - self.controls.get_height() and not self.dicerolled:
+            if mousex > 0 and mousex < self.controls.getWidth() / 4 and mousey > self.height - self.controls.getHeight() and not self.dicerolled:
                 self.popupmenu.setPopupActive(True)
                 self.popupmenu.makePopupMenu()
 

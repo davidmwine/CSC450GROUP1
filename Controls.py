@@ -6,8 +6,8 @@ class Controls:
     def __init__(self, parent, rect):
         self.area = parent.subsurface(rect)
         #print(rect, parent)
-        self.width = self.area.getWidth()
-        self.height = self.area.getHeight()
+        self.width = self.area.get_width()
+        self.height = self.area.get_height()
         buttonwh = (self.width/4, self.height)##button width and height
         self.area.fill((0x22, 0x44, 0x66, 0xFF))
         self.menu = Button(self.area, Rect((0,0,) + buttonwh), "Menu") 
@@ -18,7 +18,8 @@ class Controls:
     def getWidth(self):
         return self.width
 
-    def getHeight(self): return self.height   
+    def getHeight(self):
+        return self.height   
 
 
 class Button:
@@ -27,17 +28,17 @@ class Button:
 
         self.area = parent.subsurface(rect)
         self.font = pygame.font.Font( None, 30)
-        self.width = self.area.getWidth()
-        self.height = self.area.getHeight()
+        self.width = self.area.get_width()
+        self.height = self.area.get_height()
         
 
-        pygame.draw.rect(self.area, bgcolor, (0,0, self.area.getWidth(),
-                                              self.area.getHeight()))
+        pygame.draw.rect(self.area, bgcolor, (0,0, self.area.get_width(),
+                                              self.area.get_height()))
         self.textarea = self.font.render( label, 1, fontcolor)
-        self.area.blit(self.textarea,((self.width-self.textarea.getWidth())/2,
-                                        (self.height - self.textarea.getHeight())/2))
-        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.getWidth(),
-                                              self.area.getHeight()), 5)
+        self.area.blit(self.textarea,((self.width-self.textarea.get_width())/2,
+                                        (self.height - self.textarea.get_height())/2))
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 5)
         #print(rect, parent)
        
         

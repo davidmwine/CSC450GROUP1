@@ -22,7 +22,7 @@ class ChatBox(object):
 
     def drawChat(self):
         self.area.fill((255,255,255))
-        self.chatEnt = chatEnter(self._area,Rect(0 , self.lineHeight*8,
+        self.chatEnt = ChatEnter(self.area,Rect(0, self.lineHeight*8,
         self.lineWidth, self.lineHeight), None)
         '''for i in range(7,-1,-1):
             line_rect = Rect(3, i*self._line_height+1,

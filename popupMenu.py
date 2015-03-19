@@ -21,7 +21,7 @@ class PopupMenu(object):
 
     def loadButtons(self):
         # RADIO BUTTON GROUP
-        self.resolvebutton = RadioGroup(self._area)
+        self.resolvebutton = RadioGroup(self.area)
         self.resolvebutton.newButton(self.area.get_width() / 2 - 80, self.area.get_height() / 2 + 5, 5)
         self.resolvebutton.newButton(self.area.get_width() / 2 - 80, self.area.get_height() / 2 + 25, 5)
         self.resolvebutton.newButton(self.area.get_width() / 2 - 80, self.area.get_height() / 2 + 45, 5)
@@ -43,7 +43,7 @@ class PopupMenu(object):
         self.exitCheckActive = False
         self.area.fill((190, 192, 194))
         self.textoptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Options", True, (94, 0, 9))
-        self.area.blit(self.textOptions, (self.area.get_width()/2 - (0.5 * self.textoptions.get_width()), 5))
+        self.area.blit(self.textoptions, (self.area.get_width()/2 - (0.5 * self.textoptions.get_width()), 5))
         self.resumebutton = Button(self.area, pygame.Rect(self.area.get_width() / 2 - 100, self.area.get_height() / 2 - 80, 200, 30), "Resume Game", (94, 0, 9), (190, 192, 194))
         self.savebutton = Button(self.area, pygame.Rect(self.area.get_width() / 2 - 100, self.area.get_height() / 2 - 40, 200, 30), "Save Game", (94, 0, 9), (190, 192, 194))
         self.gameoptionsbutton = Button(self.area, pygame.Rect(self.area.get_width() / 2 - 100, self.area.get_height() / 2, 200, 30), "Game Options", (94, 0, 9), (190, 192, 194))
@@ -77,7 +77,7 @@ class PopupMenu(object):
         #self._area.blit(self.resoultion_text_5, (self._area.get_width() / 2 + 30, self._area.get_height() / 2 + 20)) #4:3 not supported yet
         self.resolvebutton.draw()
 
-    def exit_check(self):
+    def exitCheck(self):
         self.popupActive = True
         self.optionActive = False
         self.exitCheckActive = True
@@ -87,11 +87,11 @@ class PopupMenu(object):
         self.exitbuttonyes = Button(self.area, pygame.Rect(self.area.get_width() / 2 - 100, self.area.get_height() / 2 - 60, 200, 30), "Yes", (94, 0, 9), (190, 192, 194))
         self.exitbuttonno = Button(self.area, pygame.Rect(self.area.get_width() / 2 - 100, self.area.get_height() / 2 - 20, 200, 30), "No", (94, 0, 9), (190, 192, 194))
 
-    def get_width(self):
-        return self._area.get_width()
+    def getWidth(self):
+        return self.area.get_width()
 
-    def get_height(self):
-        return self._area.get_height()
+    def getHeight(self):
+        return self.area.get_height()
 
     def getPopupActive(self):
         return self.popupActive

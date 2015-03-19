@@ -35,7 +35,7 @@ def wrapLine(text, font, maxwidth):
     wrapped=[]                  
                                
     while not done:             
-        nl, done, stext=truncline(text, font, maxwidth) 
+        nl, done, stext=truncLine(text, font, maxwidth) 
         wrapped.append(stext.strip())                  
         text=text[nl:]                                 
     return wrapped
