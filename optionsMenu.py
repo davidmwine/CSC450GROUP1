@@ -4,7 +4,7 @@ import os
 import sys
 from RadioButton import RadioGroup
 from CheckBox import CheckBox
-from startMenu import Start
+from StartMenu import Start
 
 
 class Options(object):

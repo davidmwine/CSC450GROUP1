@@ -1,6 +1,5 @@
 import Colors
-from building import Building
-from buildings import Buildings
+from Building import Building
 
 
 class Player(object):

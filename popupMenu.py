@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 from Controls import Button
-from Radiobutton import RadioGroup
+from RadioButton import RadioGroup
 
 
 class PopupMenu(object):

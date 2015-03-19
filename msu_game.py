@@ -2,9 +2,9 @@ import pygame
 from pygame.locals import *
 import os
 import sys
-from rulesMenu import Rules
-from startMenu import Start
-from optionsMenu import Options
+from RulesMenu import Rules
+from StartMenu import Start
+from OptionsMenu import Options
 from GameArea import GameArea 
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display

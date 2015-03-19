@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 from Player import Player
-from Buildings import Buildings
+from Building import Buildings
 import Colors
 from PlayersDisplay import PlayersDisplay
 from Board import GameBoard
