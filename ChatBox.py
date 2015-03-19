@@ -1,33 +1,29 @@
 import pygame, sys
 from pygame.locals import *
 
-
-
-
-
-
-
-class chatBox(object):
+class ChatBox(object):
+    '''chatBox(scale=1, parent=None, size_rect=None)
+    Create a chatbox with the given '''
     
-    def __init__(self, scale=1, parent=None , size_rect=None):
-        self._RightEdge = 1920*scale
-        self._BottomEdge = 1080*scale
-        self._width = - size_rect.left + size_rect.right
-        self._height = size_rect.bottom - size_rect.top
-        self._line_width = self._width
-        self._line_height = self._height/9
-        self._scale = scale
-        self._chatlines = []
+    def __init__(self, scale=1, parent=None , sizeRect=None):
+        self.rightEdge = 1920*scale
+        self.bottomEdge = 1080*scale
+        self.width = - sizeRect.left + sizeRect.right
+        self.height = sizeRect.bottom - sizeRect.top
+        self.lineWidth = self.width
+        self.lineHeight = self.height/9
+        self.scale = scale
+        self.chatLines = []
         if parent != None:
-            self._area = parent.subsurface(size_rect)
+            self.area = parent.subsurface(sizeRect)
 
-        self.draw_chat()
+        self.drawChat()
 
 
-    def draw_chat(self):
-        self._area.fill((255,255,255))
-        self._chatenter = chatEnter(self._area,Rect(0 , self._line_height*8,
-        self._line_width, self._line_height), None)
+    def drawChat(self):
+        self.area.fill((255,255,255))
+        self.chatEnt = chatEnter(self._area,Rect(0 , self.lineHeight*8,
+        self.lineWidth, self.lineHeight), None)
         '''for i in range(7,-1,-1):
             line_rect = Rect(3, i*self._line_height+1,
                         self._line_width-3, self._line_height-1)
@@ -35,88 +31,89 @@ class chatBox(object):
                 chatLine( self._area, line_rect, self._chatlines[i])
             except IndexError:
                 chatLine(self._area, line_rect, "Line {}".format(i+1))'''
-        pygame.draw.rect(self._area,(0,0,0), (0,0, self._area.get_width(),
-                                              self._area.get_height()), 2)
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 2)
 
     def getLeft(self):
         #print(self._area.get_rect().left)
         #print(self._RightEdge - self._area.get_width())
-        return self._RightEdge - self._area.get_width()
+        return self.rightEdge - self.area.get_width()
 
     def getRight(self):
         #print(self._RightEdge)
-        return self._RightEdge
+        return self.rightEdge
 
     def getTopType(self):
         #print(self._BottomEdge - self._chatenter.getArea().get_rect().top)
-        return self._BottomEdge - self._chatenter.getArea().get_height()
+        return self.bottomEdge - self.chatEnt.getArea().get_height()
 
     def getBottomType(self):
         #print(self._BottomEdge)
-        return self._BottomEdge
+        return self.bottomEdge
 
     def typeText(self, text):
-        self._chatenter.appendText(text)
+        self.chatEnt.appendText(text)
 
     def deleteText(self):
-        self._chatenter.removeText()
+        self.chatEnt.removeText()
 
     def submitText(self):
-        newText = self._chatenter.getText()
-        print(len(newText))
+        newText = self.chatEnt.getText()
+        #print(len(newText))
         for i in newText:
-            self._chatlines.append(i)
-        self._chatenter.setText("")
+            self.chatLines.append(i)
+        self.chatEnt.setText("")
         lineNum = 0
-        for i in range(max(len(self._chatlines)-7, 0), len(self._chatlines)):
-            line_rect = Rect(7, lineNum*self._line_height+5,
-                        self._line_width-15, self._line_height-1)
-            chatLine( self._area, line_rect, self._chatlines[i])
+        for i in range(max(len(self.chatLines)-7, 0), len(self.chatLines)):
+            lineRect = Rect(7, lineNum*self.lineHeight+5,
+                        self.lineWidth-15, self.lineHeight-1)
+            chatLine( self.area, lineRect, self.chatLines[i])
             lineNum += 1
 
-class chatLine(object):
+class ChatLine(object):
     def __init__(self, parent, rect ,string= " "):
-        self._text = string.format(len(string))
-        self._width = rect.right - rect.left    
-        self._height = rect.bottom - rect.top
-        self._area = parent.subsurface(rect)
-        self._area.fill((255,255,255))
-        self._font = pygame.font.Font( None, self._height)
-        self._textarea = self._font.render( self._text, 1, (0,0,0) )
-        self._area.blit(self._textarea,(0,0))
+        self.text = string.format(len(string))
+        self.width = rect.right - rect.left    
+        self.height = rect.bottom - rect.top
+        self.area = parent.subsurface(rect)
+        self.area.fill((255,255,255))
+        self.font = pygame.font.Font( None, self.height)
+        self.textArea = self.font.render( self.text, 1, (0,0,0) )
+        self.area.blit(self.textArea,(0,0))
         
 
-    def get_area(self):
-        return self._area
+    def getArea(self):
+        return self.area
 
         
 
 
 
-class chatEnter(object):
+class ChatEnter(object):
     def __init__ (self, parent,rect, action):
         self.lineIndex = 0
         self.currLineLen = 0
-        self._height = rect.bottom - rect.top
-        self._font = pygame.font.Font( None, self._height) #For testing width
+        self.height = rect.bottom - rect.top
+        self.font = pygame.font.Font( None, self.height) #For testing width
         self.lines = ['']
-        self._area = parent.subsurface(rect)
-        self._area.fill((0xFF, 0xFF, 0xFF, 0xFF))
-        pygame.draw.rect(self._area,(0,0,0), (0,0, self._area.get_width(),
-                                              self._area.get_height()), 3)
+        self.area = parent.subsurface(rect)
+        self.area.fill((0xFF, 0xFF, 0xFF, 0xFF))
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 3)
 
 
     def chat(self):
-        self.chatlines.append(chatLine(self._text))
+        #Probably needs removal
+        self.chatLines.append(chatLine(self.text))
 
     def curlyRemove(self):
         sizeL = 0
         sizeR = 0
         for i in self.lines[self.lineIndex]:
             if i == '{':
-                sizeL += self._font.size('{')[0]
+                sizeL += self.font.size('{')[0]
             elif i == '}':
-                sizeR += self._font.size('}')[0]
+                sizeR += self.font.size('}')[0]
         sizeTot = sizeL/2 + sizeR/2
         return sizeTot
 
@@ -125,7 +122,7 @@ class chatEnter(object):
         self.currLineLen += len(newText)
         if self.lines[self.lineIndex][-1] in ['{', '}']:
             self.currLineLen -= 1
-        if self._font.size(self.lines[self.lineIndex])[0] - self.curlyRemove() > self._area.get_width()-5:
+        if self.font.size(self.lines[self.lineIndex])[0] - self.curlyRemove() > self.area.get_width()-5:
             self.currLineLen = 0
             lastSpace = self.lines[self.lineIndex].rfind(' ')
             if lastSpace > -1:
@@ -145,9 +142,9 @@ class chatEnter(object):
                 self.currLineLen = 1
                 self.lineIndex += 1
             
-        chatLine(self._area, self._area.get_rect(), self.lines[self.lineIndex])
-        pygame.draw.rect(self._area,(0,0,0), (0,0, self._area.get_width(),
-                                              self._area.get_height()), 3)
+        chatLine(self.area, self.area.get_rect(), self.lines[self.lineIndex])
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 3)
 
     def removeText(self):
         if len(self.lines[self.lineIndex]) < 1 and self.lineIndex == 0:
@@ -161,9 +158,9 @@ class chatEnter(object):
             if self.lineIndex >= 0:
                 self.lineIndex -= 1
                 self.lines.pop()
-        chatLine(self._area, self._area.get_rect(), self.lines[self.lineIndex])
-        pygame.draw.rect(self._area,(0,0,0), (0,0, self._area.get_width(),
-                                              self._area.get_height()), 3)
+        chatLine(self.area, self.area.get_rect(), self.lines[self.lineIndex])
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 3)
 
     def getArea(self):
         return self._area
@@ -175,9 +172,9 @@ class chatEnter(object):
         self.lines = [newText]
         self.lineIndex = 0
         self.currLineLen = 0
-        chatLine(self._area, self._area.get_rect(), self.lines[self.lineIndex])
-        pygame.draw.rect(self._area,(0,0,0), (0,0, self._area.get_width(),
-                                              self._area.get_height()), 3)
+        chatLine(self.area, self.area.get_rect(), self.lines[self.lineIndex])
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 3)
             
         
 
