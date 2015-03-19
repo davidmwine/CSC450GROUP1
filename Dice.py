@@ -73,31 +73,31 @@ class Dice():
     def six(self, side):
         self.four(side)
         pygame.draw.circle(self._area,(0,0,0),
-                           (self._half_width*side + self._half_width*3//10 ,self._height*5//10),
-                           int(self._height//10))
-        pygame.draw.circle(self._area,(0,0,0),
-                           (self._half_width*side + self._half_width*7//10 ,self._height*5//10),
-                           int(self._height//10))
+                           (self.halfWidth*side + self.halfWidth*3//10 ,self.height*5//10),
+                           int(self.height//10))
+        pygame.draw.circle(self.area,(0,0,0),
+                           (self.halfWidth*side + self.halfWidth*7//10 ,self.height*5//10),
+                           int(self.height//10))
         
 
 
     def roll(self):
-        if self._roll_count <= 0:
-            self._roll_count = 4
-        self._area.fill((255, 255, 255))
+        if self.rollCount <= 0:
+            self.rollCount = 4
+        self.area.fill((255, 255, 255))
         #draw 2 black boarders around each have of the rect
-        pygame.draw.rect(self._area, (0,0,0),(0,0, self._area.get_width()//2,
-                                              self._area.get_height()), 5)
-        pygame.draw.rect(self._area, (0,0,0),(self._area.get_width()//2,0,
-                                              self._area.get_width()//2,
-                                              self._area.get_height()), 5)
+        pygame.draw.rect(self.area, (0,0,0),(0,0, self.area.get_width()//2,
+                                              self.area.get_height()), 5)
+        pygame.draw.rect(self.area, (0,0,0),(self.area.get_width()//2,0,
+                                              self.area.get_width()//2,
+                                              self.area.get_height()), 5)
         #get roll value as list indicies
         r1, r2 = random.randint(0,5), random.randint(0,5)
         #print(r1+1, r2+1, self._roll_count)
-        self._numbers[r1](0)
-        self._numbers[r2](1)
-        self._roll_count -= 1
-        return (self._roll_count>0,r2+r1+2)
+        self.numbers[r1](0)
+        self.numbers[r2](1)
+        self.rollCount -= 1
+        return (self.rollCount>0,r2+r1+2)
 
 
 def main():
