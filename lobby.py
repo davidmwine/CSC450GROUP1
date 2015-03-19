@@ -4,6 +4,7 @@ from player import Player
 from globals import Globals
 from ChatBox import chatBox
 from RadioButton import RadioGroup
+from Controls import Button
 from textWrap import *
 
 
@@ -36,6 +37,8 @@ class Lobby():
         self.game_type_radio.newButton(self.width_less_radio/2+ self.width_list[0] +32, self.height/8+15, 5)
         self.game_type_radio.newButton(self.width_less_radio/2+ sum(self.width_list[:2]) +50, self.height/8+15, 5)
         self.game_type_radio.setCurrent(game_opt)
+        #button_rect(0 , self.parent.get_height()-60*scale, 150*scale, 60*scale)
+        #self.start_button = Button.Button(self.screen, button_rect, "Start Game")
 
 
 
@@ -51,6 +54,7 @@ class Lobby():
             self.screen.blit(self.text_list[i], (self.width_less_radio/2 +20*(i+1) + sum(self.width_list[:i]),
                                                  self.height/8,self.width_list[i],self.text_list[i].get_height()))
         self.game_type_radio.draw()
+        #self.screen.blit(self.start_button)
         
         
 
@@ -59,13 +63,13 @@ class Lobby():
         self.host_screen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
         self.host_screen.fill((255,255,255))
         text1 = self.font_op(20, 'berlin').render("Please select game attributes.",1,(0,0,0))
-        players_num_text = self.font_op(10, 'berlin').render("Number of Players'"),1,(0,0,0))
+        players_num_text = self.font_op(10, 'berlin').render("Number of Players'",1,(0,0,0))
 
         text_rect = (((self.host_screen.get_width() - text1.get_width())/2, self.host_screen.get_height()/10))
         self.host_screen.blit(text1, text_rect)
         
         
-                             
+    
                             
 
 
