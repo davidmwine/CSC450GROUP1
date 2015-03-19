@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import *
 import os
-from globals import Globals
-from textWrap import wrapline
+import Colors
+from Textwrap import wrapLine
 
 # These functions should still work if we change where the message box appears.
 # displayMsg and displayMsgOK should still look decent if the message box is
