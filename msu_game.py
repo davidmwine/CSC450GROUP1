@@ -42,7 +42,7 @@ class Game(object):
         self.img_icon_small = pygame.image.load(os.path.join("img","icon_small.png")).convert_alpha()
         pygame.display.set_icon(self.img_icon_small)
         self.nextScreen = "start"
-        self.splashShow = True
+        self.splashShow = False
 
         #self.round_number = 1
 

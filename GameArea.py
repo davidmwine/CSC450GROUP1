@@ -32,7 +32,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         
         self.clock = pygame.time.Clock()
         self.roll = (0,0)   # self.roll[1] is the value of the roll
-        self.rolltime = 500 #Interval between dice roll updates in mS
+        self.rollTime = 500 #Interval between dice roll updates in mS
         
         self.players = []       # List of players will be added in play()
         self.buildings = None   # List of buildings will be added in play()
@@ -40,10 +40,10 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         self.building = None    # Holds building space that was landed on
                 
         self.typing = False     # True if user is typing in chat box
-        self.midturn = False    # True if it's the middle of a player's turn
-        self.gameexit = False
-        self.carddraw = False
-        self.dicerolled = False
+        self.midTurn = False    # True if it's the middle of a player's turn
+        self.gameExit = False
+        self.cardDraw = False
+        self.diceRolled = False
         
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
@@ -55,13 +55,13 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         
         # Game Board Area
         rect = pygame.Rect((0, 0), (1440*self.scale, 1020*self.scale))
-        self.boardarea = self.area.subsurface(rect)
-        self.boardarea.fill(Colors.MAROON) 
+        self.boardArea = self.area.subsurface(rect)
+        self.boardArea.fill(Colors.MAROON) 
         
         # Chat Box
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
                            (480*self.scale, 270*self.scale))
-        self.chatbox = ChatBox(self.scale,self.area, rect)
+        self.chatBox = ChatBox(self.scale,self.area, rect)
         
         # Controls
         rect = pygame.Rect((0, 1020*self.scale),
@@ -69,16 +69,16 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         self.controls = Controls(self.area, rect)
 
         # Dice
-        self.dice = Dice(self.boardarea)
+        self.dice = Dice(self.boardArea)
 
         # Popup options menu
-        self.popupmenu = PopupMenu(self.boardarea)
+        self.popupMenu = PopupMenu(self.boardArea)
 
         #Cards
-        self.cards = Cards(self.boardarea)
+        self.cards = Cards(self.boardArea)
 
         # Message Rectangle
-        self.msgrect = pygame.Rect(440*self.scale, 314*self.scale,
+        self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
                                    560*self.scale, 392*self.scale)
 
 
@@ -92,121 +92,123 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
 
     def mouseClick(self):
         """Takes action based on when and where mouse has been clicked"""
-        mousex,mousey = pygame.mouse.get_pos()
+        mouseX,mouseY= pygame.mouse.get_pos()
 
         # menu not open
-        if not self.popupmenu.getPopupActive():             
-            #Chatbox
-            if mousex > self.chatbox.getLeft() and mousex < self.chatbox.getRight()\
-            and mousey > self.chatbox.getTopType()\
-            and mousey < self.chatbox.getBottomType():
+        if not self.popupMenu.getPopupActive():             
+            #chatBox
+            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            and mouseY> self.chatBox.getTopType()\
+            and mouseY< self.chatBox.getBottomType():
                 self.typing = True
             else:
                 self.typing = False
 
             # Menu Button
-            if mousex > 0 and mousex < self.controls.getWidth() / 4 \
-            and mousey > self.height - self.controls.getHeight():
-                self.popupmenu.setPopupActive(True)
-                self.popupmenu.makePopupMenu()
+            if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
+            and mouseY> self.height - self.controls.getHeight():
+                self.popupMenu.setPopupActive(True)
+                self.popupMenu.makePopupMenu()
 
             # Roll Button
-            if mousex > self.controls.getWidth()/4\
-            and mousex < self.controls.getWidth()/2\
-            and mousey > self.height-self.controls.getHeight():
+            if mouseX > self.controls.getWidth()/4\
+            and mouseX < self.controls.getWidth()/2\
+            and mouseY> self.height-self.controls.getHeight():
                 self.roll = (1,0)
-                self.dicerolled = True
+                self.diceRolled = True
                 self.rollDice()
 
             # OK Button in Message Box
-            if self.turn.okmsgdisplayed:
-                okrect = pygame.Rect(Turn.msgrect.x + self.turn.okrect.x,
-                                 Turn.msgrect.y + self.turn.okrect.y,
-                                 self.turn.okrect.width, self.turn.okrect.height)
-                if okrect.collidepoint(pygame.mouse.get_pos()):
+            if self.turn.okMsgDisplayed:
+                okRect = pygame.Rect(Turn.msgRect.x + self.turn.okRect.x,
+                                 Turn.msgRect.y + self.turn.okRect.y,
+                                 self.turn.okRect.width, self.turn.okRect.height)
+                if okRect.collidepoint(pygame.mouse.get_pos()):
                     # If applicable, charge fees and update playersDisplay.
-                    if self.turn.feemsgdisplayed:
+                    if self.turn.feeMsgDisplayed:
                         self.turn.chargeFees()
-                        self.playersdisplay.updatePlayer(
+                        self.playersDisplay.updatePlayer(
                             self.players.index(self.turn.owner))
-                        self.turn.feemsgdisplayed = False
-                    self.turn.okmsgdisplayed = False
+                        self.turn.feeMsgDisplayed = False
+                    self.turn.okMsgDisplayed = False
                     self.endTurn()
 
             # Yes/No Button in Message Box
-            if self.turn.buymsgdisplayed:
-                yesrect = pygame.Rect(Turn.msgrect.x + self.turn.yesrect.x,
-                                     Turn.msgrect.y + self.turn.yesrect.y,
-                                     self.turn.yesrect.width, self.turn.yesrect.height)
-                norect = pygame.Rect(Turn.msgrect.x + self.turn.norect.x,
-                                     Turn.msgrect.y + self.turn.norect.y,
-                                     self.turn.norect.width, self.turn.norect.height)
-                if yesrect.collidepoint(pygame.mouse.get_pos()):
+            if self.turn.buyMsgDisplayed:
+                yesRect = pygame.Rect(Turn.msgRect.x + self.turn.yesRect.x,
+                                     Turn.msgRect.y + self.turn.yesRect.y,
+                                     self.turn.yesRect.width, self.turn.yesRect.height)
+                noRect = pygame.Rect(Turn.msgRect.x + self.turn.noRect.x,
+                                     Turn.msgRect.y + self.turn.noRect.y,
+                                     self.turn.noRect.width, self.turn.noRect.height)
+                if yesRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buy()
-                    self.gameboard.colorBuilding(self.turn.building)
-                    self.turn.buymsgdisplayed = False
+                    self.gameBoard.colorBuilding(self.turn.building)
+                    self.turn.buyMsgDisplayed = False
                     self.endTurn()
-                elif norect.collidepoint(pygame.mouse.get_pos()):
-                    self.turn.buymsgdisplayed = False
+                elif noRect.collidepoint(pygame.mouse.get_pos()):
+                    self.turn.buyMsgDisplayed = False
                     self.endTurn()
-            if mousex > 0 and mousex < self.controls.getWidth() / 4 and mousey > self.height - self.controls.getHeight() and not self.dicerolled:
-                self.popupmenu.setPopupActive(True)
-                self.popupmenu.makePopupMenu()
+            if mouseX > 0 and mouseX < self.controls.getWidth() / 4\
+               and mouseY> self.height - self.controls.getHeight()\
+               and not self.diceRolled:
+                self.popupMenu.setPopupActive(True)
+                self.popupMenu.makePopupMenu()
 
         # menu open
         else:
             # not in game options
-            if not self.popupmenu.getOptionsActive():
+            if not self.popupMenu.getOptionsActive():
                 # not exiting game
-                if not self.popupmenu.getExitCheckActive():
+                if not self.popupMenu.getExitCheckActive():
                     # resume game
-                    if mousex > self.boardarea.get_width() / 2 - 100 \
-                    and mousex < self.boardarea.get_width() / 2 + 100 \
-                    and mousey > self.boardarea.get_height() / 2 - 80 \
-                    and mousey < self.boardarea.get_height() / 2 - 50:
-                        self.popupmenu.setPopupActive(False)
+                    if mouseX > self.boardArea.get_width() / 2 - 100 \
+                    and mouseX < self.boardArea.get_width() / 2 + 100 \
+                    and mouseY> self.boardArea.get_height() / 2 - 80 \
+                    and mouseY< self.boardArea.get_height() / 2 - 50:
+                        self.popupMenu.setPopupActive(False)
                         self.refreshGameBoard()
-                        if not self.dicerolled:
+                        if not self.diceRolled:
                             self.turn.beginTurn()
-                        elif self.turn.buymsgdisplayed or self.turn.okmsgdisplayed:
+                        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
                             self.turn.handleLanding()
                         
                     # save game
-                    if mousex > self.boardarea.get_width() / 2 - 100 \
-                    and mousex < self.boardarea.get_width() / 2 + 100 \
-                    and mousey > self.boardarea.get_height() / 2 - 40 \
-                    and mousey < self.boardarea.get_height() / 2 - 10:
+                    if mouseX > self.boardArea.get_width() / 2 - 100 \
+                    and mouseX < self.boardArea.get_width() / 2 + 100 \
+                    and mouseY> self.boardArea.get_height() / 2 - 40 \
+                    and mouseY< self.boardArea.get_height() / 2 - 10:
                         pass # NEED TO IMPLEMENT
                     # game options
-                    if mousex > self.boardarea.get_width() / 2 - 100 \
-                    and mousex < self.boardarea.get_width() / 2 + 100 \
-                    and mousey > self.boardarea.get_height() / 2 \
-                    and mousey < self.boardarea.get_height() / 2 + 30:
-                        self.popupmenu.setOptionsActive(True)
-                        self.popupmenu.gameOptions()
+                    if mouseX > self.boardArea.get_width() / 2 - 100 \
+                    and mouseX < self.boardArea.get_width() / 2 + 100 \
+                    and mouseY> self.boardArea.get_height() / 2 \
+                    and mouseY< self.boardArea.get_height() / 2 + 30:
+                        self.popupMenu.setOptionsActive(True)
+                        self.popupMenu.gameOptions()
                     # exit game
-                    if mousex > self.boardarea.get_width() / 2 - 100 \
-                    and mousex < self.boardarea.get_width() / 2 + 100 \
-                    and mousey > self.boardarea.get_height() / 2 + 40 \
-                    and mousey < self.boardarea.get_height() / 2 + 70:
-                        self.popupmenu.setExitCheckActive(True)
-                        self.popupmenu.exitCheck()
+                    if mouseX > self.boardArea.get_width() / 2 - 100 \
+                    and mouseX < self.boardArea.get_width() / 2 + 100 \
+                    and mouseY> self.boardArea.get_height() / 2 + 40 \
+                    and mouseY< self.boardArea.get_height() / 2 + 70:
+                        self.popupMenu.setExitCheckActive(True)
+                        self.popupMenu.exitCheck()
                 # exit double check
                 else:
                     # yes - exit
-                    if mousex > self.boardarea.get_width() / 2 - 100 \
-                    and mousex < self.boardarea.get_width() / 2 + 100 \
-                    and mousey > self.boardarea.get_height() / 2 - 60 \
-                    and mousey < self.boardarea.get_height() / 2 - 30:
+                    if mouseX > self.boardArea.get_width() / 2 - 100 \
+                    and mouseX < self.boardArea.get_width() / 2 + 100 \
+                    and mouseY> self.boardArea.get_height() / 2 - 60 \
+                    and mouseY< self.boardArea.get_height() / 2 - 30:
                         pygame.quit()
                         sys.exit()
                     # no - go back to menu
-                    if mousex > self.boardarea.get_width() / 2 - 100 \
-                    and mousex < self.boardarea.get_width() / 2 + 100 \
-                    and mousey > self.boardarea.get_height() / 2 - 20 \
-                    and mousey < self.boardarea.get_height() / 2 + 10:
-                        self.popupmenu.setExitCheckActive(False)
-                        self.popupmenu.makePopupMenu()
+                    if mouseX > self.boardArea.get_width() / 2 - 100 \
+                    and mouseX < self.boardArea.get_width() / 2 + 100 \
+                    and mouseY> self.boardArea.get_height() / 2 - 20 \
+                    and mouseY< self.boardArea.get_height() / 2 + 10:
+                        self.popupMenu.setExitCheckActive(False)
+                        self.popupMenu.makePopupMenu()
 
             # in game options
             else:
@@ -214,28 +216,28 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 # problem is either
                 #   1. Program not recognizing the radio button being checked
                 #   2. Not changing resolution with the returned value
-                change = self.popupmenu.changeResolution(mousex, mousey)
+                change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
                     self.area = pygame.display.set_mode(change)
-                    self.popupmenu.loadButtons()
+                    self.popupMenu.loadButtons()
                 # back to menu
-                if mousex > self.boardarea.get_width() / 2 - 100 \
-                and mousex < self.boardarea.get_width() / 2 + 100 \
-                and mousey > self.boardarea.get_height() / 2 - 80 \
-                and mousey < self.boardarea.get_height() / 2 - 50:
-                    self.popupmenu.setOptionsActive(False)
-                    self.popupmenu.makePopupMenu()
+                if mouseX > self.boardArea.get_width() / 2 - 100 \
+                and mouseX < self.boardArea.get_width() / 2 + 100 \
+                and mouseY> self.boardArea.get_height() / 2 - 80 \
+                and mouseY< self.boardArea.get_height() / 2 - 50:
+                    self.popupMenu.setOptionsActive(False)
+                    self.popupMenu.makePopupMenu()
 
     def refreshGameBoard(self):
         rect = pygame.Rect((20*self.scale, 20*self.scale),
                            (1400*self.scale, 980*self.scale))
-        self.area.blit(self.gameboard.getGB(), rect)
+        self.area.blit(self.gameBoard.getGB(), rect)
 
 
     def refreshPlayersDisplay(self):
         rect = pygame.Rect((1440*self.scale, 0),
                            (480*self.scale, 810*self.scale))
-        self.area.blit(self.playersdisplay.getPD(), rect)
+        self.area.blit(self.playersDisplay.getPD(), rect)
 
 
     def refreshDisplay(self):
@@ -247,18 +249,18 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
     def rollDice(self):
         while self.roll[0]>0:
             self.clock.tick(30)
-            self.rolltime += self.clock.get_time()
-            if self.rolltime>250:
+            self.rollTime += self.clock.get_time()
+            if self.rollTime>250:
                 self.roll = self.dice.roll()
-                self.rolltime = 0
+                self.rollTime = 0
                 self.refreshDisplay()
         self.turn.setDiceRoll(self.roll[1])
         
         
     def endTurn(self):
         print("End of turn")
-        self.midturn = False
-        self.dicerolled = False
+        self.midTurn = False
+        self.diceRolled = False
         self.refreshPlayersDisplay()
         self.refreshGameBoard()
         
@@ -266,32 +268,32 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
     def displayMsgOK(self, msg):
         """Displays msg with OK button in the center of the game board."""        
         # Create message box as a surface and display text.
-        msgbox = pygame.Surface((560*self.scale, 392*self.scale))
-        msgbox.fill(Colors.LIGHTGRAY)
-        lines = wrapline(msg, self.font, 440*self.scale)
+        msgBox = pygame.Surface((560*self.scale, 392*self.scale))
+        msgBox.fill(Colors.LIGHTGRAY)
+        lines = wrapline(msg, self.font, 440*self.scale) #wrapline from pygame, don't standardize
         i = 0
         for line in lines:
-            lineypos = 50*i*self.scale + 2
+            lineYPos = 50*i*self.scale + 2
             line = self.font.render(line, True, Color("black"))
-            msgbox.blit(line, (2, lineypos))
+            msgBox.blit(line, (2, lineYPos))
             i += 1
 
         # Create and position OK button.
-        okbutton = pygame.Surface((100*self.scale, 50*self.scale))
-        self.okrect = okbutton.get_rect()
-        okbutton.fill(Colors.MEDGRAY)
+        okButton = pygame.Surface((100*self.scale, 50*self.scale))
+        self.okRect = okButton.get_rect()
+        okButton.fill(Colors.MEDGRAY)
         text = self.font.render("OK", True, Color("black"))
-        textpos = text.get_rect()
-        textpos.center = self.okrect.center
-        okbutton.blit(text, textpos)
-        self.okrect.bottom = msgbox.get_rect().height - 10
-        self.okrect.centerx = msgbox.get_rect().centerx
-        msgBox.blit(okbutton, self.okrect)
+        textPos = text.get_rect()
+        textPos.center = self.okRect.center
+        okButton.blit(text, textPos)
+        self.okRect.bottom = msgBox.get_rect().height - 10
+        self.okRect.centerx = msgBox.get_rect().centerx
+        msgBox.blit(okButton, self.okRect)
         
         # Position message box on the screen.
-        self.msgrect = pygame.Rect(440*self.scale, 314*self.scale,
+        self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
                         560*self.scale, 392*self.scale)
-        self.area.blit(msgbox, self.msgrect) 
+        self.area.blit(msgBox, self.msgRect) 
 
     def chatting(self, event):
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
@@ -299,29 +301,29 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         
         if event.key == K_ESCAPE:
             self.typing = False
-            self.gameexit = True
+            self.gameExit = True
         elif event.key == K_RETURN:
-            self.chatbox.submitText()
+            self.chatBox.submitText()
         elif event.key == K_BACKSPACE:
-            self.chatbox.deleteText()
+            self.chatBox.deleteText()
         elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
-            #self.chatbox.typeText(pygame.key.name(event.key))
-            #self.chatbox.typeText(chr(event.key))
-            checkcaps = pygame.key.get_pressed()
-            if checkcaps[K_RSHIFT] or checkcaps[K_LSHIFT] and chr(event.key) in CHARS:
+            #self.chatBox.typeText(pygame.key.name(event.key))
+            #self.chatBox.typeText(chr(event.key))
+            checkCaps = pygame.key.get_pressed()
+            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
                 index = CHARS.index(chr(event.key))
                 if CHARSCAPS[index] not in ['{', '}']:
-                    self.chatbox.typeText(CHARSCAPS[index])
+                    self.chatBox.typeText(CHARSCAPS[index])
                 else:
-                    self.chatbox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
-            elif checkcaps[K_CAPSLOCK]:
+                    self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
+            elif checkCaps[K_CAPSLOCK]:
                 index = CHARS.index(chr(event.key))
                 if index < 26: #Only caps lock regular alphabet
-                    self.chatbox.typeText(CHARSCAPS[index])
+                    self.chatBox.typeText(CHARSCAPS[index])
                 else:
-                    self.chatbox.typeText(chr(event.key))
+                    self.chatBox.typeText(chr(event.key))
             else:
-                self.chatbox.typeText(chr(event.key))
+                self.chatBox.typeText(chr(event.key))
 
     def play(self):
 
@@ -336,35 +338,35 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         self.players = [p1, p2, p3, p4, p5, p6]
 
         # Players Display
-        self.playersdisplay = PlayersDisplay(self.players, self.scale, True)
+        self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
         self.refreshPlayersDisplay()
         self.refreshDisplay()
 
         self.buildings = Buildings().getBuildingList()
 
         # Game Board
-        self.gameboard = GameBoard(self.scale, self.buildings, True)
+        self.gameBoard = GameBoard(self.scale, self.buildings, True)
         self.refreshGameBoard()
         self.refreshDisplay()
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
         Turn.setStaticVariables(self.scale, self.area, self.buildings)
         pygame.key.set_repeat(75, 75)
-        self.gameexit = False #Must be reset each time play is
+        self.gameExit = False #Must be reset each time play is
         
-        while not self.gameexit:
+        while not self.gameExit:
             self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.mouseClick()
                 if event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
-                        self.gameexit = True
+                        self.gameExit = True
                         break
                     ###Cards demo - Remove Later ###
                     if event.key == K_c:
-                        self.carddraw = True
-                        self.currentcard = self.cards.drawCard(self.scale)
+                        self.cardDraw = True
+                        self.currentCard = self.cards.drawCard(self.scale)
                     ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
@@ -373,26 +375,26 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                     sys.exit()
                     return 0
 
-            if self.carddraw == False and not self.popupmenu.getPopupActive():
+            if self.cardDraw == False and not self.popupMenu.getPopupActive():
                 self.cards.displayCard("back", self.scale)
-            elif not self.popupmenu.getPopupActive():
-                self.cards.displayCard(self.currentcard, self.scale)
+            elif not self.popupMenu.getPopupActive():
+                self.cards.displayCard(self.currentCard, self.scale)
                 
-            if not self.midturn:    # If it's a new player's turn...
-                self.playersdisplay.updatePlayer(Turn.count % len(self.players))
+            if not self.midTurn:    # If it's a new player's turn...
+                self.playersDisplay.updatePlayer(Turn.count % len(self.players))
                 Turn.count += 1
-                playerindex = Turn.count % len(self.players)
-                self.player = self.players[playerindex]
-                self.playersdisplay.selectPlayer(playerindex)
+                playerIndex = Turn.count % len(self.players)
+                self.player = self.players[playerIndex]
+                self.playersDisplay.selectPlayer(playerIndex)
                 self.refreshPlayersDisplay()
-                self.midturn = True
+                self.midTurn = True
                 self.turn = Turn(self.player)
                 self.turn.beginTurn()        
                 
-            self.rolltime += self.clock.get_time()
-            if self.roll[0] and self.rolltime>250:
+            self.rollTime += self.clock.get_time()
+            if self.roll[0] and self.rollTime>250:
                 self.roll = self.dice.roll()
-                self.rolltime = 0
+                self.rollTime = 0
             if self.parent:
                 self.parent.blit(self.area, (0,0))
                 

@@ -11,10 +11,10 @@ class Turn(object):
         self.roll = 0
         self.building = None    # Will hold building space that is landed on
         self.owner = None   # Will hold the owner of the building landed on
-        self.feeamt = None  # Will hold the fee for landing on a building
-        self.buymsgdisplayed = False
-        self.okmsgdisplayed = False     # True if any OK message is displayed
-        self.feemsgdisplayed = False
+        self.feeAmt = None  # Will hold the fee for landing on a building
+        self.buyMsgDisplayed = False
+        self.okMsgDisplayed = False     # True if any OK message is displayed
+        self.feeMsgDisplayed = False
 
     @staticmethod
     def setStaticVariables(scale, parent, buildings):
@@ -23,15 +23,15 @@ class Turn(object):
         Turn.parent = parent
         Turn.buildings = buildings
         Turn.font = pygame.font.Font(None, int(50*scale))
-        Turn.msgrect = pygame.Rect(440*scale, 314*scale,
+        Turn.msgRect = pygame.Rect(440*scale, 314*scale,
                                    560*scale, 392*scale)
-        Turn.msgsurface = parent.subsurface(Turn.msgrect)        
+        Turn.msgSurface = parent.subsurface(Turn.msgRect)        
 
     def beginTurn(self):
         print("------- " + self.player.getName() + "'s turn -------")
-        msgbox = displayMsg(Turn.scale, Turn.msgrect, Turn.font,
+        msgBox = displayMsg(Turn.scale, Turn.msgRect, Turn.font,
                    self.player.getName() + "'s turn. Click 'Roll'")
-        Turn.msgsurface.blit(msgbox, (0, 0))
+        Turn.msgSurface.blit(msgBox, (0, 0))
         
     def setDiceRoll(self, roll):
         '''
@@ -60,31 +60,34 @@ class Turn(object):
         (e.g., buying the building or paying fees to another player).
         """
         if self.building.getPurpose() == "special":
-            (msgbox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgrect,
+            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                 Turn.font, "Special message about " + self.building.getName())
-            Turn.msgsurface.blit(msgbox, (0, 0))
+            Turn.msgSurface.blit(msgBox, (0, 0))
             self.okMsgDisplayed = True
         else:    
             self.owner = self.building.getOwner()
             if self.owner == self.player:
-                (msgbox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgrect,
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "You already own " + self.building.getName() + ".")
-                Turn.msgsurface.blit(msgbox, (0, 0))
-                self.okmsgdisplayed = True
+                Turn.msgSurface.blit(msgBox, (0, 0))
+                self.okMsgDisplayed = True
             elif self.owner == None:
-                (msgbox, self.yesRect, self.noRect) = displayMsgYN(
-                    Turn.scale, Turn.msgrect, Turn.font,
+                (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                    Turn.scale, Turn.msgRect, Turn.font,
                     "Do you want to buy " + self.building.getName() + "?")
-                Turn.msgsurface.blit(msgbox, (0, 0))
+                print(msgBox)
+                print(self.yesRect)
+                print(self.noRect)
+                Turn.msgSurface.blit(msgBox, (0, 0))
                 self.buyMsgDisplayed = True  
             elif self.owner != self.player:
                 self.feeAmt = self.building.getFeeAmount()
-                (msgbox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgrect,
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "You pay $" + str(self.feeAmt) + " to " +
                                 self.owner.getName() + ".")
-                Turn.msgsurface.blit(msgbox, (0, 0))
-                self.okmsgdisplayed = True
-                self.feemsgdisplayed = True
+                Turn.msgSurface.blit(msgBox, (0, 0))
+                self.okMsgDisplayed = True
+                self.feeMsgDisplayed = True
 
 
     def buy(self):
@@ -97,7 +100,7 @@ class Turn(object):
 
     def chargeFees(self):
         """If building is already owned, fees are paid to owner."""
-        self.player.subtractdollars(self.feeAmt)
+        self.player.subtractDollars(self.feeAmt)
         self.owner.addDollars(self.feeAmt)
         
 
