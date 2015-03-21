@@ -149,11 +149,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buyMsgDisplayed = False
                     self.endTurn()
-            if mouseX > 0 and mouseX < self.controls.getWidth() / 4\
-               and mouseY> self.height - self.controls.getHeight()\
-               and not self.diceRolled:
-                self.popupMenu.setPopupActive(True)
-                self.popupMenu.makePopupMenu()
+                    
 
         # menu open
         else:
@@ -228,6 +224,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                     self.popupMenu.setOptionsActive(False)
                     self.popupMenu.makePopupMenu()
 
+
     def refreshGameBoard(self):
         rect = pygame.Rect((20*self.scale, 20*self.scale),
                            (1400*self.scale, 980*self.scale))
@@ -264,36 +261,6 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         self.refreshPlayersDisplay()
         self.refreshGameBoard()
         
-     
-    def displayMsgOK(self, msg):
-        """Displays msg with OK button in the center of the game board."""        
-        # Create message box as a surface and display text.
-        msgBox = pygame.Surface((560*self.scale, 392*self.scale))
-        msgBox.fill(Colors.LIGHTGRAY)
-        lines = wrapline(msg, self.font, 440*self.scale) #wrapline from pygame, don't standardize
-        i = 0
-        for line in lines:
-            lineYPos = 50*i*self.scale + 2
-            line = self.font.render(line, True, Color("black"))
-            msgBox.blit(line, (2, lineYPos))
-            i += 1
-
-        # Create and position OK button.
-        okButton = pygame.Surface((100*self.scale, 50*self.scale))
-        self.okRect = okButton.get_rect()
-        okButton.fill(Colors.MEDGRAY)
-        text = self.font.render("OK", True, Color("black"))
-        textPos = text.get_rect()
-        textPos.center = self.okRect.center
-        okButton.blit(text, textPos)
-        self.okRect.bottom = msgBox.get_rect().height - 10
-        self.okRect.centerx = msgBox.get_rect().centerx
-        msgBox.blit(okButton, self.okRect)
-        
-        # Position message box on the screen.
-        self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
-                        560*self.scale, 392*self.scale)
-        self.area.blit(msgBox, self.msgRect) 
 
     def chatting(self, event):
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
@@ -348,9 +315,11 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
         self.refreshGameBoard()
         self.refreshDisplay()
+        
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
         Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        
         pygame.key.set_repeat(75, 75)
         self.gameExit = False #Must be reset each time play is
         
@@ -391,15 +360,6 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 self.turn = Turn(self.player)
                 self.turn.beginTurn()        
                 
-            self.rollTime += self.clock.get_time()
-            if self.roll[0] and self.rollTime>250:
-                self.roll = self.dice.roll()
-                self.rollTime = 0
-            if self.parent:
-                self.parent.blit(self.area, (0,0))
-                
-            pygame.display.update()
-            #next(self.sequence)     # Perform next action in player's turn       
             self.refreshDisplay()
             
         return "start"
@@ -407,7 +367,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
 
 
 def main():
-    screen = GameArea(False, 0.5)
+    screen = GameArea(False, 2/3)
     screen.play()
 
 
