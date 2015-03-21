@@ -1,10 +1,20 @@
 import pygame
 from pygame.locals import *
-from messageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
+from MessageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
 
 
 class Turn(object):
-    """Contains most of the methods related to the game logic of a player's turn."""
+    """Contains most of the methods related to the game logic of a player's turn."""     
+
+    def __init__(self, player):
+        self.player = player
+        self.roll = 0
+        self.building = None    # Will hold building space that is landed on
+        self.owner = None   # Will hold the owner of the building landed on
+        self.feeAmt = None  # Will hold the fee for landing on a building
+        self.buyMsgDisplayed = False
+        self.okMsgDisplayed = False     # True if any OK message is displayed
+        self.feeMsgDisplayed = False
 
     @staticmethod
     def setStaticVariables(scale, parent, buildings):
@@ -15,34 +25,27 @@ class Turn(object):
         Turn.font = pygame.font.Font(None, int(50*scale))
         Turn.msgRect = pygame.Rect(440*scale, 314*scale,
                                    560*scale, 392*scale)
-        Turn.msgSurface = parent.subsurface(Turn.msgRect)
-        
-
-    def __init__(self, player):
-        self.player = player
-        self.roll = 0
-        self.building = None    # Will hold building space that is landed on
-        self.owner = None   # Will hold the owner of the building landed on
-        self.feeAmt = None  # Will hold the fee for landing on a building
-        self.buyMsgDisplayed = False
-        self.okMsgDisplayed = False     # True if any OK message is displayed
-        self.feeMsgDisplayed = False    
-        
+        Turn.msgSurface = parent.subsurface(Turn.msgRect)        
 
     def beginTurn(self):
         print("------- " + self.player.getName() + "'s turn -------")
         msgBox = displayMsg(Turn.scale, Turn.msgRect, Turn.font,
                    self.player.getName() + "'s turn. Click 'Roll'")
         Turn.msgSurface.blit(msgBox, (0, 0))
-
         
     def setDiceRoll(self, roll):
+        '''
+        Rolls and gets the value of the dice for a players turn.
+        Passes to moving the token.
+        '''
         print("Dice Rolled:", roll)
         self.roll = roll
         self.moveToken()
 
-
     def moveToken(self):
+        '''
+        Method to advance token.  Paired with the dice roll.
+        '''   
         pygame.time.wait(1000)
         self.player.increasePosition(self.roll)
         position = self.player.getPosition()
@@ -72,6 +75,9 @@ class Turn(object):
                 (msgBox, self.yesRect, self.noRect) = displayMsgYN(
                     Turn.scale, Turn.msgRect, Turn.font,
                     "Do you want to buy " + self.building.getName() + "?")
+                print(msgBox)
+                print(self.yesRect)
+                print(self.noRect)
                 Turn.msgSurface.blit(msgBox, (0, 0))
                 self.buyMsgDisplayed = True  
             elif self.owner != self.player:
