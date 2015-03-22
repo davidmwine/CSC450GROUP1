@@ -1,8 +1,8 @@
 import pygame, sys, os
 from pygame.locals import *
 from player import Player
-from globals import Globals
-from ChatBox import chatBox
+import Colors
+from ChatBox import ChatBox
 from RadioButton import RadioGroup
 from Controls import Button
 from textWrap import *
@@ -20,6 +20,7 @@ class Lobby():
         self.screen = pygame.Surface((self.width, self.height))
         self.game_type = [self.hostDraw,self.lfgDraw, self.localGameDraw]
         self.game_opt = 0
+        self.nextScreen = ''
 
 
     def load(self, game_opt):
@@ -37,8 +38,9 @@ class Lobby():
         self.game_type_radio.newButton(self.width_less_radio/2+ self.width_list[0] +32, self.height/8+15, 5)
         self.game_type_radio.newButton(self.width_less_radio/2+ sum(self.width_list[:2]) +50, self.height/8+15, 5)
         self.game_type_radio.setCurrent(game_opt)
-        #button_rect(0 , self.parent.get_height()-60*scale, 150*scale, 60*scale)
-        #self.start_button = Button.Button(self.screen, button_rect, "Start Game")
+        button_rect= Rect(0 , self.height -40, 150, 40)
+        self.start_button = Button(self.screen, button_rect, "Start Game")
+
 
 
 
@@ -46,6 +48,9 @@ class Lobby():
         mouseX, mouseY = pygame.mouse.get_pos()
         if self.game_type_radio.checkButton(mouseX, mouseY):
             self.game_opt = self.game_type_radio.getCurrent()
+        if self.start_button.wasClicked(mouseX, mouseY):
+            self.gameExit = True
+            self.nextScreen = 'Start'
             
     def alwaysDraw(self):
         
@@ -54,7 +59,8 @@ class Lobby():
             self.screen.blit(self.text_list[i], (self.width_less_radio/2 +20*(i+1) + sum(self.width_list[:i]),
                                                  self.height/8,self.width_list[i],self.text_list[i].get_height()))
         self.game_type_radio.draw()
-        #self.screen.blit(self.start_button)
+        self.start_button.redraw()
+        
         
         
 
@@ -93,7 +99,7 @@ class Lobby():
     def run(self):
         self.load(0)
         self.gameExit = False
-        while not self.gameExit:
+        if True:
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.buttonClick()
@@ -106,7 +112,7 @@ class Lobby():
             self.game_type[self.game_opt]()
             self.parent.blit(self.screen, (0,0))
             pygame.display.update()
-        return 'start'  
+        return self.nextScreen  
             
 
         
