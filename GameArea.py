@@ -90,7 +90,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         return self.scale
 
 
-    def mouseClick(self):
+    def mouseClick(self, event):
         """Takes action based on when and where mouse has been clicked"""
         mouseX,mouseY= pygame.mouse.get_pos()
 
@@ -103,6 +103,14 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 self.typing = True
             else:
                 self.typing = False
+
+            #Scrolling in chatBox
+            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            and mouseY < self.chatBox.getTopType() and mouseY > self.chatBox.getTop():
+                if event.button == 4:
+                    self.chatBox.displayText(-1)
+                elif event.button == 5:
+                    self.chatBox.displayText(1)
 
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
@@ -283,7 +291,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                     self.chatBox.typeText(CHARSCAPS[index])
                 else:
                     self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
-            elif checkCaps[K_CAPSLOCK]:
+            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
                 index = CHARS.index(chr(event.key))
                 if index < 26: #Only caps lock regular alphabet
                     self.chatBox.typeText(CHARSCAPS[index])
@@ -327,7 +335,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
             self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
-                    self.mouseClick()
+                    self.mouseClick(event)
                 if event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
                         self.gameExit = True
