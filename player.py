@@ -1,17 +1,24 @@
 import Colors
 from Building import *
+from Token import Token
+from Board import GameBoard
 
 
 class Player(object):
 
-    def __init__(self, name, college):
+    def __init__(self, name, college,board, bldgs, scale = 1):
+        self.scale = scale
+        self.board = board
+        self.bldgs = bldgs
         self.name = name
         self.college = college
         self.dollars = 1500000
         self.points = 0
         self.pointsPerRound = 0
         self.buildings = []     # buildings that the player owns
+        self.buildingList = Buildings().getBuildingList()
         self.position = 0
+        self.playerToken = Token(self.getColor(), self.position, self.board, self.bldgs, self.scale)
 
     def getName(self):
         return self.name
@@ -87,5 +94,12 @@ class Player(object):
             self.points += self.pointsPerRound
             self.dollars += 200000
         self.position %= numBuildings
+        self.playerToken.moveToken(spaces)
+
+    def getPosition(self):
+        return self.position
+
+    def displayWheel(self, percentage, location):
+        self.playerToken.drawWheel(percentage, location)
 
 

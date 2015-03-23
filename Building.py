@@ -13,13 +13,17 @@ class Building(object):
         self.rect = None            # Rect object where its space is located on the board
 
         if purpose == 'academic':
-            self.color = Colors.LIGHTGRAY 
+            self.color = Colors.LIGHTGRAY
+            self.buildingColor = Colors.LIGHTGRAY
         elif purpose == 'special':
             self.color = Colors.BLUE
+            self.buildingColor = Colors.BLUE
         elif purpose == 'sports':
-            self.color = Colors.GREEN 
+            self.color = Colors.GREEN
+            self.buildingColor = Colors.GREEN
         elif purpose == 'support':
-            self.color = Colors.WHITE 
+            self.color = Colors.WHITE
+            self.buildingColor = Colors.WHITE
 
     def getName(self): 
         return self.name
@@ -46,7 +50,10 @@ class Building(object):
         return self.color
     
     def setColor(self, color):
-        self.color = color    
+        self.color = color
+
+    def getBuildingColor(self):
+        return self.buildingColor
         
 
 class OwnableBuilding(Building):    

@@ -80,6 +80,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         # Message Rectangle
         self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
                                    560*self.scale, 392*self.scale)
+        
 
 
     def getArea(self):
@@ -250,6 +251,21 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
             self.parent.blit(self.area, (0,0))
         pygame.display.update()
 
+    def updatePlayerPosition(self):
+        '''updatePlayerPosition() determines the number of players
+        at a given position and displays a circle of each player
+        at that position'''
+        pos = {}
+        loc = {}
+        for p in self.players:
+            if p.getPosition() not in pos:
+                pos[p.getPosition()] = 1
+                loc[p.getPosition()] = 0
+            else:
+                pos[p.getPosition()] += 1
+        for p in self.players:
+            p.displayWheel(1/pos[p.getPosition()], loc[p.getPosition()])
+            loc[p.getPosition()] += 1
 
     def rollDice(self):
         while self.roll[0]>0:
@@ -302,26 +318,26 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
 
     def play(self):
 
+        self.buildings = Buildings().getBuildingList()
+
+        # Game Board
+        self.gameBoard = GameBoard(self.scale, self.buildings, True)
+        self.refreshGameBoard()
+        self.refreshDisplay()
+
         # This data will eventually be obtained from the lobby / setup menu.
-        p1 = Player("player1", "Agriculture")
-        p2 = Player("player2", "Arts and Letters")
-        p3 = Player("player3", "Natural and Applied Sciences")
-        p4 = Player("player4", "Education")
-        p5 = Player("player5", "Health and Human Services")
-        p6 = Player("player6", "Humanities and Public Affairs")
+        p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildings, self.scale)
+        p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildings, self.scale)
+        p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildings, self.scale)
+        p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildings, self.scale)
+        p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildings, self.scale)
+        p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildings, self.scale)
 
         self.players = [p1, p2, p3, p4, p5, p6]
 
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
         self.refreshPlayersDisplay()
-        self.refreshDisplay()
-
-        self.buildings = Buildings().getBuildingList()
-
-        # Game Board
-        self.gameBoard = GameBoard(self.scale, self.buildings, True)
-        self.refreshGameBoard()
         self.refreshDisplay()
         
         # This needs to come after the game board is created, as creation of
@@ -330,6 +346,9 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         
         pygame.key.set_repeat(75, 75)
         self.gameExit = False #Must be reset each time play is
+
+        print("Width: ", self.buildings[0].getRect().width)
+        print("Height: ", self.buildings[0].getRect().height)
         
         while not self.gameExit:
             self.clock.tick(30)
@@ -364,6 +383,8 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 self.player = self.players[playerIndex]
                 self.playersDisplay.selectPlayer(playerIndex)
                 self.refreshPlayersDisplay()
+                self.updatePlayerPosition()
+                self.refreshGameBoard()
                 self.midTurn = True
                 self.turn = Turn(self.player)
                 self.turn.beginTurn()        
