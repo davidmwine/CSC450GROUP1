@@ -9,13 +9,20 @@ class EntryBox():
         self.parent = parent
         self.len = length
         self.font_op = font_op
-        self.width, self.height = font_op(10, 'berlin').size("W"*length)
+        self.width, self.height = self.font_op(10, 'berlin').size("W"*length)
         self.text = start_text
         self.x_start = position[0]
         self.y_start = position[1]
-        self.area = parent.subsurface(positon)
+        self.area = parent.subsurface(position)
         self.focus = False
+        
 
+    def draw(self):
+        self.area.fill((255,255,255))
+        boxText = self.font_op(10, 'berlin').render(self.text,1,(0,0,0))
+        self.area.blit(boxText, (0,0))
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 5)
 
     def hasFocus(self):
         return self.focus
@@ -42,8 +49,9 @@ class EntryBoxSet():
 
     def createNew(self,parent, length, position , font_op , name = '',start_text = ''):
         if name == '':
-            name = str(len(entryBoxes))
+            name = str(len(self.entryBoxes))
         self.entryBoxes[name] = EntryBox(parent, length, position , font_op, start_text)
+        return self.entryBoxes[name]
 
     def isClicked(mousex,mousey):
         for i in entryBoxes:
@@ -52,6 +60,13 @@ class EntryBoxSet():
                 if not focused is None:
                     focused.takeFocus
                 return i
+            
+    def getBoxes(self):
+        return self.entryBoxes
+
+    def draw(self):
+        for i in self.entryBoxes:
+            self.entryBoxes.get(i).draw()
     
 
 
