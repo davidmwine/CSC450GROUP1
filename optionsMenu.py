@@ -4,140 +4,136 @@ import os
 import sys
 from RadioButton import RadioGroup
 from CheckBox import CheckBox
-from startMenu import Start
+from StartMenu import Start
 
 
 class Options(object):
-    def __init__(self, screen, infoScreen, font_op, y_offset):
+    def __init__(self, screen, infoScreen, fontOp, yoffset):
         self.screen = screen
         self.infoScreen = infoScreen
-        self.font_op = font_op
-        self.y_offset = y_offset
-        self.res_opt = 0
-        self.soundeffectsOff = False
-        self.musicOff = False
-        self.load_images()
-        self.load_buttons(self.res_opt, self.soundeffectsOff, self.musicOff)
-        self.screen_modes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]
+        self.fontOp = fontOp
+        self.yoffset = yoffset
+        self.resolutionoption = 0
+        self.soundeffectsoff = False
+        self.musicoff = False
+        self.loadImages()
+        self.loadButtons(self.resolutionoption)
+        self.screenmodes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]
 
-    def load_buttons(self, res_opt, soundeffectsOn, musicOn):
+    def loadButtons(self, resolutionoption):
         # RADIO BUTTON GROUP
-        self.resolution_radio_buttons = RadioGroup(self.screen)
-        self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 54 + self.y_offset, 5)
-        self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 34 + self.y_offset, 5)
-        self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 14 + self.y_offset, 5)
-        self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 54 + self.y_offset, 5)
-        #self.resolution_radio_buttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 34 + self.y_offset, 5) #4:3 not supported yet
+        self.resolutionbuttons = RadioGroup(self.screen)
+        self.resolutionbuttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 54 + self.yoffset, 5)
+        self.resolutionbuttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 34 + self.yoffset, 5)
+        self.resolutionbuttons.newButton(self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 - 14 + self.yoffset, 5)
+        self.resolutionbuttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 54 + self.yoffset, 5)
+        #self.resolutionbuttons.newButton(self.screen.get_width() / 2 + 20, self.screen.get_height() / 2 - 34 + self.yoffset, 5) #4:3 not supported yet
         # CHECKBOXES
-        self.checkbox_soundeffects = CheckBox(self.screen, self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 + 58 + self.y_offset, 10)
-        self.checkbox_music = CheckBox(self.screen, self.screen.get_width() / 2 - 80, self.screen.get_height()/2 + 78 + self.y_offset, 10)
+        self.soundeffectscheckbox = CheckBox(self.screen, self.screen.get_width() / 2 - 80, self.screen.get_height() / 2 + 58 + self.yoffset, 10)
+        self.musiccheckbox = CheckBox(self.screen, self.screen.get_width() / 2 - 80, self.screen.get_height()/2 + 78 + self.yoffset, 10)
 
         # FOR RELOADING BUTTONS
         # set the checked resolution box
-        self.resolution_radio_buttons.setCurrent(res_opt)
+        self.resolutionbuttons.setCurrent(resolutionoption)
         # if mute sound effects box should be checked check them, other wise leave unchecked
-        if self.soundeffectsOff == True:
-            if self.checkbox_soundeffects.getChecked() == False:
-                self.checkbox_soundeffects.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height() / 2 + 59 + self.y_offset)
+        if self.soundeffectsoff == True:
+            if self.soundeffectscheckbox.getChecked() == False:
+                self.soundeffectscheckbox.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height() / 2 + 59 + self.yoffset)
         else:
-            if self.checkbox_soundeffects.getChecked() == True:
-                self.checkbox_soundeffects.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height() / 2 + 59 + self.y_offset)
+            if self.soundeffectscheckbox.getChecked() == True:
+                self.soundeffectscheckbox.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height() / 2 + 59 + self.yoffset)
         # if mute music box should be checked check them, other wise leave unchecked
-        if self.musicOff == True:
-            if self.checkbox_music.getChecked() == False:
-                self.checkbox_music.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height()/2 + 79 + self.y_offset)
+        if self.musicoff == True:
+            if self.musiccheckbox.getChecked() == False:
+                self.musiccheckbox.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height()/2 + 79 + self.yoffset)
         else:
-            if self.checkbox_music.getChecked() == True:
-                self.checkbox_music.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height()/2 + 79 + self.y_offset)
+            if self.musiccheckbox.getChecked() == True:
+                self.musiccheckbox.setChecked(self.screen.get_width() / 2 - 79, self.screen.get_height()/2 + 79 + self.yoffset)
 
 
-    def load_images(self):
-        self.img_menu_bg = pygame.image.load(os.path.join("img", "menu_bg4.png")).convert()
+    def loadImages(self):
+        self.imgmenubg = pygame.image.load(os.path.join("img", "menu_bg4.png")).convert()
 
     def buttonClick(self):
-        mouseX, mouseY = pygame.mouse.get_pos()
+        mousex, mousey = pygame.mouse.get_pos()
 
-        if mouseX > self.screen.get_width() / 2 + 178 \
-                and mouseX < self.screen.get_width() / 2 + 198 \
-                and mouseY > self.screen.get_height() / 2 - 123 + self.y_offset and mouseY < self.screen.get_height() / 2 - 103 + self.y_offset:
+        if mousex > self.screen.get_width() / 2 + 178 \
+                and mousex < self.screen.get_width() / 2 + 198 \
+                and mousey > self.screen.get_height() / 2 - 123 + self.yoffset and mousey < self.screen.get_height() / 2 - 103 + self.yoffset:
             return False
 
-        if self.resolution_radio_buttons.checkButton(mouseX, mouseY):
-            self.res_opt = self.resolution_radio_buttons.getCurrent()
-            if self.infoScreen.current_h == self.screen_modes[self.resolution_radio_buttons.getCurrent()][1]\
-               and self.infoScreen.current_w == self.screen_modes[self.resolution_radio_buttons.getCurrent()][0]:
-                self.screen = pygame.display.set_mode(self.screen_modes[self.resolution_radio_buttons.getCurrent()], pygame.FULLSCREEN)
+        if self.resolutionbuttons.checkButton(mousex, mousey):
+            self.resolutionoption = self.resolutionbuttons.getCurrent()
+            if self.infoScreen.current_h == self.screenmodes[self.resolutionbuttons.getCurrent()][1]\
+               and self.infoScreen.current_w == self.screenmodes[self.resolutionbuttons.getCurrent()][0]:
+                self.screen = pygame.display.set_mode(self.screenmodes[self.resolutionbuttons.getCurrent()], pygame.FULLSCREEN)
             else:
-                self.screen = pygame.display.set_mode(self.screen_modes[self.resolution_radio_buttons.getCurrent()])
+                self.screen = pygame.display.set_mode(self.screenmodes[self.resolutionbuttons.getCurrent()])
 
-        self.checkbox_soundeffects.setChecked(mouseX, mouseY)
-        self.soundeffectsOff = self.checkbox_soundeffects.getChecked()
+        self.soundeffectscheckbox.setChecked(mousex, mousey)
+        self.soundeffectsoff = self.soundeffectscheckbox.getChecked()
 
-        self.checkbox_music.setChecked(mouseX, mouseY)
-        self.musicOff = self.checkbox_music.getChecked()
-        if self.checkbox_music.getChecked() == True:
+        self.musiccheckbox.setChecked(mousex, mousey)
+        self.musicoff = self.musiccheckbox.getChecked()
+        if self.musiccheckbox.getChecked() == True:
             pygame.mixer.Sound(os.path.join('sound','start_menu.wav')).stop()
 
         return True
 
     def run(self):
-        options_exit = False
-        while not options_exit:
+        optionsexit = False
+        while not optionsexit:
             # background image
-            self.screen.blit(self.img_menu_bg, (0, 0))
-            self.screen.blit(pygame.transform.scale(self.img_menu_bg,(self.screen.get_width(), int(self.screen.get_height()-(2*self.y_offset)))),(0,self.y_offset))
+            self.screen.blit(self.imgmenubg, (0, 0))
+            self.screen.blit(pygame.transform.scale(self.imgmenubg,(self.screen.get_width(), int(self.screen.get_height()-(2*self.yoffset)))),(0,self.yoffset))
             # rectangle window w/ exit button
-            self.text_exit_options = self.font_op(22, "helvetica").render("X", True, (255, 0, 0))
-            pygame.draw.rect(self.screen, (126, 51, 58), Rect((self.screen.get_width() / 2 - 200, self.screen.get_height() / 2 - 125 + self.y_offset), (400, 250 + self.y_offset)))
-            pygame.draw.rect(self.screen, (255, 255, 255), Rect((self.screen.get_width() / 2 + 178, self.screen.get_height() / 2 - 123 + self.y_offset), (self.text_exit_options.get_width() + 6, 20)))
-            self.screen.blit(self.text_exit_options, (self.screen.get_width() / 2 + 182, self.screen.get_height() / 2 - 127 + self.y_offset))
-            pygame.draw.rect(self.screen, (94, 0, 9), Rect((self.screen.get_width() / 2 - 200, self.screen.get_height() / 2 - 125 + self.y_offset), (400, 250 + self.y_offset)), 2)
+            self.text_exit_options = self.fontOp(22, "helvetica").render("X", True, (255, 0, 0))
+            pygame.draw.rect(self.screen, (126, 51, 58), Rect((self.screen.get_width() / 2 - 200, self.screen.get_height() / 2 - 125 + self.yoffset), (400, 250 + self.yoffset)))
+            pygame.draw.rect(self.screen, (255, 255, 255), Rect((self.screen.get_width() / 2 + 178, self.screen.get_height() / 2 - 123 + self.yoffset), (self.text_exit_options.get_width() + 6, 20)))
+            self.screen.blit(self.text_exit_options, (self.screen.get_width() / 2 + 182, self.screen.get_height() / 2 - 127 + self.yoffset))
+            pygame.draw.rect(self.screen, (94, 0, 9), Rect((self.screen.get_width() / 2 - 200, self.screen.get_height() / 2 - 125 + self.yoffset), (400, 250 + self.yoffset)), 2)
             # header
-            header = self.font_op(50, "berlin").render("Game Options", True, (255, 255, 255))
-            self.screen.blit(header, (self.screen.get_width() / 2 - 0.5 * header.get_width(), 4+self.y_offset))
+            header = self.fontOp(50, "berlin").render("Game Options", True, (255, 255, 255))
+            self.screen.blit(header, (self.screen.get_width() / 2 - 0.5 * header.get_width(), 4+self.yoffset))
             # video options
-            video_options = self.font_op(20, "berlin").render("Video options", True, (255, 255, 255))
-            self.screen.blit(video_options, (self.screen.get_width() / 2 - 0.5 * video_options.get_width(), self.screen.get_height() / 2 - 110 + self.y_offset))
-            screen_resolution = self.font_op(12, "berlin").render("Screen Resolution", True, (255, 255, 255))
-            self.screen.blit(screen_resolution, (self.screen.get_width() / 2 - 0.5 * screen_resolution.get_width(), self.screen.get_height() / 2 - 80 + self.y_offset))
-            self.resoultion_text_1 = self.font_op(10, "berlin").render("960x540", True, (255, 255, 255))
-            self.resoultion_text_2 = self.font_op(10, "berlin").render("1280x720", True, (255, 255, 255))
-            self.resoultion_text_3 = self.font_op(10, "berlin").render("1600x900", True, (255, 255, 255))
-            self.resoultion_text_4 = self.font_op(10, "berlin").render("1920x1080", True, (255, 255, 255))
-            self.resoultion_text_5 = self.font_op(10, "berlin").render("960x720", True, (255, 255, 255))
-            self.screen.blit(self.resoultion_text_1, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 60 + self.y_offset))
-            self.screen.blit(self.resoultion_text_2, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 40 + self.y_offset))
-            self.screen.blit(self.resoultion_text_3, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 20 + self.y_offset))
-            self.screen.blit(self.resoultion_text_4, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 60 + self.y_offset))
-            #self.screen.blit(self.resoultion_text_5, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 40 + self.y_offset)) #4:3 not supported yet
-            self.resolution_radio_buttons.draw()
+            videooptions = self.fontOp(20, "berlin").render("Video options", True, (255, 255, 255))
+            self.screen.blit(videooptions, (self.screen.get_width() / 2 - 0.5 * videooptions.get_width(), self.screen.get_height() / 2 - 110 + self.yoffset))
+            screenresolution = self.fontOp(12, "berlin").render("Screen Resolution", True, (255, 255, 255))
+            self.screen.blit(screenresolution, (self.screen.get_width() / 2 - 0.5 * screenresolution.get_width(), self.screen.get_height() / 2 - 80 + self.yoffset))
+            self.resolutiontext1 = self.fontOp(10, "berlin").render("960x540", True, (255, 255, 255))
+            self.resolutiontext2 = self.fontOp(10, "berlin").render("1280x720", True, (255, 255, 255))
+            self.resolutiontext3 = self.fontOp(10, "berlin").render("1600x900", True, (255, 255, 255))
+            self.resolutiontext4 = self.fontOp(10, "berlin").render("1920x1080", True, (255, 255, 255))
+            self.resolutiontext5 = self.fontOp(10, "berlin").render("960x720", True, (255, 255, 255))
+            self.screen.blit(self.resolutiontext1, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 60 + self.yoffset))
+            self.screen.blit(self.resolutiontext2, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 40 + self.yoffset))
+            self.screen.blit(self.resolutiontext3, (self.screen.get_width() / 2 - 70, self.screen.get_height() / 2 - 20 + self.yoffset))
+            self.screen.blit(self.resolutiontext4, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 60 + self.yoffset))
+            #self.screen.blit(self.resolutiontext5, (self.screen.get_width() / 2 + 30, self.screen.get_height() / 2 - 40 + self.yoffset)) #4:3 not supported yet
+            self.resolutionbuttons.draw()
 
             # audio option
-            audio_options = self.font_op(20, "berlin").render("Audio options", True, (255, 255, 255))
-            self.screen.blit(audio_options, (self.screen.get_width() / 2 - 0.5 * audio_options.get_width(), self.screen.get_height() / 2 + 30 + self.y_offset))
-            self.text_sound_effect_option = self.font_op(12, "berlin").render("Mute sound effects", True, (255, 255, 255))
-            self.text_music_option = self.font_op(12, "berlin").render("Mute music", True, (255, 255, 255))
-            self.screen.blit(self.text_sound_effect_option, (self.screen.get_width() / 2 - 60, self.screen.get_height()/2 + 55 + self.y_offset))
-            self.screen.blit(self.text_music_option, (self.screen.get_width() / 2 - 60, self.screen.get_height()/2 + 75 + self.y_offset))
-            self.checkbox_soundeffects.draw()
-            self.checkbox_music.draw()
-
-            # player option
-            # player_options = self.font_op(12, "berlin").render("Player options", True, (255, 255, 255))
-            # self.screen.blit(player_options, (self.screen.get_width() / 2 - 0.5 * player_options.get_width(), self.screen.get_height()/2 + 100 + self.y_offset))
+            audiooptions = self.fontOp(20, "berlin").render("Audio options", True, (255, 255, 255))
+            self.screen.blit(audiooptions, (self.screen.get_width() / 2 - 0.5 * audiooptions.get_width(), self.screen.get_height() / 2 + 30 + self.yoffset))
+            self.textsoundeffectoption = self.fontOp(12, "berlin").render("Mute sound effects", True, (255, 255, 255))
+            self.textmusicoption = self.fontOp(12, "berlin").render("Mute music", True, (255, 255, 255))
+            self.screen.blit(self.textsoundeffectoption, (self.screen.get_width() / 2 - 60, self.screen.get_height()/2 + 55 + self.yoffset))
+            self.screen.blit(self.textmusicoption, (self.screen.get_width() / 2 - 60, self.screen.get_height()/2 + 75 + self.yoffset))
+            self.soundeffectscheckbox.draw()
+            self.musiccheckbox.draw()
 
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        options_exit = True
+                        optionsexit = True
                         break
                 elif event.type == MOUSEBUTTONDOWN:  # Perform action on click
                     if not self.buttonClick():
-                        options_exit = True
+                        optionsexit = True
                         break
                 elif event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-            self.load_buttons(self.res_opt, self.soundeffectsOff, self.musicOff)
+            self.loadButtons(self.resolutionoption)
             pygame.display.update()
         return "start"
