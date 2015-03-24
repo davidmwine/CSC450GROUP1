@@ -3,6 +3,7 @@
 import pygame
 from pygame.locals import *
 import sys
+import os
 import math
 import Building
 import Colors 
@@ -63,6 +64,41 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Remove these if statement, testing images
+                if seq == 0:
+                    carrington = pygame.image.load(os.path.join("img","buildings","CarringtonHall.png")).convert()
+                    carrington = pygame.transform.scale(carrington, (int(self.scale*205), int(self.scale*142)))
+                    self.board.blit(carrington,(x_pos, y_pos))
+                if seq == 1:
+                    siceluff = pygame.image.load(os.path.join("img","buildings","SiceluffHall.png")).convert()
+                    siceluff = pygame.transform.scale(siceluff, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(siceluff,(x_pos, y_pos))
+                if seq == 2:
+                    cheek = pygame.image.load(os.path.join("img","buildings","CheekHall.png")).convert()
+                    cheek = pygame.transform.scale(cheek, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(cheek,(x_pos, y_pos))
+                if seq == 3:
+                    bookstore = pygame.image.load(os.path.join("img","buildings","UniversityBookstore.png")).convert()
+                    bookstore = pygame.transform.scale(bookstore, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(bookstore,(x_pos, y_pos))
+                if seq == 4:
+                    hammons = pygame.image.load(os.path.join("img","buildings","HammonsField.png")).convert()
+                    hammons = pygame.transform.scale(hammons, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(hammons,(x_pos, y_pos))
+                if seq == 5:
+                    greenwood = pygame.image.load(os.path.join("img","buildings","GreenwoodLabSchool.png")).convert()
+                    greenwood = pygame.transform.scale(greenwood, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(greenwood,(x_pos, y_pos))
+                if seq == 6:
+                    foster = pygame.image.load(os.path.join("img","buildings","FosterRecreationCenter.png")).convert()
+                    foster = pygame.transform.scale(foster, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(foster,(x_pos, y_pos))
+                if seq == 7:
+                    juanita = pygame.image.load(os.path.join("img","buildings","JuanitaKHammons.png")).convert()
+                    juanita = pygame.transform.scale(juanita, (int(self.scale*136), int(self.scale*142)))
+                    self.board.blit(juanita,(x_pos, y_pos))
+
                 # Store rect in building object
                 buildings[building].setRect(rect)
                 x_pos += cellWidth
@@ -84,6 +120,42 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Remove these if statements, testing images
+                if seq == 8:
+                    north = pygame.image.load(os.path.join("img","buildings","BearParkNorth.png")).convert()
+                    north = pygame.transform.scale(north, (int(self.scale*205), int(self.scale*142)))
+                    self.board.blit(north,(x_pos, y_pos))
+                if seq == 9:
+                    hammonscenter = pygame.image.load(os.path.join("img","buildings","HammonsStudentCenter.png")).convert()
+                    hammonscenter = pygame.transform.scale(hammonscenter, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(hammonscenter,(x_pos, y_pos))
+                if seq == 10:
+                    brick = pygame.image.load(os.path.join("img","buildings","BrickCity.png")).convert()
+                    brick = pygame.transform.scale(brick, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(brick,(x_pos, y_pos))
+                if seq == 11:
+                    kings = pygame.image.load(os.path.join("img","buildings","KingsStreetAnnex.png")).convert()
+                    kings = pygame.transform.scale(kings, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(kings,(x_pos, y_pos))
+                if seq == 12:
+                    jqh = pygame.image.load(os.path.join("img","buildings","JQHArena.png")).convert()
+                    jqh = pygame.transform.scale(jqh, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(jqh,(x_pos, y_pos))
+                if seq == 13:
+                    forsythe = pygame.image.load(os.path.join("img","buildings","ForsytheAthleticsCenter.png")).convert()
+                    forsythe = pygame.transform.scale(forsythe, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(forsythe,(x_pos, y_pos))
+                if seq == 14:
+                    mcdonald = pygame.image.load(os.path.join("img","buildings","McDonaldArena.png")).convert()
+                    mcdonald = pygame.transform.scale(mcdonald, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(mcdonald,(x_pos, y_pos))
+                if seq == 15:
+                    psu = pygame.image.load(os.path.join("img","buildings","PlasterStudentUnion.png")).convert()
+                    psu = pygame.transform.scale(psu, (int(self.scale*205), int(self.scale*94)))
+                    self.board.blit(psu,(x_pos, y_pos))
+                    
+                
                 # Store rect in building object
                 buildings[building].setRect(rect)
                 y_pos += cellHeight
@@ -106,6 +178,13 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Remove these if statements, testing images
+                if seq == 16:
+                    south = pygame.image.load(os.path.join("img","buildings","BearParkSouth.png")).convert()
+                    south = pygame.transform.scale(south, (int(self.scale*205), int(self.scale*142)))
+                    self.board.blit(south,(x_pos, y_pos))
+                
                 # Store rect in building object
                 buildings[building].setRect(rect)
                                 
@@ -130,6 +209,9 @@ class GameBoard(object):
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
                 # Store rect in building object
                 buildings[building].setRect(rect)
+
+            #remove this (needed for image dimesions)
+            print(cellWidth, cellHeight)
                 
 
     def getGB(self):
@@ -150,7 +232,7 @@ def main():
     
     buildingsFromBuildings = Building.Buildings().getBuildingList()
     
-    gb = GameBoard(0.65, buildingsFromBuildings)
+    gb = GameBoard(1, buildingsFromBuildings)
     
     pygame.display.flip()                           #Updates the screen
     
