@@ -2,7 +2,7 @@ import pygame, sys, os
 from pygame.locals import *
 from player import Player
 import Colors
-from ChatBox import ChatBox
+from ChatBoxCopy import ChatBox
 from RadioButton import RadioGroup
 from Controls import Button
 from textWrap import *
@@ -52,12 +52,16 @@ to determine the inital screen'''
         self.gameTypeRadio.setCurrent(gameOpt)
 
         #Start Game button
-        buttonRect= Rect(0 , self.height -40, 150, 40)
+        buttonRect= Rect(0 , self.height -80*self.scale, 300*self.scale, 80*self.scale)
         self.startButton = Button(self.screen, buttonRect, "Start Game")
-
+        buttonRect= Rect(300*self.scale , self.height -80*self.scale, 300*self.scale, 80*self.scale)
+        self.backButton = Button(self.screen, buttonRect, "Back")
+        buttonRect= Rect(600*self.scale , self.height -80*self.scale, 300*self.scale, 80*self.scale)
+        self.optButton = Button(self.screen, buttonRect, "Options")
+        
         #init screens
         self.hostScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
-        self.lfgScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*2/3, self.height*2/3-self.height/10)
+        self.lfgScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*5/8, self.height*2/3-self.height/10)
         self.localScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
         
         #chat Box
@@ -65,24 +69,29 @@ to determine the inital screen'''
                            (480*self.scale, 270*self.scale))
         self.chatBox = ChatBox(self.scale, self.screen, rect)
 
-        #form fields
-        self.hostAttributes = EntryBoxSet()
-        boxRect = Rect(self.hostScreen.get_width()/3-10, self.hostScreen.get_height()/4,20,15)
-        self.hostAttributes.createNew(self.hostScreen,1 ,boxRect, self.font_op ,'1')
-        boxRect = Rect(self.hostScreen.get_width()/3-10, self.hostScreen.get_height()/4+15,20,15)
+        #Host form fields
+        self.hostAttributes = EntryBoxSet(self.scale)
+        boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4,40*self.scale,30*self.scale)
+        self.hostAttributes.createNew(self.hostScreen,1 ,boxRect, self.font_op,'1')
+        boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4+30*self.scale,40*self.scale,30*self.scale)
         self.hostAttributes.createNew(self.hostScreen,15, boxRect, self.font_op ,"Mastering MSU")
-        boxRect = Rect(self.hostScreen.get_width()/3-10, self.hostScreen.get_height()/4+30,20,15)
-        self.hostAttributes.createNew(self.hostScreen,15 ,boxRect, self.font_op ,"Player 1")
-        self.lfgAttributes = EntryBoxSet()
-        self.localAttributes = EntryBoxSet()
+        boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4+60*self.scale,40*self.scale,30*self.scale)
+        self.hostAttributes.createNew(self.hostScreen,15 ,boxRect, self.font_op,"Player 1")
 
+        #LFG form Fields
+        self.lfgAttributes = EntryBoxSet(self.scale)
+
+        #Local Form Fields
+        self.localAttributes = EntryBoxSet(self.scale)
+        boxRect = Rect(self.localScreen.get_width()/3+200*self.scale, self.localScreen.get_height()/4,40*self.scale,30*self.scale)
+        self.localAttributes.createNew(self.localScreen,1 ,boxRect, self.font_op ,'1')
         
         #Render Text
-        self.hostText = self.font_op(20, 'berlin').render("Please select game attributes.",1,(0,0,0))
-        self.lfgText = self.font_op(20, 'berlin').render("Please select a game to join.",1,(0,0,0))
-        self.playersNumText = self.font_op(10, 'berlin').render("Number of Players",1,(0,0,0))
-        self.gameNameText = self.font_op(10, 'berlin').render("Name of Game",1,(0,0,0))
-        self.hostNameText = self.font_op(10, 'berlin').render("Name of Host",1,(0,0,0))
+        self.hostText = self.font_op(40*self.scale, 'berlin').render("Please select game attributes.",1,(0,0,0))
+        self.lfgText = self.font_op(40*self.scale, 'berlin').render("Please select a game to join.",1,(0,0,0))
+        self.playersNumText = self.font_op(20*self.scale, 'berlin').render("Number of Players",1,(0,0,0))
+        self.gameNameText = self.font_op(20*self.scale, 'berlin').render("Name of Game",1,(0,0,0))
+        self.hostNameText = self.font_op(20*self.scale, 'berlin').render("Name of Host",1,(0,0,0))
 
 
         
@@ -92,11 +101,18 @@ to determine the inital screen'''
         '''determine what happens when the mouse is clicked'''
         #Takes action if a button is clicked
         mouseX, mouseY = pygame.mouse.get_pos()
+        print(mouseX, mouseY)
         if self.gameTypeRadio.checkButton(mouseX, mouseY):
             self.gameOpt = self.gameTypeRadio.getCurrent()
+            return
         if self.startButton.wasClicked(mouseX, mouseY):
             self.gameExit = True
-            self.nextScreen = 'Start'
+            self.nextScreen = 'game'
+            return
+        if self.backButton.wasClicked(mouseX, mouseY):
+            self.gameExit = True
+            self.nextScreen = 'start'
+            return
             
     def alwaysDraw(self):
         '''Screen that is always drawn no matter which radio button is selected should be run before other draw functions'''
@@ -108,6 +124,9 @@ to determine the inital screen'''
                                                  self.height/8,self.width_list[i],self.text_list[i].get_height()))
         self.gameTypeRadio.draw()
         self.startButton.redraw()
+        self.backButton.redraw()
+        self.optButton.redraw()
+        self.chatBox.redraw()
         
         
         
@@ -139,6 +158,7 @@ to determine the inital screen'''
         self.lfgScreen.fill((255,255,255))
         textRect = (((self.lfgScreen.get_width() - self.lfgText.get_width())/2, self.lfgScreen.get_height()/10))
         self.lfgScreen.blit(self.lfgText, textRect)
+        
 
 
     def localGameDraw(self):
@@ -151,7 +171,9 @@ to determine the inital screen'''
 
         textRect = textRect = ((self.localScreen.get_width()/3, self.localScreen.get_height()/4))
         self.localScreen.blit(self.playersNumText, textRect)
-        
+
+        self.localAttributes.draw()
+
 
 
     
@@ -172,6 +194,9 @@ to determine the inital screen'''
             self.gameType[self.gameOpt]()
             self.parent.blit(self.screen, (0,0))
             pygame.display.update()
+        #remove these when integrating
+        pygame.quit()
+        sys.exit()
         return self.nextScreen  
             
 
