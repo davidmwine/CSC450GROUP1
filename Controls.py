@@ -1,5 +1,6 @@
 import pygame, sys
 from pygame.locals import *
+import Colors
 
 class Controls:
 
@@ -24,7 +25,7 @@ class Controls:
 
 class Button:
 
-    def __init__(self, parent, rect, label = "", bgcolor=(255, 255, 255), fontcolor=(0, 0, 0)):
+    def __init__(self, parent, rect, label = "", bgcolor=Colors.LIGHTGRAY, fontcolor=(0, 0, 0)):
 
         self.area = parent.subsurface(rect)
         self.font = pygame.font.Font( None, 30)

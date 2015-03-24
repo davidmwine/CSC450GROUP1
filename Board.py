@@ -32,6 +32,8 @@ class GameBoard(object):
             pygame.display.set_caption("Mastering MSU")              #Name of title
         else:
             self.board = pygame.Surface(size)
+
+        self.board.fill(Colors.MAROON)    
             
         self.boardfont = pygame.font.Font(None, 16)
 
