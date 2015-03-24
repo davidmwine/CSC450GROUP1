@@ -1,6 +1,7 @@
 from socket import *
 import socketserver
 import threading
+from ServerHandler import *
 
 # Use these for binding our server
 #when ready for WAN testing replace with:
@@ -9,6 +10,8 @@ HOST = "127.0.0.1"
 PORT = 10205
 clientsList = []
 tCnt = 1
+cmd = ""
+handle = ServerHandler(cmd)
 
 class myThread (threading.Thread):
     def __init__(self, threadID, name, counter):
@@ -30,6 +33,8 @@ while(True):
     message, address = server.recvfrom(1024)
     clientsList.append([message, address, []])
     print("Receiving from client: ", message.decode())
+    handle = ServerHandler(message.decode())
+    
     
     if message.decode() == "thread":
         print("You received the thread command.")

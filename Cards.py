@@ -7,27 +7,27 @@ class Cards():
         self.height = self.parent.get_height()//4
         self.area = parent.subsurface((self.parent.get_width()//2 - self.width//2), 
                 (self.parent.get_height()//2 - self.height//2), self.width, self.height)
-        self.carddeck = []
-        self.cardsindeck = 6  #Number of cards in the deck
-        self.cardpos = 0  #Card position(index) in the deck
+        self.cardDeck = []
+        self.cardsInDeck = 6  #Number of cards in the deck
+        self.cardPos = 0  #Card position(index) in the deck
         self.initDeck()
         self.loadImages()
         
     def initDeck(self):
-        for card in range(self.cardsindeck):
-            self.carddeck.append(card)
-        random.shuffle(self.carddeck)
+        for card in range(self.cardsInDeck):
+            self.cardDeck.append(card)
+        random.shuffle(self.cardDeck)
         
-    def fontOp(self, size, fontname):  #Duplicated from msu_game.py
-        if fontname == "helvetica":
-            fontsized = pygame.font.Font(os.path.join("font","helvetica.otf"),size)
-        elif fontname == "berlin":
-            fontsized = pygame.font.Font(os.path.join("font","berlin.ttf"),size)
-        return fontsized
+    def fontOp(self, size, fontName):  #Duplicated from msu_game.py
+        if fontName == "helvetica":
+            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.otf"),size)
+        elif fontName == "berlin":
+            fontAndSize = pygame.font.Font(os.path.join("font","berlin.ttf"),size)
+        return fontAndSize
 
     def loadImages(self):
-        self.imgcard = pygame.image.load(os.path.join("img","card.png")).convert_alpha()
-        self.imgcardback = pygame.image.load(os.path.join("img","card_back.png")).convert_alpha()
+        self.imgCard = pygame.image.load(os.path.join("img","card.png")).convert_alpha()
+        self.imgCardBack = pygame.image.load(os.path.join("img","card_back.png")).convert_alpha()
 
     def cardDescription(self, card):
         if card == 0:
@@ -46,57 +46,57 @@ class Cards():
 
     def displayCard(self, card, scale):
         if card == "back":
-            self.area.blit(pygame.transform.scale(self.imgcardback,(self.width,
+            self.area.blit(pygame.transform.scale(self.imgCardBack,(self.width,
                         self.height)),(0,0))
         else:
             #Get the card text
-            self.cardtext = self.cardDescription(card) 
+            self.cardText = self.cardDescription(card) 
 
-            self.area.blit(pygame.transform.scale(self.imgcard,(self.width,
+            self.area.blit(pygame.transform.scale(self.imgCard,(self.width,
                         self.height)),(0,0))
             
             #Print text on cards   
-            linetext=""
+            lineText=""
             word = ""
-            textedge = 15 #Text boundary on card -> right side 
-            charactercounter = 0 
-            fontsize = int(27*scale)
+            textEdge = 15 #Text boundary on card -> right side 
+            characterCounter = 0 
+            fontSize = int(27*scale)
             padding = 0
-            paddingincrement = int(30*scale)
+            paddingIncrement = int(30*scale)
             margin = 7
-            textcolor = (35,35,35)
-            for character in self.cardtext:
-                charactercounter += 1
-                if charactercounter == len(self.cardtext):
-                    if len(linetext + word + character) >= textedge:
-                        textout = self.fontOp(fontsize, "berlin").render(linetext, True, textcolor)
+            textColor = (35,35,35)
+            for character in self.cardText:
+                characterCounter += 1
+                if characterCounter == len(self.cardText):
+                    if len(lineText + word + character) >= textEdge:
+                        textout = self.fontOp(fontSize, "berlin").render(lineText, True, textColor)
                         self.area.blit(textout,(margin,margin + padding))
-                        linetext = word + character
-                        padding += paddingincrement
-                        textout = self.fontOp(fontsize, "berlin").render(linetext, True, textcolor)
+                        lineText = word + character
+                        padding += paddingIncrement
+                        textout = self.fontOp(fontSize, "berlin").render(lineText, True, textColor)
                         self.area.blit(textout,(margin,margin + padding))
                     else:
-                        linetext += word + character
-                        textout = self.fontOp(fontsize, "berlin").render(linetext, True, textcolor)
+                        lineText += word + character
+                        textout = self.fontOp(fontSize, "berlin").render(lineText, True, textColor)
                         self.area.blit(textout,(margin,margin + padding))
                 if character != " ":
                     word += character
                 if character == " ":
-                    if len(linetext + word + character) >= textedge:
-                        textout = self.fontOp(fontsize, "berlin").render(linetext, True, textcolor)
+                    if len(lineText + word + character) >= textEdge:
+                        textout = self.fontOp(fontSize, "berlin").render(lineText, True, textColor)
                         self.area.blit(textout,(margin,margin + padding))
-                        linetext = word + character
-                        padding += paddingincrement
+                        lineText = word + character
+                        padding += paddingIncrement
                     else:
-                        linetext += word + character
+                        lineText += word + character
                     word = ""
     
     def drawCard(self, scale):
-        if self.cardpos == len(self.carddeck):
-            random.shuffle(self.carddeck)
-            self.cardpos = 0
-        card = self.carddeck[self.cardpos]
-        self.cardpos += 1
+        if self.cardPos == len(self.cardDeck):
+            random.shuffle(self.cardDeck)
+            self.cardPos = 0
+        card = self.cardDeck[self.cardPos]
+        self.cardPos += 1
         self.displayCard(card, scale)
         return card
         

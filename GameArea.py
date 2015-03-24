@@ -80,6 +80,7 @@ class GameArea(object):
         # Message Rectangle
         self.msgRect = pygame.Rect(440*self.scale, 314*self.scale,
                                    560*self.scale, 392*self.scale)
+        
 
 
     def getArea(self):
@@ -90,8 +91,9 @@ class GameArea(object):
         return self.scale
 
 
-    def mouseClick(self):
+    def mouseClick(self, event):
         """Takes action based on when and where mouse has been clicked"""
+
         mouseX, mouseY = pygame.mouse.get_pos()
 
         # menu not open
@@ -103,6 +105,14 @@ class GameArea(object):
                 self.typing = True
             else:
                 self.typing = False
+
+            #Scrolling in chatBox
+            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            and mouseY < self.chatBox.getTopType() and mouseY > self.chatBox.getTop():
+                if event.button == 4:
+                    self.chatBox.displayText(-1)
+                elif event.button == 5:
+                    self.chatBox.displayText(1)
 
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
@@ -160,8 +170,8 @@ class GameArea(object):
                     # resume game
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY > self.boardArea.get_height() / 2 - 80 \
-                    and mouseY < self.boardArea.get_height() / 2 - 50:
+                    and mouseY> self.boardArea.get_height() / 2 - 80 \
+                    and mouseY< self.boardArea.get_height() / 2 - 50:
                         self.popupMenu.setPopupActive(False)
                         self.refreshGameBoard()
                         if not self.diceRolled:
@@ -172,21 +182,21 @@ class GameArea(object):
                     # save game
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY > self.boardArea.get_height() / 2 - 40 \
-                    and mouseY < self.boardArea.get_height() / 2 - 10:
+                    and mouseY> self.boardArea.get_height() / 2 - 40 \
+                    and mouseY< self.boardArea.get_height() / 2 - 10:
                         pass # NEED TO IMPLEMENT
                     # game options
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY > self.boardArea.get_height() / 2 \
-                    and mouseY < self.boardArea.get_height() / 2 + 30:
+                    and mouseY> self.boardArea.get_height() / 2 \
+                    and mouseY< self.boardArea.get_height() / 2 + 30:
                         self.popupMenu.setOptionsActive(True)
                         self.popupMenu.gameOptions()
                     # exit game
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY > self.boardArea.get_height() / 2 + 40 \
-                    and mouseY < self.boardArea.get_height() / 2 + 70:
+                    and mouseY> self.boardArea.get_height() / 2 + 40 \
+                    and mouseY< self.boardArea.get_height() / 2 + 70:
                         self.popupMenu.setExitCheckActive(True)
                         self.popupMenu.exitCheck()
                 # exit double check
@@ -194,15 +204,15 @@ class GameArea(object):
                     # yes - exit
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY > self.boardArea.get_height() / 2 - 60 \
-                    and mouseY < self.boardArea.get_height() / 2 - 30:
+                    and mouseY> self.boardArea.get_height() / 2 - 60 \
+                    and mouseY< self.boardArea.get_height() / 2 - 30:
                         pygame.quit()
                         sys.exit()
                     # no - go back to menu
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY > self.boardArea.get_height() / 2 - 20 \
-                    and mouseY < self.boardArea.get_height() / 2 + 10:
+                    and mouseY> self.boardArea.get_height() / 2 - 20 \
+                    and mouseY< self.boardArea.get_height() / 2 + 10:
                         self.popupMenu.setExitCheckActive(False)
                         self.popupMenu.makePopupMenu()
 
@@ -219,8 +229,8 @@ class GameArea(object):
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \
-                and mouseY > self.boardArea.get_height() / 2 - 80 \
-                and mouseY < self.boardArea.get_height() / 2 - 50:
+                and mouseY> self.boardArea.get_height() / 2 - 80 \
+                and mouseY< self.boardArea.get_height() / 2 - 50:
                     self.popupMenu.setOptionsActive(False)
                     self.popupMenu.makePopupMenu()
 
@@ -253,6 +263,23 @@ class GameArea(object):
                 self.rollTime = 0
                 self.refreshDisplay()
         self.turn.setDiceRoll(self.roll[1])
+
+
+    def updatePlayerPosition(self):
+        '''updatePlayerPosition() determines the number of players
+        at a given position and displays a circle of each player
+        at that position'''
+        pos = {}
+        loc = {}
+        for p in self.players:
+            if p.getPosition() not in pos:
+                pos[p.getPosition()] = 1
+                loc[p.getPosition()] = 0
+            else:
+                pos[p.getPosition()] += 1
+        for p in self.players:
+            p.displayWheel(1/pos[p.getPosition()], loc[p.getPosition()])
+            loc[p.getPosition()] += 1    
         
         
     def endTurn(self):
@@ -284,7 +311,7 @@ class GameArea(object):
                     self.chatBox.typeText(CHARSCAPS[index])
                 else:
                     self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
-            elif checkCaps[K_CAPSLOCK]:
+            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
                 index = CHARS.index(chr(event.key))
                 if index < 26: #Only caps lock regular alphabet
                     self.chatBox.typeText(CHARSCAPS[index])
@@ -296,26 +323,26 @@ class GameArea(object):
 
     def play(self):
 
+        self.buildings = Buildings().getBuildingList()
+
+        # Game Board
+        self.gameBoard = GameBoard(self.scale, self.buildings, True)
+        self.refreshGameBoard()
+        self.refreshDisplay()
+
         # This data will eventually be obtained from the lobby / setup menu.
-        p1 = Player("player1", "Agriculture")
-        p2 = Player("player2", "Arts and Letters")
-        p3 = Player("player3", "Natural and Applied Sciences")
-        p4 = Player("player4", "Education")
-        p5 = Player("player5", "Health and Human Services")
-        p6 = Player("player6", "Humanities and Public Affairs")
+        p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildings, self.scale)
+        p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildings, self.scale)
+        p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildings, self.scale)
+        p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildings, self.scale)
+        p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildings, self.scale)
+        p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildings, self.scale)
 
         self.players = [p1, p2, p3, p4, p5, p6]
 
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
         self.refreshPlayersDisplay()
-        self.refreshDisplay()
-
-        self.buildings = Buildings().getBuildingList()
-
-        # Game Board
-        self.gameBoard = GameBoard(self.scale, self.buildings, True)
-        self.refreshGameBoard()
         self.refreshDisplay()
         
         # This needs to come after the game board is created, as creation of
@@ -324,12 +351,15 @@ class GameArea(object):
         
         pygame.key.set_repeat(75, 75)
         self.gameExit = False #Must be reset each time play is
+
+        print("Width: ", self.buildings[0].getRect().width)
+        print("Height: ", self.buildings[0].getRect().height)
         
         while not self.gameExit:
             self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
-                    self.mouseClick()
+                    self.mouseClick(event)
                 if event.type == KEYDOWN and not self.typing: #TEMPORARY, will later replace with proper game exit
                     if event.key == K_ESCAPE:
                         self.gameExit = True
@@ -346,15 +376,6 @@ class GameArea(object):
                     sys.exit()
                     return 0
 
-            '''
-            # I moved this method call to self.refreshGameBoard(), as it was
-            # interfering with displaying messages.
-            
-            if self.cardDraw == False and not self.popupMenu.getPopupActive():
-                self.cards.displayCard("back", self.scale)
-            elif not self.popupMenu.getPopupActive():
-                self.cards.displayCard(self.currentCard, self.scale)
-            '''    
                 
             if not self.midTurn:    # If it's a new player's turn...
                 self.playersDisplay.updatePlayer(Turn.count % len(self.players))
@@ -363,6 +384,8 @@ class GameArea(object):
                 self.player = self.players[playerIndex]
                 self.playersDisplay.selectPlayer(playerIndex)
                 self.refreshPlayersDisplay()
+                self.updatePlayerPosition()
+                self.refreshGameBoard()
                 self.midTurn = True
                 self.turn = Turn(self.player)
                 self.turn.beginTurn()        
