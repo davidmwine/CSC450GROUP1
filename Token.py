@@ -18,12 +18,15 @@ class Token(object):
         self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
                          int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
                          (self.size, self.size))
-        self.token = pygame.draw.rect(self.board, self.color, self.rect)
+        #self.token = pygame.draw.rect(self.board, self.color, self.rect)
 
     def moveToken(self, spaces):
         redrawRect = self.buildings[self.position].getRect()
         pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
+        redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
+                                             (int(redrawRect.width - 3), int(redrawRect.height - 3)))
+        self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
         self.prevX = self.rect.left
         self.prevY = self.rect.top
         self.position += spaces
@@ -31,7 +34,7 @@ class Token(object):
         self.position %= numBuildings
         self.rect = self.rect.move(int(self.buildings[self.position].getRect().right - self.scale*50 - self.prevX),\
                          int(self.buildings[self.position].getRect().bottom - self.scale*50 - self.prevY))
-        self.token = pygame.draw.rect(self.board, self.color, self.rect)
+        #self.token = pygame.draw.rect(self.board, self.color, self.rect)
 
     def drawWheel(self, percentage, location):
         angle = percentage*360 #Size of angle
