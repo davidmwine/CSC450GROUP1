@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from messageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
+from MessageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
 
 
 class Turn(object):

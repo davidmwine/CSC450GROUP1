@@ -1,17 +1,17 @@
 import pygame
 from pygame.locals import *
 import sys
-from player import Player
+from Player import Player
 from Building import Buildings
 import Colors
-from playersDisplay import PlayersDisplay
+from PlayersDisplay import PlayersDisplay
 from Board import GameBoard
 from Controls import Controls
 from ChatBox import ChatBox
 from Dice import Dice
-from popupMenu import PopupMenu
-from cards import Cards
-from turn import Turn
+from PopupMenu import PopupMenu
+from Cards import Cards
+from Turn import Turn
 
 
 class GameArea(object):
