@@ -22,12 +22,16 @@ class Token(object):
         self.clock = pygame.time.Clock()
 
     def moveToken(self, spaces):
+        pass
         count = 0
         while count != spaces:
             self.clock.tick(30)
             redrawRect = self.buildings[self.position].getRect()
             pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
             pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
+            redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
+                                             (int(redrawRect.width - 3), int(redrawRect.height - 3)))
+            self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
             self.prevX = self.rect.left
             self.prevY = self.rect.top
             self.position += 1
