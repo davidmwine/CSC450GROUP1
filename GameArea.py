@@ -163,9 +163,7 @@ class GameArea(object):
 
         # menu open
         else:
-            # not in game options
             if not self.popupMenu.getOptionsActive():
-                # not exiting game
                 if not self.popupMenu.getExitCheckActive():
                     # resume game
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
@@ -199,15 +197,15 @@ class GameArea(object):
                     and mouseY< self.boardArea.get_height() / 2 + 70:
                         self.popupMenu.setExitCheckActive(True)
                         self.popupMenu.exitCheck()
-                # exit double check
+                # exiting game - double check
                 else:
                     # yes - exit
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
                     and mouseY> self.boardArea.get_height() / 2 - 60 \
                     and mouseY< self.boardArea.get_height() / 2 - 30:
-                        pygame.quit()
-                        sys.exit()
+                        self.popupMenu.setPopupActive(False)
+                        self.gameExit = True
                     # no - go back to menu
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
@@ -219,13 +217,13 @@ class GameArea(object):
             # in game options
             else:
                 # change resolution (NOT WORKING)
-                # problem is either
-                #   1. Program not recognizing the radio button being checked
-                #   2. Not changing resolution with the returned value
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
+                    # self.area = pygame.Surface(change)
                     self.area = pygame.display.set_mode(change)
                     self.popupMenu.loadButtons()
+                    # pygame.display.update()
+                    # self.refreshDisplay()
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \
