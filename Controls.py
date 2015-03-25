@@ -31,18 +31,35 @@ class Button:
         self.font = pygame.font.Font( None, 30)
         self.width = self.area.get_width()
         self.height = self.area.get_height()
+        self.left = rect[0]
+        self.top = rect[1]
+        self.bgcolor = bgcolor
+        self.fontcolor = fontcolor
+        self.text = label
         
 
         pygame.draw.rect(self.area, bgcolor, (0,0, self.area.get_width(),
                                               self.area.get_height()))
-        self.textarea = self.font.render( label, 1, fontcolor)
+        self.textarea = self.font.render( self.text, 1, fontcolor)
         self.area.blit(self.textarea,((self.width-self.textarea.get_width())/2,
                                         (self.height - self.textarea.get_height())/2))
         pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
                                               self.area.get_height()), 5)
         #print(rect, parent)
        
-        
+    def redraw(self):
+        pygame.draw.rect(self.area, self.bgcolor, (0,0, self.area.get_width(),
+                                              self.area.get_height()))
+        self.textarea = self.font.render( self.text, 1, self.fontcolor)
+        self.area.blit(self.textarea,((self.width-self.textarea.get_width())/2,
+                                        (self.height - self.textarea.get_height())/2))
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
+                                              self.area.get_height()), 5)
+    def wasClicked(self, mouseX, mouseY):
+        print(-self.left + mouseX, "is greater" , self.width)
+        print(-self.top + mouseY, "is greater" ,self.height)
+        return (-self.left + mouseX < self.width) and\
+                (-self.top + mouseY > 0)
         
         
 
