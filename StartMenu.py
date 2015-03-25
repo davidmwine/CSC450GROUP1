@@ -258,4 +258,4 @@ class Start(object):
         if self.optionsOn:
             return "options"
         if self.gameOn:
-            return "game"
+            return "lobby"

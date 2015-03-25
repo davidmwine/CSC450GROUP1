@@ -1,6 +1,6 @@
 import pygame, sys, os
 from pygame.locals import *
-from textWrap import *
+from TextWrap import *
 
 
 class EntryBox():

@@ -1,11 +1,11 @@
 import pygame, sys, os
 from pygame.locals import *
-from player import Player
+from Player import Player
 import Colors
 from ChatBoxCopy import ChatBox
 from RadioButton import RadioGroup
 from Controls import Button
-from textWrap import *
+from TextWrap import *
 from EntryBox import EntryBoxSet
 
 
@@ -100,8 +100,7 @@ to determine the inital screen'''
     def buttonClick(self):
         '''determine what happens when the mouse is clicked'''
         #Takes action if a button is clicked
-        mouseX, mouseY = pygame.mouse.get_pos()
-        print(mouseX, mouseY)
+        mouseX, mouseY = pygame.mouse.get_pos() 
         if self.gameTypeRadio.checkButton(mouseX, mouseY):
             self.gameOpt = self.gameTypeRadio.getCurrent()
             return
@@ -195,8 +194,6 @@ to determine the inital screen'''
             self.parent.blit(self.screen, (0,0))
             pygame.display.update()
         #remove these when integrating
-        pygame.quit()
-        sys.exit()
         return self.nextScreen  
             
 
