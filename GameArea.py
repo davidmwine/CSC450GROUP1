@@ -25,14 +25,14 @@ class GameArea(object):
         is a 1920x1080 screen.
         """
 
-        self.width = int(scale*1920)
-        self.height = int(scale*1080)
-        self.scale = scale
         self.parent = parent
+        self.scale = scale
+        self.width = int(self.scale*1920)
+        self.height = int(self.scale*1080)
         
         self.clock = pygame.time.Clock()
         self.playerIndex = 0
-        self.roll = (0,0)   # self.roll[1] is the value of the roll
+        self.roll = (0,0,0)   # self.roll[1] and self.roll[2] are the numbers on the dice
         self.rollTime = 500 #Interval between dice roll updates in mS
         
         self.players = []       # List of players will be added in play()
@@ -53,8 +53,12 @@ class GameArea(object):
             pygame.init()
             self.area = pygame.display.set_mode((self.width, self.height))
 
-        self.font = pygame.font.Font(None, int(50*self.scale))    
-        
+        self.font = pygame.font.Font(None, int(50*self.scale))
+
+        self.initializeDisplay()
+
+
+    def initializeDisplay(self):    
         # Game Board Area
         rect = pygame.Rect((0, 0), (1440*self.scale, 1020*self.scale))
         self.boardArea = self.area.subsurface(rect)
@@ -221,11 +225,7 @@ class GameArea(object):
                 # change resolution (NOT WORKING)
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
-                    # self.area = pygame.Surface(change)
-                    self.area = pygame.display.set_mode(change)
-                    self.popupMenu.loadButtons()
-                    # pygame.display.update()
-                    # self.refreshDisplay()
+                    self.resizeScreen(change)
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \
@@ -240,6 +240,7 @@ class GameArea(object):
                            (1400*self.scale, 980*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
         self.cards.displayCard("back", self.scale)
+        self.dice.displayDice(self.roll[1], self.roll[2])
 
 
     def refreshPlayersDisplay(self):
@@ -254,6 +255,33 @@ class GameArea(object):
         pygame.display.update()
 
 
+    def resizeScreen(self, newSize):
+        """
+        Resizes the screen and redraws all the components at the new scale.
+        Called when the user selects a new resolution option.
+        """
+        self.area = pygame.display.set_mode(newSize)
+        self.scale = newSize[0] / 1920
+        self.width = int(self.scale*1920)
+        self.height = int(self.scale*1080)
+        self.initializeDisplay()
+        
+        self.gameBoard = GameBoard(self.scale, self.buildings, True)
+        for player in self.players:
+            player.createToken(self.gameBoard.getGB(), self.scale)
+        self.updatePlayerPosition()
+        self.refreshGameBoard()
+        
+        self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
+        self.playersDisplay.selectPlayer(self.playerIndex)
+        self.refreshPlayersDisplay()
+        
+        Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        self.popupMenu.makePopupMenu()
+        self.popupMenu.gameOptions()
+        self.popupMenu.loadButtons()
+
+
     def rollDice(self):
         while self.roll[0]>0:
             self.clock.tick(30)
@@ -262,7 +290,7 @@ class GameArea(object):
                 self.roll = self.dice.roll()
                 self.rollTime = 0
                 self.refreshDisplay()
-        self.turn.setDiceRoll(self.roll[1])
+        self.turn.setDiceRoll(self.roll[1] + self.roll[2])
         self.move()
 
     def move(self):
@@ -272,11 +300,11 @@ class GameArea(object):
         self.refreshDisplay()
         self.updatePlayerPosition()
         self.refreshGameBoard()
-        while count < self.roll[1]:
+        while count < self.roll[1] + self.roll[2]:
             self.clock.tick(30)
             self.turn.moveToken()
             count += 1
-            if count == self.roll[1]:
+            if count == self.roll[1] + self.roll[2]:
                 self.midRoll = False
                 self.refreshDisplay()
                 self.updatePlayerPosition()
@@ -286,7 +314,7 @@ class GameArea(object):
             self.refreshDisplay()
             self.updatePlayerPosition()
             self.refreshGameBoard()
-            if count < self.roll[1]:
+            if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
                 pygame.time.wait(1000)
@@ -313,7 +341,7 @@ class GameArea(object):
         for p in range(len(self.players)):
             if not (p == self.playerIndex and self.midRoll):
                 self.players[p].displayWheel(1/pos[self.players[p].getPosition()], loc[self.players[p].getPosition()])
-                loc[self.players[p].getPosition()] += 1    
+                loc[self.players[p].getPosition()] += 1
         
         
     def endTurn(self):
@@ -382,12 +410,10 @@ class GameArea(object):
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
         Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        Turn.initializeTurnCount()
         
         pygame.key.set_repeat(75, 75)
         self.gameExit = False #Must be reset each time play is
-
-        print("Width: ", self.buildings[0].getRect().width)
-        print("Height: ", self.buildings[0].getRect().height)
         
         while not self.gameExit:
             self.clock.tick(30)

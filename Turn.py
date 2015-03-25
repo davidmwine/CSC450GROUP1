@@ -18,13 +18,17 @@ class Turn(object):
 
 
     @staticmethod
+    def initializeTurnCount():
+        Turn.count = -1     # This will be incremented to 0 for the first turn.
+
+
+    @staticmethod
     def setStaticVariables(scale, parent, buildings):
         """
         These variables are used by and related to the other methods in this
         class, but are not closely related to individual players' turns
         (i.e., Turn instances).
         """
-        Turn.count = -1     # This will be incremented to 0 for the first turn.
         Turn.scale = scale
         Turn.parent = parent
         Turn.buildings = buildings

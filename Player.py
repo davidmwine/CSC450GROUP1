@@ -1,5 +1,4 @@
 import Colors
-from Building import *
 from Token import Token
 from Board import GameBoard
 
@@ -7,6 +6,10 @@ from Board import GameBoard
 class Player(object):
 
     def __init__(self, name, college, board, bldgs, scale = 1):
+        """
+        'bldgs' should be a list of all the buildings, with attributes
+        initialized from the creation of the game board.
+        """
         self.scale = scale
         self.board = board
         self.bldgs = bldgs
@@ -16,7 +19,6 @@ class Player(object):
         self.points = 0
         self.pointsPerRound = 0
         self.buildings = []     # buildings that the player owns
-        self.buildingList = Buildings().getBuildingList()
         self.position = 0
         self.playerToken = Token(self.getColor(), self.position, self.board, self.bldgs, self.scale)
 
@@ -87,9 +89,10 @@ class Player(object):
         else:
             return -1   # or whatever we want to do here...
 
+
     def increasePosition(self, spaces):
         self.position += spaces
-        numBuildings = Buildings().getNumBuildings()
+        numBuildings = len(self.bldgs)
         if self.position > numBuildings:    # if we've passed Carrington
             self.points += self.pointsPerRound
             self.dollars += 200000
@@ -103,7 +106,17 @@ class Player(object):
         self.playerToken.clearToken()
 
 
+    def createToken(self, board, scale):
+        """Used for re-creating the tokens after the screen has been resized."""
+        self.playerToken = Token(self.getColor(), self.position, board, self.bldgs, scale)
+
+    def startToken(self):
+        self.playerToken.displayToken()
+
+    def removeToken(self):
+        self.playerToken.clearToken()
+
     def displayWheel(self, percentage, location):
         self.playerToken.drawWheel(percentage, location)
 
-
+        
