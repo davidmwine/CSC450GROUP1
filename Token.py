@@ -19,19 +19,27 @@ class Token(object):
                          int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
                          (self.size, self.size))
         self.token = pygame.draw.rect(self.board, self.color, self.rect)
+        self.clock = pygame.time.Clock()
 
     def moveToken(self, spaces):
-        redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
-        pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
-        self.prevX = self.rect.left
-        self.prevY = self.rect.top
-        self.position += spaces
-        numBuildings = Buildings().getNumBuildings()
-        self.position %= numBuildings
-        self.rect = self.rect.move(int(self.buildings[self.position].getRect().right - self.scale*50 - self.prevX),\
-                         int(self.buildings[self.position].getRect().bottom - self.scale*50 - self.prevY))
-        self.token = pygame.draw.rect(self.board, self.color, self.rect)
+        count = 0
+        while count != spaces:
+            self.clock.tick(30)
+            redrawRect = self.buildings[self.position].getRect()
+            pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
+            pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
+            self.prevX = self.rect.left
+            self.prevY = self.rect.top
+            self.position += 1
+            numBuildings = Buildings().getNumBuildings()
+            self.position %= numBuildings
+            count += 1
+            self.rect = self.rect.move(int(self.buildings[self.position].getRect().right - self.scale*50 - self.prevX),\
+                             int(self.buildings[self.position].getRect().bottom - self.scale*50 - self.prevY))
+            self.token = pygame.draw.rect(self.board, self.color, self.rect)
+            pygame.time.delay(250)
+            print("MOVED A SPACE")
+            pygame.display.update()
 
     def drawWheel(self, percentage, location):
         angle = percentage*360 #Size of angle
