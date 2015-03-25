@@ -3,14 +3,16 @@ import Colors
 import pygame
 from pygame.locals import *
 import sys
+import os
 
 class Building(object):
 
-    def __init__(self, name, sequence, purpose):
+    def __init__(self, name, sequence, purpose, image):
         self.name = name            # Name of Building
         self.sequence = sequence    # Sequence number of space
         self.purpose = purpose      # Purpose of building (academic, sports, support, special)
         self.rect = None            # Rect object where its space is located on the board
+        self.image = pygame.image.load(os.path.join("img","buildings",image))
 
         if purpose == 'academic':
             self.color = Colors.LIGHTGRAY
@@ -24,6 +26,9 @@ class Building(object):
         elif purpose == 'support':
             self.color = Colors.WHITE
             self.buildingColor = Colors.WHITE
+
+    def getImage(self):
+        return self.image
 
     def getName(self): 
         return self.name
@@ -57,8 +62,8 @@ class Building(object):
         
 
 class OwnableBuilding(Building):    
-    def __init__(self, name, sequence, purpose, price=200000):
-        Building.__init__(self, name, sequence, purpose)
+    def __init__(self, name, sequence, purpose, image, price=200000):
+        Building.__init__(self, name, sequence, purpose, image)
         self.owner = None           # Which dean 'owns' building
         self.price = price          # Inital purchase price
         self.renovation = False     # Under Renovation (similar to mortgage)
@@ -84,8 +89,8 @@ class OwnableBuilding(Building):
 
 class NonAcademicBuilding(OwnableBuilding):
 
-    def __init__(self, name, sequence, purpose, price=200000):
-        OwnableBuilding.__init__(self, name, sequence, purpose)
+    def __init__(self, name, sequence, purpose, image, price=200000):
+        OwnableBuilding.__init__(self, name, sequence, purpose, image)
         self.costNonAcademic = 10000     # Cost to other deans for non-academic building fees
 
     def getFeeAmount(self):
@@ -94,8 +99,8 @@ class NonAcademicBuilding(OwnableBuilding):
     
 class AcademicBuilding(OwnableBuilding):
 
-    def __init__(self, name, sequence, price=200000):
-        OwnableBuilding.__init__(self, name, sequence, 'academic')
+    def __init__(self, name, sequence, image, price=200000):
+        OwnableBuilding.__init__(self, name, sequence, 'academic', image)
         self.degreeLvl = 'Associate'
         self.baseGrads = 10             # Base number of grad points earned
         self.costAssociate = 10000      # Cost to other deans for associate lvl classes
@@ -129,100 +134,117 @@ class Buildings(object):
         self.buildings = []
         
         self.buildings.append( Building('Carrington Hall',
-                                        len(self.buildings), 'special') )
+                                        len(self.buildings), 'special',
+                                        "CarringtonHall.png") )
         
         self.buildings.append( AcademicBuilding('Siceluff Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "SiceluffHall.png") )
         
         self.buildings.append( AcademicBuilding('Cheek Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "CheekHall.png") )
         
         self.buildings.append( NonAcademicBuilding('University Bookstore',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "UniversityBookstore.png") )
         
         self.buildings.append( NonAcademicBuilding('Hammons Field',
-                                        len(self.buildings), 'sports') )
+                                        len(self.buildings), 'sports',
+                                        "HammonsField.png") )
         
         self.buildings.append( AcademicBuilding('Greenwood Lab School',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "GreenwoodLabSchool.png") )
         
         self.buildings.append( NonAcademicBuilding('Foster Recreation Center',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "FosterRecreationCenter.png") )
         
         self.buildings.append( NonAcademicBuilding('Juanita K Hammons',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "JuanitaKHammons.png") )
         
         self.buildings.append( Building('Bear Park North',
-                                        len(self.buildings), 'special') )
+                                        len(self.buildings), 'special',
+                                        "BearParkNorth.png") )
         
         self.buildings.append( NonAcademicBuilding('Hammons Student Center',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "HammonsStudentCenter.png") )
         
         self.buildings.append( AcademicBuilding('Brick City',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "BrickCity.png") )
         
         self.buildings.append( AcademicBuilding('Kings St Annex',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "KingsStreetAnnex.png") )
         
         self.buildings.append( NonAcademicBuilding('JQH Arena',
-                                        len(self.buildings), 'sports') )
+                                        len(self.buildings), 'sports',
+                                        "JQHArena.png") )
         
         self.buildings.append( NonAcademicBuilding('Forsythe Athletics Center',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "ForsytheAthleticsCenter.png") )
         
         self.buildings.append( AcademicBuilding('McDonald Arena',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "McDonaldArena.png") )
         
         self.buildings.append( NonAcademicBuilding('Plaster Student Union',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "PlasterStudentUnion.png") )
         
         self.buildings.append( Building('Bear Park South',
-                                        len(self.buildings), 'special') )
+                                        len(self.buildings), 'special',
+                                        "BearParkSouth.png") )
         
         self.buildings.append( NonAcademicBuilding('Meyer Library',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "MeyerLibrary.png") )
         
         self.buildings.append( AcademicBuilding('Glass Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "GlassHall.png") )
         
         self.buildings.append( AcademicBuilding('Strong Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "StrongHall.png") )
         
         self.buildings.append( NonAcademicBuilding('Allison South Stadium',
-                                        len(self.buildings), 'sports') )
+                                        len(self.buildings), 'sports',
+                                        "AllisonSouthStadium.png") )
         
         self.buildings.append( AcademicBuilding('Kemper Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "KemperHall.png") )
         
         self.buildings.append( AcademicBuilding('Temple Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "TempleHall.png") )
         
         self.buildings.append( NonAcademicBuilding('Central Stores & Maintenance',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "CentralMaintenance.png") )
         
         self.buildings.append( Building('Accreditation Review',
-                                        len(self.buildings), 'special') )
+                                        len(self.buildings), 'special',
+                                        "AccreditationReview.png") )
 
         self.buildings.append( NonAcademicBuilding('Power House',
-                                        len(self.buildings), 'support') )
+                                        len(self.buildings), 'support',
+                                        "PowerHouse.png") )
         
         self.buildings.append( AcademicBuilding('Karls Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "KarlsHall.png") )
         
         self.buildings.append( AcademicBuilding('Craig Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "CraigHall.png") )
         
         self.buildings.append( NonAcademicBuilding('Plaster Sports Complex',
-                                        len(self.buildings), 'sports') )
+                                        len(self.buildings), 'sports',
+                                        "PlasterSportsComplex.png") )
         
         self.buildings.append( AcademicBuilding('Ellis Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "EllisHall.png") )
         
         self.buildings.append( AcademicBuilding('Hill Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "HillHall.png") )
 
         self.buildings.append( AcademicBuilding('Pummill Hall',
-                                        len(self.buildings)) )
+                                        len(self.buildings), "PummillHall.png") )
 
 
     def getBuildingList(self):
