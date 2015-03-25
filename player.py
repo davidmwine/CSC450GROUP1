@@ -6,7 +6,7 @@ from Board import GameBoard
 
 class Player(object):
 
-    def __init__(self, name, college,board, bldgs, scale = 1):
+    def __init__(self, name, college, board, bldgs, scale = 1):
         self.scale = scale
         self.board = board
         self.bldgs = bldgs
@@ -96,8 +96,6 @@ class Player(object):
         self.position %= numBuildings
         self.playerToken.moveToken(spaces)
 
-    def getPosition(self):
-        return self.position
 
     def displayWheel(self, percentage, location):
         self.playerToken.drawWheel(percentage, location)

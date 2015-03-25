@@ -1,29 +1,29 @@
 import pygame
 from pygame.locals import *
 import sys
-from Player import Player
+from player import Player
 from Building import Buildings
 import Colors
-from PlayersDisplay import PlayersDisplay
+from playersDisplay import PlayersDisplay
 from Board import GameBoard
 from Controls import Controls
 from ChatBox import ChatBox
 from Dice import Dice
-from PopupMenu import PopupMenu
-from Cards import Cards
-from Turn import Turn
+from popupMenu import PopupMenu
+from cards import Cards
+from turn import Turn
 
 
 class GameArea(object):
 
 
     def __init__(self, parent=False, scale=1):
-        '''Overall function for the Game Area Screen.  Takes a parent
-surface and scale as optional paramaters.  If no parent is
-passed this will be the pygame screen, else it drawn on the
-main screen.  Scale defaults to one, and must be one or less
-and scales the screen accordingly where 1 is a 1920x1080 screen'''
-
+        """Overall function for the Game Area Screen.  Takes a parent surface
+        and scale as optional paramaters.  If no parent is passed this will be
+        the pygame screen, else it drawn on the main screen.  Scale defaults to
+        one, and must be one or less and scales the screen accordingly where 1
+        is a 1920x1080 screen.
+        """
 
         self.width = int(scale*1920)
         self.height = int(scale*1080)
@@ -74,7 +74,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         # Popup options menu
         self.popupMenu = PopupMenu(self.boardArea)
 
-        #Cards
+        # Cards
         self.cards = Cards(self.boardArea)
 
         # Message Rectangle
@@ -93,14 +93,15 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
 
     def mouseClick(self, event):
         """Takes action based on when and where mouse has been clicked"""
-        mouseX,mouseY= pygame.mouse.get_pos()
+
+        mouseX, mouseY = pygame.mouse.get_pos()
 
         # menu not open
         if not self.popupMenu.getPopupActive():             
             #chatBox
             if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
-            and mouseY> self.chatBox.getTopType()\
-            and mouseY< self.chatBox.getBottomType():
+            and mouseY > self.chatBox.getTopType()\
+            and mouseY < self.chatBox.getBottomType():
                 self.typing = True
             else:
                 self.typing = False
@@ -115,14 +116,14 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
 
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
-            and mouseY> self.height - self.controls.getHeight():
+            and mouseY > self.height - self.controls.getHeight():
                 self.popupMenu.setPopupActive(True)
                 self.popupMenu.makePopupMenu()
 
             # Roll Button
             if mouseX > self.controls.getWidth()/4\
             and mouseX < self.controls.getWidth()/2\
-            and mouseY> self.height-self.controls.getHeight():
+            and mouseY > self.height-self.controls.getHeight():
                 self.roll = (1,0)
                 self.diceRolled = True
                 self.rollDice()
@@ -238,6 +239,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         rect = pygame.Rect((20*self.scale, 20*self.scale),
                            (1400*self.scale, 980*self.scale))
         self.area.blit(self.gameBoard.getGB(), rect)
+        self.cards.displayCard("back", self.scale)
 
 
     def refreshPlayersDisplay(self):
@@ -250,6 +252,18 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
         if self.parent:    
             self.parent.blit(self.area, (0,0))
         pygame.display.update()
+
+
+    def rollDice(self):
+        while self.roll[0]>0:
+            self.clock.tick(30)
+            self.rollTime += self.clock.get_time()
+            if self.rollTime>250:
+                self.roll = self.dice.roll()
+                self.rollTime = 0
+                self.refreshDisplay()
+        self.turn.setDiceRoll(self.roll[1])
+
 
     def updatePlayerPosition(self):
         '''updatePlayerPosition() determines the number of players
@@ -265,17 +279,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                 pos[p.getPosition()] += 1
         for p in self.players:
             p.displayWheel(1/pos[p.getPosition()], loc[p.getPosition()])
-            loc[p.getPosition()] += 1
-
-    def rollDice(self):
-        while self.roll[0]>0:
-            self.clock.tick(30)
-            self.rollTime += self.clock.get_time()
-            if self.rollTime>250:
-                self.roll = self.dice.roll()
-                self.rollTime = 0
-                self.refreshDisplay()
-        self.turn.setDiceRoll(self.roll[1])
+            loc[p.getPosition()] += 1    
         
         
     def endTurn(self):
@@ -315,6 +319,7 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                     self.chatBox.typeText(chr(event.key))
             else:
                 self.chatBox.typeText(chr(event.key))
+
 
     def play(self):
 
@@ -371,10 +376,6 @@ and scales the screen accordingly where 1 is a 1920x1080 screen'''
                     sys.exit()
                     return 0
 
-            if self.cardDraw == False and not self.popupMenu.getPopupActive():
-                self.cards.displayCard("back", self.scale)
-            elif not self.popupMenu.getPopupActive():
-                self.cards.displayCard(self.currentCard, self.scale)
                 
             if not self.midTurn:    # If it's a new player's turn...
                 self.playersDisplay.updatePlayer(Turn.count % len(self.players))

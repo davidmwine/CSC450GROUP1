@@ -8,13 +8,11 @@ class Dice():
     #parent is the game area
     def __init__(self, parent):
         self.parent = parent
-        
-        
-        self.parent = parent
         self.width = self.parent.get_width()//8
         self.height = self.parent.get_width()//16
-        self.area = parent.subsurface((self.parent.get_width()//2) - (self.width//2), (3*self.parent.get_height()//4) - (self.height//2),
-                    self.width,self.height)
+        self.area = parent.subsurface((self.parent.get_width()//2) - (self.width//2),
+                                      (23*self.parent.get_height()//32) - (self.height//2),
+                                      self.width, self.height)
         #self._width = int(self._area.get_width())
         self.halfWidth = self.width//2
         #self._height = int(self._area.get_height())

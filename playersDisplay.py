@@ -4,7 +4,7 @@ from pygame.locals import *
 import sys
 import os
 
-from Player import Player
+from player import Player
 import Colors
 
 
