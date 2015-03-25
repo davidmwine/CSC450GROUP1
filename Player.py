@@ -99,6 +99,12 @@ class Player(object):
         self.position %= numBuildings
         self.playerToken.moveToken(spaces)
 
+    def startToken(self):
+        self.playerToken.displayToken()
+
+    def removeToken(self):
+        self.playerToken.clearToken()
+
 
     def createToken(self, board, scale):
         """Used for re-creating the tokens after the screen has been resized."""

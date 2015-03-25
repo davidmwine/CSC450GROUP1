@@ -293,7 +293,6 @@ class GameArea(object):
         self.turn.setDiceRoll(self.roll[1] + self.roll[2])
         self.move()
 
-
     def move(self):
         count = 0
         self.midRoll = True

@@ -15,23 +15,42 @@ class Token(object):
         self.buildings = buildings
         self.scale = scale
         self.size = int(self.scale*40)
-        self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
+        '''self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
                          int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
                          (self.size, self.size))
-        self.token = pygame.draw.rect(self.board, self.color, self.rect)
+        self.token = pygame.draw.rect(self.board, self.color, self.rect)'''
 
     def moveToken(self, spaces):
         redrawRect = self.buildings[self.position].getRect()
         pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
+        redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
+                                         (int(redrawRect.width - 3), int(redrawRect.height - 3)))
+        self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
         self.prevX = self.rect.left
         self.prevY = self.rect.top
-        self.position += spaces
+        self.position += 1
         numBuildings = Buildings().getNumBuildings()
         self.position %= numBuildings
-        self.rect = self.rect.move(int(self.buildings[self.position].getRect().right - self.scale*50 - self.prevX),\
-                         int(self.buildings[self.position].getRect().bottom - self.scale*50 - self.prevY))
+        self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
+                         int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
+                         (self.size, self.size))
         self.token = pygame.draw.rect(self.board, self.color, self.rect)
+
+    def displayToken(self):
+        self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
+                         int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
+                         (self.size, self.size))
+        self.token = pygame.draw.rect(self.board, self.color, self.rect)
+
+    def clearToken(self):
+        redrawRect = self.buildings[self.position].getRect()
+        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
+        pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
+        redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
+                                         (int(redrawRect.width - 3), int(redrawRect.height - 3)))
+        self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
+        
 
     def drawWheel(self, percentage, location):
         angle = percentage*360 #Size of angle
@@ -42,5 +61,10 @@ class Token(object):
                          (self.size, self.size))
         
         pygame.draw.arc(self.board, self.color, wheelRect, startAng*math.pi/180, stopAng*math.pi/180, self.size//2)
+        '''for d in range(int(startAng), int(stopAng)):
+            pygame.draw.line(self.board, self.color, (self.buildings[self.position].getRect().left + 30*self.scale, \
+                                                      self.buildings[self.position].getRect().bottom - 30*self.scale),\
+                             (self.buildings[self.position].getRect().left + 30*self.scale + 20*self.scale*math.cos(d*math.pi/180),\
+                              self.buildings[self.position].getRect().bottom - 30*self.scale + 20*self.scale*math.sin(d*math.pi/180)), 1)'''
         
         

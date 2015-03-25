@@ -5,9 +5,12 @@ import sys
 from RulesMenu import Rules
 from StartMenu import Start
 from OptionsMenu import Options
-from GameArea import GameArea 
+from GameArea import GameArea
+from Sound import Sound
+from lobby import Lobby
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
+pygame.mixer.pre_init(44100, -16, 2, 2048) # Setup mixer to avoid sound lag
 pygame.init()
 
 class Game(object):
@@ -44,26 +47,36 @@ class Game(object):
         self.nextScreen = "start"
         self.splashShow = False
 
+        self.intro = Sound('intro')
+        self.click = Sound('click')
+        self.bgMusic = Sound('start_menu')
+
         #self.round_number = 1
 
     def fontOp(self, size, fontName):  #Pick font size and type
         if fontName == "helvetica":
-            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.otf"),size) # "font" is directory for the font file
+            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.otf"),int(size)) # "font" is directory for the font file
         elif fontName == "berlin":
-            fontAndSize = pygame.font.Font(os.path.join("font","berlin.ttf"),size)
+            fontAndSize = pygame.font.Font(os.path.join("font","berlin.ttf"),int(size))
         return fontAndSize
         
     def start(self):
-        startMenu = Start(self.screen, self.fontOp, self.yOffset)
-        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset)
+        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.click, self.bgMusic)
+        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.click, self.bgMusic)
         playGame = GameArea(self.screen, self.ratio)
+        lobby = Lobby(self.fontOp, self.screen, self.ratio)
         
         while True:
             if playGame.getScale() != self.screen.get_height()/1080:
                 self.ratio = self.screen.get_height()/1080
                 playGame = GameArea(self.screen, self.ratio)
-            if self.nextScreen == "start":
+                lobby = Lobby(self.fontOp, self.screen, self.ratio)
+            if self.nextScreen == "game":
+                self.nextScreen = playGame.play()
+            if self.nextScreen == "lobby":
+                self.nextScreen = lobby.run()
+            elif self.nextScreen == "start":
                 if self.splashShow:
                     startMenu.splash()
                     self.splashShow = False
@@ -76,8 +89,7 @@ class Game(object):
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()
-            elif self.nextScreen == "game":
-                self.nextScreen = playGame.play()
+            
                 
                 
 Game().start()
