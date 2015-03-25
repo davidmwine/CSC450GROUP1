@@ -31,6 +31,7 @@ class GameArea(object):
         self.parent = parent
         
         self.clock = pygame.time.Clock()
+        self.playerIndex = 0
         self.roll = (0,0)   # self.roll[1] is the value of the roll
         self.rollTime = 500 #Interval between dice roll updates in mS
         
@@ -44,6 +45,7 @@ class GameArea(object):
         self.gameExit = False
         self.cardDraw = False
         self.diceRolled = False
+        self.midRoll = False
         
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
@@ -261,6 +263,38 @@ class GameArea(object):
                 self.rollTime = 0
                 self.refreshDisplay()
         self.turn.setDiceRoll(self.roll[1])
+        self.move()
+
+    def move(self):
+        count = 0
+        self.midRoll = True
+        self.players[self.playerIndex].startToken()
+        self.refreshDisplay()
+        self.updatePlayerPosition()
+        self.refreshGameBoard()
+        while count < self.roll[1]:
+            self.clock.tick(30)
+            self.turn.moveToken()
+            count += 1
+            if count == self.roll[1]:
+                self.midRoll = False
+                self.refreshDisplay()
+                self.updatePlayerPosition()
+                self.refreshGameBoard()
+                pygame.time.wait(250)
+                self.players[self.playerIndex].startToken()
+            self.refreshDisplay()
+            self.updatePlayerPosition()
+            self.refreshGameBoard()
+            if count < self.roll[1]:
+                pygame.time.wait(250)
+            else:
+                pygame.time.wait(1000)
+        self.players[self.playerIndex].removeToken()
+        self.refreshDisplay()
+        self.updatePlayerPosition()
+        self.refreshGameBoard()
+        self.turn.handleLanding()
 
 
     def updatePlayerPosition(self):
@@ -269,15 +303,17 @@ class GameArea(object):
         at that position'''
         pos = {}
         loc = {}
-        for p in self.players:
-            if p.getPosition() not in pos:
-                pos[p.getPosition()] = 1
-                loc[p.getPosition()] = 0
-            else:
-                pos[p.getPosition()] += 1
-        for p in self.players:
-            p.displayWheel(1/pos[p.getPosition()], loc[p.getPosition()])
-            loc[p.getPosition()] += 1    
+        for p in range(len(self.players)):
+            if not (p == self.playerIndex and self.midRoll):
+                if self.players[p].getPosition() not in pos:
+                    pos[self.players[p].getPosition()] = 1
+                    loc[self.players[p].getPosition()] = 0
+                else:
+                    pos[self.players[p].getPosition()] += 1
+        for p in range(len(self.players)):
+            if not (p == self.playerIndex and self.midRoll):
+                self.players[p].displayWheel(1/pos[self.players[p].getPosition()], loc[self.players[p].getPosition()])
+                loc[self.players[p].getPosition()] += 1    
         
         
     def endTurn(self):
@@ -378,9 +414,9 @@ class GameArea(object):
             if not self.midTurn:    # If it's a new player's turn...
                 self.playersDisplay.updatePlayer(Turn.count % len(self.players))
                 Turn.count += 1
-                playerIndex = Turn.count % len(self.players)
-                self.player = self.players[playerIndex]
-                self.playersDisplay.selectPlayer(playerIndex)
+                self.playerIndex = Turn.count % len(self.players)
+                self.player = self.players[self.playerIndex]
+                self.playersDisplay.selectPlayer(self.playerIndex)
                 self.refreshPlayersDisplay()
                 self.updatePlayerPosition()
                 self.refreshGameBoard()

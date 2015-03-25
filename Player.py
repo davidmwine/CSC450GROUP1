@@ -96,6 +96,12 @@ class Player(object):
         self.position %= numBuildings
         self.playerToken.moveToken(spaces)
 
+    def startToken(self):
+        self.playerToken.displayToken()
+
+    def removeToken(self):
+        self.playerToken.clearToken()
+
 
     def displayWheel(self, percentage, location):
         self.playerToken.drawWheel(percentage, location)
