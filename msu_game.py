@@ -5,9 +5,11 @@ import sys
 from RulesMenu import Rules
 from StartMenu import Start
 from OptionsMenu import Options
-from GameArea import GameArea 
+from GameArea import GameArea
+from Sound import Sound
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
+pygame.mixer.pre_init(44100, -16, 2, 2048) # Setup mixer to avoid sound lag
 pygame.init()
 
 class Game(object):
@@ -44,6 +46,10 @@ class Game(object):
         self.nextScreen = "start"
         self.splashShow = False
 
+        self.intro = Sound('intro')
+        self.click = Sound('click')
+        self.bgMusic = Sound('start_menu')
+
         #self.round_number = 1
 
     def fontOp(self, size, fontName):  #Pick font size and type
@@ -54,9 +60,9 @@ class Game(object):
         return fontAndSize
         
     def start(self):
-        startMenu = Start(self.screen, self.fontOp, self.yOffset)
-        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset)
+        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.click, self.bgMusic)
+        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.click, self.bgMusic)
         playGame = GameArea(self.screen, self.ratio)
         
         while True:
