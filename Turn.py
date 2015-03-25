@@ -58,17 +58,18 @@ class Turn(object):
         """
         print("Dice Rolled:", roll)
         self.roll = roll
-        self.moveToken()
+        pygame.time.wait(1000)
+        #self.moveToken()
 
 
     def moveToken(self):
         """Advances the token.  Called after the dice roll.""" 
-        pygame.time.wait(1000)
-        self.player.increasePosition(self.roll)
-        position = self.player.getPosition()
-        self.building = Turn.buildings[position]
-        print("Token landed on", self.building.getName())
-        self.handleLanding()
+        #pygame.time.wait(1000)
+        self.player.increasePosition(1)
+        #position = self.player.getPosition()
+        #self.building = Turn.buildings[position]
+        #print("Token landed on", self.building.getName())
+        #self.handleLanding()
 
 
     def handleLanding(self):
@@ -76,6 +77,9 @@ class Turn(object):
         This method handles what comes next after a player lands on a space,
         (e.g., buying the building or paying fees to another player).
         """
+        position = self.player.getPosition()
+        self.building = Turn.buildings[position]
+        print("Token landed on", self.building.getName())
         if self.building.getPurpose() == "special":
             (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                 Turn.font, "Special message about " + self.building.getName())
