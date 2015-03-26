@@ -1,11 +1,18 @@
-from globals import Globals
-from building import Building
-from buildings import Buildings
+import Colors
+from Token import Token
+from Board import GameBoard
 
 
 class Player(object):
 
-    def __init__(self, name, college):
+    def __init__(self, name, college, board, bldgs, scale = 1):
+        """
+        'bldgs' should be a list of all the buildings, with attributes
+        initialized from the creation of the game board.
+        """
+        self.scale = scale
+        self.board = board
+        self.bldgs = bldgs
         self.name = name
         self.college = college
         self.dollars = 1500000
@@ -13,6 +20,7 @@ class Player(object):
         self.pointsPerRound = 0
         self.buildings = []     # buildings that the player owns
         self.position = 0
+        self.playerToken = Token(self.getColor(), self.position, self.board, self.bldgs, self.scale)
 
     def getName(self):
         return self.name
@@ -21,10 +29,10 @@ class Player(object):
         return self.college
 
     def getCollegeAbbr(self):
-        return Globals.collegeAbbr.get(self.college, "")    # look up in dictionary
+        return Colors.COLLEGEABBR.get(self.college, "")    # look up in dictionary
 
     def getColor(self):
-        return Globals.collegeColors.get(self.college, "")
+        return Colors.COLLEGECOLORS.get(self.college, "")
 
     def getDollars(self):
         return self.dollars
@@ -81,12 +89,34 @@ class Player(object):
         else:
             return -1   # or whatever we want to do here...
 
+
     def increasePosition(self, spaces):
         self.position += spaces
-        numBuildings = Buildings().getNumBuildings()
+        numBuildings = len(self.bldgs)
         if self.position > numBuildings:    # if we've passed Carrington
             self.points += self.pointsPerRound
             self.dollars += 200000
         self.position %= numBuildings
+        self.playerToken.moveToken(spaces)
+
+    def startToken(self):
+        self.playerToken.displayToken()
+
+    def removeToken(self):
+        self.playerToken.clearToken()
 
 
+    def createToken(self, board, scale):
+        """Used for re-creating the tokens after the screen has been resized."""
+        self.playerToken = Token(self.getColor(), self.position, board, self.bldgs, scale)
+
+    def startToken(self):
+        self.playerToken.displayToken()
+
+    def removeToken(self):
+        self.playerToken.clearToken()
+
+    def displayWheel(self, percentage, location):
+        self.playerToken.drawWheel(percentage, location)
+
+        

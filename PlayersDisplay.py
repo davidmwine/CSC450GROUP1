@@ -4,8 +4,8 @@ from pygame.locals import *
 import sys
 import os
 
-from player import Player
-from globals import Globals
+from Player import Player
+import Colors
 
 
 class PlayersDisplay(object):
@@ -43,16 +43,16 @@ class PlayersDisplay(object):
         # The main Surface for the PlayersDisplay, which we'll keep adding to
         self.pd = pygame.Surface((self.width, self.height))
         self.pd = self.pd.convert()
-        self.pd.fill(Globals.maroon)
+        self.pd.fill(Colors.MAROON)
 
         # Add gray background for player data & separate with lines.
         totalPlayersHeight = self.playerHeight * len(players)
-        pygame.draw.rect(self.pd, Globals.lightGray,
+        pygame.draw.rect(self.pd, Colors.LIGHTGRAY,
                          (0, 0, self.width, totalPlayersHeight), 0)
         for i in range(0, len(players)):
-            pygame.draw.rect(self.pd, Globals.medGray,
+            pygame.draw.rect(self.pd, Colors.MEDGRAY,
                          (0, i*self.playerHeight, self.width, 45*c), 0)
-            pygame.draw.lines(self.pd, Globals.maroon, False,
+            pygame.draw.lines(self.pd, Colors.MAROON, False,
                               [(0, i*self.playerHeight),
                                (self.width, i*self.playerHeight)], 2)
 
@@ -79,15 +79,15 @@ class PlayersDisplay(object):
         if college == 'Natural and Applied Sciences' \
            or college == 'Health and Human Services' \
            or college == 'Education' or college == 'Business':
-            textOutline = font.render(Globals.collegeAbbr[college],
+            textOutline = font.render(Colors.COLLEGEABBR[college],
                            True, Color('black'))
             self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 5))
             self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 3))
             self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 5))
             self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 3))
         
-        text = font.render(Globals.collegeAbbr[college],
-                           True, Globals.collegeColors[college])
+        text = font.render(Colors.COLLEGEABBR[college],
+                           True, Colors.COLLEGECOLORS[college])
         self.pd.blit(text, (220*c, self.playerHeight*i + 4))
 
         # Points
@@ -106,26 +106,30 @@ class PlayersDisplay(object):
         self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
 
 
-    def selectPlayer(self, playerNum):
-        """Uses light maroon to highlight a player's section
+    def selectPlayer(self, playerIndex):
+        """
+        Uses light maroon to highlight a player's section
         (for indicating it's his/her turn).
         """
         pygame.draw.rect(self.pd, (238, 180, 180),
-            (0, playerNum * self.playerHeight + 2, self.width,
+            (0, playerIndex * self.playerHeight + 2, self.width,
              self.playerHeight - 2), 0)
         pygame.draw.rect(self.pd, (205, 155, 155),
-            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
-        self.printText(self.scale, playerNum)
+            (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerIndex)
 
 
-    def unselectPlayer(self, playerNum):
-        """Returns a player's section to gray after it has been selected."""
-        pygame.draw.rect(self.pd, Globals.lightGray,
-            (0, playerNum * self.playerHeight + 2, self.width,
+    def updatePlayer(self, playerIndex):
+        """
+        Updates a player's displayed information to reflect current data.
+        Also used to return a player's section to gray after it has been selected.
+        """
+        pygame.draw.rect(self.pd, Colors.LIGHTGRAY,
+            (0, playerIndex * self.playerHeight + 2, self.width,
              self.playerHeight - 2), 0)
-        pygame.draw.rect(self.pd, Globals.medGray,
-            (0, playerNum * self.playerHeight + 2, self.width, 45*self.scale), 0)
-        self.printText(self.scale, playerNum)    
+        pygame.draw.rect(self.pd, Colors.MEDGRAY,
+            (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.printText(self.scale, playerIndex)    
         
               
     def getPD(self):
