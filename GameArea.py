@@ -322,7 +322,7 @@ class GameArea(object):
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
-                pygame.time.wait(5000)
+                pygame.time.wait(1000)
         self.players[self.playerIndex].removeToken()
         self.refreshDisplay()
         self.updatePlayerPosition()
