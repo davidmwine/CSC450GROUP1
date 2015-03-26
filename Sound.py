@@ -35,5 +35,3 @@ class Sound(object):
         if self.soundID == 'click':
             if self.soundOff3 == False:
                 self.sound_click.play()
-            else:
-                pygame.mixer.stop()

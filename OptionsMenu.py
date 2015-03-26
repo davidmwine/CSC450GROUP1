@@ -13,7 +13,7 @@ class Options(object):
         self.fontOp = fontOp
         self.yOffset = yOffset
         self.resolutionOption = 0
-        #self.soundEffectsOff = False
+        self.soundEffectsOff = False
         self.musicOff = False
         self.loadImages()
         self.loadText()
@@ -97,21 +97,21 @@ class Options(object):
             else:
                 self.screen = pygame.display.set_mode(self.screenModes[self.resolutionButtons.getCurrent()])
 
-        '''#Effects button
-        if mouseX > self.screen.get_width() / 2 + 47 \
-                and mouseX < self.screen.get_width() / 2 + 92 \
-                and mouseY > self.screen.get_height() / 2 + 158 + self.yOffset \
-                and mouseY < self.screen.get_height() / 2 + 179 + self.yOffset:
+        #Effects button
+        if mouseX > self.screen.get_width() / 2 + 132 \
+                and mouseX < self.screen.get_width() / 2 + 177 \
+                and mouseY > self.screen.get_height() / 2 + 186 + self.yOffset \
+                and mouseY < self.screen.get_height() / 2 + 205 + self.yOffset:
             self.click.play()
             self.soundEffectsOff = not self.soundEffectsOff
             self.click.setSound('click')
-            self.click.play()'''
+            self.click.play()
 
         #Music button
-        if mouseX > self.screen.get_width() / 2 + 129 \
-                and mouseX < self.screen.get_width() / 2 + 174 \
-                and mouseY > self.screen.get_height() / 2 + 163 + self.yOffset \
-                and mouseY < self.screen.get_height() / 2 + 184 + self.yOffset:
+        if mouseX > self.screen.get_width() / 2 + 132 \
+                and mouseX < self.screen.get_width() / 2 + 177 \
+                and mouseY > self.screen.get_height() / 2 + 160 + self.yOffset \
+                and mouseY < self.screen.get_height() / 2 + 181 + self.yOffset:
             self.click.play()
             self.musicOff = not self.musicOff
             self.bgMusic.setSound('start_menu')
@@ -148,27 +148,21 @@ class Options(object):
             #Audio options
             self.screen.blit(self.audio_options, (self.screen.get_width() / 2 - 0.5 * self.audio_options.get_width() + 125, \
                                                   self.screen.get_height() / 2 + 123 + self.yOffset))
-            '''self.screen.blit(self.text_sound_effect_option, (self.screen.get_width() / 2 + 95, \
-                                                  self.screen.get_height()/2 + 157 + self.yOffset))
-            self.screen.blit(self.text_music_option, (self.screen.get_width() / 2 + 95, \
-                                                  self.screen.get_height()/2 + 179 + self.yOffset))'''
             self.screen.blit(self.text_music_option, (self.screen.get_width() / 2 + 78, \
                                                   self.screen.get_height()/2 + 162 + self.yOffset))
+            self.screen.blit(self.text_sound_effect_option, (self.screen.get_width() / 2 + 78, \
+                                                  self.screen.get_height()/2 + 184 + self.yOffset))
 
-            '''if self.soundEffectsOff == False:
-                self.screen.blit(self.img_on,(self.screen.get_width()/2 + 48,self.screen.get_height()/2 + 159 + self.yOffset))
-            else:
-                self.screen.blit(self.img_off,(self.screen.get_width()/2 + 48,self.screen.get_height()/2 + 159 + self.yOffset))
-
+            #Audio on/off buttons      
             if self.musicOff == False:
-                self.screen.blit(self.img_on,(self.screen.get_width()/2 + 48,self.screen.get_height()/2 + 181 + self.yOffset))
+                self.screen.blit(self.img_on,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 163 + self.yOffset))
             else:
-                self.screen.blit(self.img_off,(self.screen.get_width()/2+ 48,self.screen.get_height()/2 + 181 + self.yOffset))'''
+                self.screen.blit(self.img_off,(self.screen.get_width()/2+ 133,self.screen.get_height()/2 + 163 + self.yOffset))
 
-            if self.musicOff == False:
-                self.screen.blit(self.img_on,(self.screen.get_width()/2 + 130,self.screen.get_height()/2 + 164 + self.yOffset))
+            if self.soundEffectsOff == False:
+                self.screen.blit(self.img_on,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 186 + self.yOffset))
             else:
-                self.screen.blit(self.img_off,(self.screen.get_width()/2+ 130,self.screen.get_height()/2 + 164 + self.yOffset))
+                self.screen.blit(self.img_off,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 186 + self.yOffset))
 
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
