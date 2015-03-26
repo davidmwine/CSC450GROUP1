@@ -28,10 +28,10 @@ class PopupMenu(object):
         self.resolveButton.newButton(self.area.get_width() / 2 + 20, self.area.get_height() / 2 + 5, 5)
         #self.resolveButton.newButton(self._area.get_width() / 2 + 20, self._area.get_height() / 2 + 25, 5) #4:3 not supported yet
         self.resolveButton.setCurrent(self.resOpt)
-
+        
     def changeResolution(self, X, Y):
         # supposed to check radio button and return whichever resolution was selected
-        if self.resolveButton.checkButton(X, Y):
+        if self.resolveButton.checkButton(X - self.parent.get_width() / 4, Y - self.parent.get_height() / 4):
             self.resOpt = self.resolveButton.getCurrent()
             return self.screenModes[self.resolveButton.getCurrent()]
         else:

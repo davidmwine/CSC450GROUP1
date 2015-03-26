@@ -78,24 +78,28 @@ class Dice():
                            int(self.height//10))
         
 
-
-    def roll(self):
-        if self.rollCount <= 0:
-            self.rollCount = 4
+    def displayDice(self, r1, r2):
         self.area.fill((255, 255, 255))
-        #draw 2 black boarders around each have of the rect
+        #draw 2 black borders around each half of the rect
         pygame.draw.rect(self.area, (0,0,0),(0,0, self.area.get_width()//2,
                                               self.area.get_height()), 5)
         pygame.draw.rect(self.area, (0,0,0),(self.area.get_width()//2,0,
                                               self.area.get_width()//2,
                                               self.area.get_height()), 5)
-        #get roll value as list indicies
-        r1, r2 = random.randint(0,5), random.randint(0,5)
-        #print(r1+1, r2+1, self._roll_count)
-        self.numbers[r1](0)
-        self.numbers[r2](1)
+        # print the dots on the dice
+        self.numbers[r1-1](0)   
+        self.numbers[r2-1](1)
+
+
+    def roll(self):
+        if self.rollCount <= 0:
+            self.rollCount = 4
+        
+        r1, r2 = random.randint(1,6), random.randint(1,6)
+        self.displayDice(r1, r2)
+     
         self.rollCount -= 1
-        return (self.rollCount>0,r2+r1+2)
+        return (self.rollCount>0, r1, r2)
 
 
 def main():
