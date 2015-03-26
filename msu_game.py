@@ -64,13 +64,13 @@ class Game(object):
         startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.click, self.bgMusic)
         rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
         optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.click, self.bgMusic)
-        playGame = GameArea(self.screen, self.ratio)
+        playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
         
         while True:
             if playGame.getScale() != self.screen.get_height()/1080:
                 self.ratio = self.screen.get_height()/1080
-                playGame = GameArea(self.screen, self.ratio)
+                playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
             if self.nextScreen == "game":
                 self.nextScreen = playGame.play()

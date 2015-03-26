@@ -17,7 +17,7 @@ from Turn import Turn
 class GameArea(object):
 
 
-    def __init__(self, parent=False, scale=1):
+    def __init__(self, screenInfo, parent=False, scale=1):
         """Overall function for the Game Area Screen.  Takes a parent surface
         and scale as optional paramaters.  If no parent is passed this will be
         the pygame screen, else it drawn on the main screen.  Scale defaults to
@@ -29,6 +29,7 @@ class GameArea(object):
         self.scale = scale
         self.width = int(self.scale*1920)
         self.height = int(self.scale*1080)
+        self.infoScreen = screenInfo #For making fullscreen if fullscreen resolution
         
         self.clock = pygame.time.Clock()
         self.playerIndex = 0
@@ -260,7 +261,11 @@ class GameArea(object):
         Resizes the screen and redraws all the components at the new scale.
         Called when the user selects a new resolution option.
         """
-        self.area = pygame.display.set_mode(newSize)
+        if self.infoScreen.current_h == newSize[1]\
+           and self.infoScreen.current_w == newSize[0]:
+            self.area = pygame.display.set_mode(newSize, pygame.FULLSCREEN)
+        else:
+            self.area = pygame.display.set_mode(newSize)
         self.scale = newSize[0] / 1920
         self.width = int(self.scale*1920)
         self.height = int(self.scale*1080)
@@ -317,7 +322,7 @@ class GameArea(object):
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
-                pygame.time.wait(1000)
+                pygame.time.wait(5000)
         self.players[self.playerIndex].removeToken()
         self.refreshDisplay()
         self.updatePlayerPosition()
