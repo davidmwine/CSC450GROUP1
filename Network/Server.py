@@ -45,10 +45,10 @@ def gameServer():
            \nWaiting for connections......")
 
     while(True):
-        #read, write, err = select(globalClients, [], [])
+        read, write, err = select(globalClients, [], [])
         ##print("Client List: ", globalClients)
 
-        for sock in globalClients:
+        for sock in read:
             if sock == server:
                 sockfd, addr = server.accept()
                 globalClients.append(sockfd)
