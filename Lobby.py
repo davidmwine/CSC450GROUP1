@@ -7,7 +7,7 @@ from RadioButton import RadioGroup
 from Controls import Button
 from TextWrap import *
 from EntryBox import EntryBoxSet
-from Network import *
+from Client import *
 
 
 class Lobby():
