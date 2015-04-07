@@ -7,6 +7,7 @@ from RadioButton import RadioGroup
 from Controls import Button
 from TextWrap import *
 from EntryBox import EntryBoxSet
+from Network import *
 
 
 class Lobby():
@@ -196,8 +197,8 @@ to determine the inital screen'''
             self.enterForm = False
         elif event.key == K_BACKSPACE:
             self.entBoxes[self.gameOpt].getFocused().deleteText()
-        elif event.key <= 127 and event.key >= 32 and self.entBoxes[self.gameOpt].getFocused().getMaxChar() != -1 and\
-             len(self.entBoxes[self.gameOpt].getFocused().getText()) < self.entBoxes[self.gameOpt].getFocused().getMaxChar(): #Only accept regular ascii characters (ignoring certain special characters)
+        elif event.key <= 127 and event.key >= 32 and (self.entBoxes[self.gameOpt].getFocused().getMaxChar() == -1 or\
+             len(self.entBoxes[self.gameOpt].getFocused().getText()) < self.entBoxes[self.gameOpt].getFocused().getMaxChar()): #Only accept regular ascii characters (ignoring certain special characters)
             checkCaps = pygame.key.get_pressed()
             if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
                 index = CHARS.index(chr(event.key))
@@ -224,6 +225,8 @@ to determine the inital screen'''
         CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         self.load(0)
         self.gameExit = False
+        server = gameClient()
+        result = cmdList.get()
         while not self.gameExit:
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
