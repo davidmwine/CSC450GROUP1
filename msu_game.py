@@ -7,7 +7,7 @@ from StartMenu import Start
 from OptionsMenu import Options
 from GameArea import GameArea
 from Sound import Sound
-from lobby import Lobby
+from Lobby import Lobby
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
 pygame.mixer.pre_init(44100, -16, 2, 2048) # Setup mixer to avoid sound lag
