@@ -8,6 +8,7 @@ from Controls import Button
 from TextWrap import *
 from EntryBox import EntryBoxSet
 from Client import *
+from DeanBox import *
 
 
 class Lobby():
@@ -90,8 +91,17 @@ to determine the inital screen'''
         #Local Form Fields
         self.localAttributes = EntryBoxSet(self.scale)
         boxRect = Rect(self.localScreen.get_width()/3+200*self.scale, self.localScreen.get_height()/4,40*self.scale,30*self.scale)
-        self.localAttributes.createNew(self.localScreen,1 ,boxRect, self.font_op, offset3, '1')
+        self.localAttributes.createNew(self.localScreen,1 ,boxRect, self.font_op, offset3, '6')
         self.localAttributes.getBox('0').setMaxChar(1)
+
+        #Boxes for Dean Selection
+        self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, offset3)
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
         
         #Render Text
         self.hostText = self.font_op(40*self.scale, 'berlin').render("Please select game attributes.",1,(0,0,0))
@@ -124,10 +134,12 @@ to determine the inital screen'''
             return
         if self.gameOpt == 2 and self.localAttributes.isClicked(mouseX, mouseY):
             self.enterForm = True
-        if self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
+        elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
             self.enterForm = True
-        if self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
+        elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
             self.enterForm = True
+        else:
+            self.enterForm = False
             
     def alwaysDraw(self):
         '''Screen that is always drawn no matter which radio button is selected should be run before other draw functions'''
@@ -188,6 +200,7 @@ to determine the inital screen'''
         self.localScreen.blit(self.playersNumText, textRect)
 
         self.localAttributes.draw()
+        self.deanBoxes.drawBoxes()
 
     def enteringForm(self, event):
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
@@ -225,8 +238,8 @@ to determine the inital screen'''
         CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         self.load(0)
         self.gameExit = False
-        server = gameClient()
-        result = cmdList.get()
+        #server = gameClient()
+        #result = cmdList.get()
         while not self.gameExit:
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
