@@ -107,8 +107,13 @@ class Player(object):
         twoInARow = []      # for keeping track of consecutive buildings
         threeOrMore = []
 
-        if len(acad) == 0:
+        # If 0 or 1 academic buildings, not eligible for any upgrades.
+        if len(acad) <= 1:
             return ([], [], [])
+
+        # Appending these will allow adjacency to wrap around the game board.
+        acad.append(acad[0] + len(allAcadBuildings))
+        acad.append(acad[1] + len(allAcadBuildings))
 
         startOfRun = acad[0]
         previous = acad[0]
@@ -137,16 +142,35 @@ class Player(object):
                 startOfRun = x
                 runLength = 0
                 
-            previous = x        
+            previous = x
+
+        # Adjust for the two "extra" buildings we appended.
+        if len(allAcadBuildings) in twoInARow:
+            if 0 not in twoInARow:
+                twoInARow.insert(0, 0)
+
+        if len(allAcadBuildings)+1 in threeOrMore:
+            if 1 not in threeOrMore:
+                threeOrMore.insert(0, 1)
+        if len(allAcadBuildings) in threeOrMore:        
+            if 0 not in threeOrMore:
+                threeOrMore.insert(0, 0)    
+
+        for i in range(2):
+            acad.pop()
+            if len(twoInARow) > 0 and twoInARow[-1] >= len(allAcadBuildings):
+                twoInARow.pop()
+            if len(threeOrMore) > 0 and threeOrMore[-1] >= len(allAcadBuildings):
+                threeOrMore.pop()
+        
 
         # From the lists of eligible buildings compiled above, remove the ones
         # which have already been upgraded.  Then convert the indices to names.
         bachelors = []
-        if len(acad) >= 2:
-            for i in range(len(acad)):
-                building = self.allBldgs.getBuilding( allAcadBuildings[acad[i]] )
-                if building.getDegreeLvl() == "Associate":
-                    bachelors.append( building.getName() )
+        for i in range(len(acad)):
+            building = self.allBldgs.getBuilding( allAcadBuildings[acad[i]] )
+            if building.getDegreeLvl() == "Associate":
+                bachelors.append( building.getName() )
 
         masters = []    
         for i in range(len(twoInARow)):
