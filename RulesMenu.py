@@ -4,18 +4,46 @@ import os
 import sys
 
 class Rules(object):
-    def __init__(self, screen, fontOp, yoffset):
+    def __init__(self, screen, fontOp, yoffset, click):
         self.screen = screen
         self.fontOp = fontOp
         self.yoffset = yoffset
         self.loadImages()
+        self.loadText()
         self.rulescount = 3  #Number of rules/rule pages - *change later
+        self.click = click
 
     def loadImages(self):     
         self.imgarrow = pygame.image.load(os.path.join("img","arrow.png")).convert_alpha()
         self.imgarrowleft = pygame.image.load(os.path.join("img","arrowLeft.png")).convert_alpha()
         self.imgmenubg = pygame.image.load(os.path.join("img","menu_bg4.png")).convert()
-        
+
+    def loadText(self):
+        self.textexitrules = self.fontOp(22,"berlin").render("Exit Rules",True,(220,146,40))
+        #Index text
+        self.textintro = self.fontOp(22,"berlin").render("Introduction",True,(255,255,255))
+        self.textobjective = self.fontOp(22,"berlin").render("Objective",True,(255,255,255))
+        self.text_general = self.fontOp(22,"berlin").render("General",True,(255,255,255))
+        self.textrule1 = self.fontOp(20,"berlin").render("Pieces",True,(255,255,255))
+        self.textrule2 = self.fontOp(20,"berlin").render("Properties",True,(255,255,255))
+        self.textrule3 = self.fontOp(20,"berlin").render("Rule 3",True,(255,255,255))
+        self.textrule4 = self.fontOp(20,"berlin").render("Rule 4",True,(255,255,255))
+        self.textrule5 = self.fontOp(20,"berlin").render("Rule 5",True,(255,255,255))
+        self.textrule6 = self.fontOp(20,"berlin").render("Rule 6",True,(255,255,255))
+        self.textrule7 = self.fontOp(20,"berlin").render("Rule 7",True,(255,255,255))
+        self.textrule8 = self.fontOp(20,"berlin").render("Rule 8",True,(255,255,255))
+        self.textrule9 = self.fontOp(20,"berlin").render("Rule 9",True,(255,255,255))
+        self.textrule10 = self.fontOp(20,"berlin").render("Rule 10",True,(255,255,255))
+        self.textrule11 = self.fontOp(20,"berlin").render("Rule 11",True,(255,255,255))
+        self.textrule12 = self.fontOp(20,"berlin").render("Rule 12",True,(255,255,255))
+        self.textrule13 = self.fontOp(20,"berlin").render("Rule 13",True,(255,255,255))
+        self.textrule14 = self.fontOp(20,"berlin").render("Rule 14",True,(255,255,255))
+        self.textrule15 = self.fontOp(20,"berlin").render("Rule 15",True,(255,255,255))
+        self.textrule16 = self.fontOp(20,"berlin").render("Rule 16",True,(255,255,255))
+        self.textrule17 = self.fontOp(20,"berlin").render("Rule 17",True,(255,255,255))
+        self.textrule18 = self.fontOp(20,"berlin").render("Rule 18",True,(255,255,255))
+        self.textrule19 = self.fontOp(20,"berlin").render("Rule 19",True,(255,255,255))
+        self.textrule20 = self.fontOp(20,"berlin").render("Rule 20",True,(255,255,255))
 
     def buttonClick(self):
         mousex,mousey = pygame.mouse.get_pos()
@@ -23,12 +51,14 @@ class Rules(object):
         if mousex > self.screen.get_width()/2+194\
            and mousex < self.screen.get_width()/2+295\
            and mousey > self.screen.get_height()/8+self.yoffset-5 and mousey < self.screen.get_height()/8+self.yoffset+self.textexitrules.get_height()+5:
+            self.click.play()
             return False
         #Prev page
         if self.rulespage > 1:
             if mousex > self.screen.get_width()/2-310\
                and mousex < self.screen.get_width()/2-254\
                and mousey > self.screen.get_height()/8+self.yoffset+335 and mousey < self.screen.get_height()/8+self.yoffset+self.imgarrowleft.get_height()+345:
+                self.click.play()
                 self.rulesNextPage(-1)
                 return True
         #Next page
@@ -36,24 +66,28 @@ class Rules(object):
             if mousex > self.screen.get_width()/2+245\
                and mousex < self.screen.get_width()/2+320\
                and mousey > self.screen.get_height()/8+self.yoffset+335 and mousey < self.screen.get_height()/8+self.yoffset+self.imgarrow.get_height()+345:
+                self.click.play()
                 self.rulesNextPage(1)
                 return True
         #Index:Introduction
         if mousex > self.screen.get_width()/2-168\
                and mousex < self.screen.get_width()/2-157+self.textintro.get_width()\
                and mousey > self.screen.get_height()/8+self.yoffset+375 and mousey < self.screen.get_height()/8+self.yoffset+self.textintro.get_height()+385:
+                self.click.play()
                 self.rulesNextPage(1,True)
                 return True
         #Index:Objective
         if mousex > self.screen.get_width()/2-153+self.textintro.get_width()\
                and mousex < self.screen.get_width()/2-142+self.textintro.get_width()+self.textobjective.get_width()\
                and mousey > self.screen.get_height()/8+self.yoffset+375 and mousey < self.screen.get_height()/8+self.yoffset+self.textobjective.get_height()+385:
+                self.click.play()
                 self.rulesNextPage(2,True)
                 return True
         #Index:General
         if mousex > self.screen.get_width()/2-138+self.textintro.get_width()+self.textobjective.get_width()\
                and mousex < self.screen.get_width()/2-127+self.textintro.get_width()+self.textobjective.get_width()+self.text_general.get_width()\
                and mousey > self.screen.get_height()/8+self.yoffset+375 and mousey < self.screen.get_height()/8+self.yoffset+self.text_general.get_height()+385:
+                self.click.play()
                 self.rulesNextPage(3,True)
                 return True  
         return True
@@ -84,33 +118,6 @@ class Rules(object):
 
     def run(self):
         self.rulesNextPage()
-        
-        self.textexitrules = self.fontOp(22,"berlin").render("Exit Rules",True,(220,146,40))
-        
-        #Index text
-        self.textintro = self.fontOp(22,"berlin").render("Introduction",True,(255,255,255))
-        self.textobjective = self.fontOp(22,"berlin").render("Objective",True,(255,255,255))
-        self.text_general = self.fontOp(22,"berlin").render("General",True,(255,255,255))
-        self.textrule1 = self.fontOp(20,"berlin").render("Pieces",True,(255,255,255))
-        self.textrule2 = self.fontOp(20,"berlin").render("Properties",True,(255,255,255))
-        self.textrule3 = self.fontOp(20,"berlin").render("Rule 3",True,(255,255,255))
-        self.textrule4 = self.fontOp(20,"berlin").render("Rule 4",True,(255,255,255))
-        self.textrule5 = self.fontOp(20,"berlin").render("Rule 5",True,(255,255,255))
-        self.textrule6 = self.fontOp(20,"berlin").render("Rule 6",True,(255,255,255))
-        self.textrule7 = self.fontOp(20,"berlin").render("Rule 7",True,(255,255,255))
-        self.textrule8 = self.fontOp(20,"berlin").render("Rule 8",True,(255,255,255))
-        self.textrule9 = self.fontOp(20,"berlin").render("Rule 9",True,(255,255,255))
-        self.textrule10 = self.fontOp(20,"berlin").render("Rule 10",True,(255,255,255))
-        self.textrule11 = self.fontOp(20,"berlin").render("Rule 11",True,(255,255,255))
-        self.textrule12 = self.fontOp(20,"berlin").render("Rule 12",True,(255,255,255))
-        self.textrule13 = self.fontOp(20,"berlin").render("Rule 13",True,(255,255,255))
-        self.textrule14 = self.fontOp(20,"berlin").render("Rule 14",True,(255,255,255))
-        self.textrule15 = self.fontOp(20,"berlin").render("Rule 15",True,(255,255,255))
-        self.textrule16 = self.fontOp(20,"berlin").render("Rule 16",True,(255,255,255))
-        self.textrule17 = self.fontOp(20,"berlin").render("Rule 17",True,(255,255,255))
-        self.textrule18 = self.fontOp(20,"berlin").render("Rule 18",True,(255,255,255))
-        self.textrule19 = self.fontOp(20,"berlin").render("Rule 19",True,(255,255,255))
-        self.textrule20 = self.fontOp(20,"berlin").render("Rule 20",True,(255,255,255))
 
         self.rulesindex = [self.textintro, self.textobjective, self.text_general, self.textrule1,
                                 self.textrule2, self.textrule3, self.textrule4, self.textrule5,

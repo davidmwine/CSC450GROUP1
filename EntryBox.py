@@ -1,11 +1,11 @@
 import pygame, sys, os
 from pygame.locals import *
-from textWrap import *
+from TextWrap import *
 
 
 class EntryBox():
 
-    def __init__(self, parent, length, position ,font_op, scale ,start_text = ''):
+    def __init__(self, parent, length, position ,font_op, scale , offset, start_text = ''):
         self.parent = parent
         self.len = length
         self.font_op = font_op
@@ -18,6 +18,8 @@ class EntryBox():
         self.area = parent.subsurface(position)
         self.focus = False
         self.scale = scale
+        self.offset = offset #For isClick to know proper location
+        self.maxChar = -1
 
     def draw(self):
         self.area.fill((255,255,255))
@@ -26,6 +28,21 @@ class EntryBox():
         pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
                                               self.area.get_height()), 2)
         self.area.blit(boxText, (0,0))
+
+    def setMaxChar(self, num):
+        self.maxChar = num
+
+    def getMaxChar(self):
+        return self.maxChar
+
+    def getText(self):
+        return self.text
+
+    def setText(self, entry = ""):
+        self.text = entry
+
+    def deleteText(self):
+        self.text = self.text[:-1]
 
     def hasFocus(self):
         return self.focus
@@ -37,7 +54,7 @@ class EntryBox():
         self.focus = False
 
     def isClicked(self, mousex, mousey):
-        if(self.x_start< mousex< self.x_start+self.width) and (self.y_start< mousey< self.y_start+self.height):
+        if(self.x_start< mousex-self.offset[0]< self.x_start+self.width) and (self.y_start< mousey-self.offset[1]< self.y_start+self.height):
            return True
         else:
            return False
@@ -49,24 +66,33 @@ class EntryBoxSet():
     def __init__(self, scale):
         self.entryBoxes = dict()
         self.scale = scale
-        focused = None
+        self.focused = None
 
-    def createNew(self,parent, length, position , font_op ,start_text = '', name = ''):
+    def createNew(self,parent, length, position , font_op , offset,start_text = '', name = ''):
         if name == '':
             name = str(len(self.entryBoxes))
-        self.entryBoxes[name] = EntryBox(parent, length, position , font_op, self.scale  ,start_text)
+        self.entryBoxes[name] = EntryBox(parent, length, position , font_op, self.scale, offset ,start_text)
         return self.entryBoxes[name]
 
-    def isClicked(mousex,mousey):
-        for i in entryBoxes:
-            if i.isClicked():
-                i.giveFocus()
-                if not focused is None:
-                    focused.takeFocus
-                return i
+    def isClicked(self, mousex, mousey):
+        result = False
+        for i in self.entryBoxes.keys():
+            if self.entryBoxes[i].isClicked(mousex, mousey):
+                result = True
+                self.entryBoxes[i].giveFocus()
+                if not self.focused is None:
+                    self.focused.takeFocus()
+                self.focused = self.entryBoxes[i]
+        return result
             
     def getBoxes(self):
         return self.entryBoxes
+
+    def getBox(self, name):
+        return self.entryBoxes[name]
+
+    def getFocused(self):
+        return self.focused
 
     def draw(self):
         for i in self.entryBoxes:

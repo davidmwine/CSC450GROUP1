@@ -3,6 +3,7 @@
 import pygame
 from pygame.locals import *
 import sys
+import os
 import math
 import Building
 import Colors 
@@ -32,6 +33,8 @@ class GameBoard(object):
             pygame.display.set_caption("Mastering MSU")              #Name of title
         else:
             self.board = pygame.Surface(size)
+
+        self.board.fill(Colors.MAROON)    
             
         self.boardfont = pygame.font.Font(None, 16)
 
@@ -43,6 +46,7 @@ class GameBoard(object):
             seq = buildings[building].getSequence()
             cellColor = buildings[building].getColor()
             cellName = buildings[building].getName()
+            cellImage = buildings[building].getImage()
             
             print(seq, cellColor, cellName)
                 
@@ -63,6 +67,11 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Load cell image
+                cellImage = pygame.transform.scale(cellImage, (int(cellWidth - margin), int(cellHeight - margin)))
+                self.board.blit(cellImage, (x_pos + margin, y_pos + margin))
+
                 # Store rect in building object
                 buildings[building].setRect(rect)
                 x_pos += cellWidth
@@ -84,6 +93,11 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Load cell image
+                cellImage = pygame.transform.scale(cellImage, (int(cellWidth - margin), int(cellHeight - margin)))
+                self.board.blit(cellImage, (x_pos + margin, y_pos + margin))
+
                 # Store rect in building object
                 buildings[building].setRect(rect)
                 y_pos += cellHeight
@@ -106,6 +120,11 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Load cell image
+                cellImage = pygame.transform.scale(cellImage, (int(cellWidth - margin), int(cellHeight - margin)))
+                self.board.blit(cellImage, (x_pos + margin, y_pos + margin))
+
                 # Store rect in building object
                 buildings[building].setRect(rect)
                                 
@@ -128,8 +147,16 @@ class GameBoard(object):
                     
                 rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
+
+                # Load cell image
+                cellImage = pygame.transform.scale(cellImage, (int(cellWidth - margin), int(cellHeight - margin)))
+                self.board.blit(cellImage, (x_pos + margin, y_pos + margin))
+                
                 # Store rect in building object
                 buildings[building].setRect(rect)
+
+            #remove this (needed for image dimesions)
+            print(cellWidth, cellHeight)
                 
 
     def getGB(self):
@@ -143,7 +170,7 @@ class GameBoard(object):
         #pygame.draw.rect(self.board, color, rect)
         pygame.draw.polygon(self.board, color, pointList)
         pygame.draw.polygon(self.board, color, pointList, 1)
-        self.board.blit(self.boardfont.render(name, True, Colors.BLACK), rect)
+        #self.board.blit(self.boardfont.render(name, True, Colors.BLACK), rect)        
 
 
 def main():

@@ -1,12 +1,14 @@
 import pygame, sys, os
 from pygame.locals import *
-from player import Player
+from Player import Player
 import Colors
 from ChatBoxCopy import ChatBox
 from RadioButton import RadioGroup
 from Controls import Button
-from textWrap import *
+from TextWrap import *
 from EntryBox import EntryBoxSet
+from Client import *
+from DeanBox import *
 
 
 class Lobby():
@@ -25,6 +27,9 @@ class Lobby():
         #list for determining which screen to draw
         self.gameType = [self.hostDraw,self.lfgDraw, self.localGameDraw]
         self.gameOpt = 0
+
+        #booleans
+        self.enterForm = False
 
         #return on exit
         self.nextScreen = ''
@@ -61,8 +66,10 @@ to determine the inital screen'''
         
         #init screens
         self.hostScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
+        offset1 = [self.width/10, self.height/3]
         self.lfgScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*5/8, self.height*2/3-self.height/10)
         self.localScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
+        offset3 = [self.width/10, self.height/3]
         
         #chat Box
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
@@ -72,11 +79,11 @@ to determine the inital screen'''
         #Host form fields
         self.hostAttributes = EntryBoxSet(self.scale)
         boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4,40*self.scale,30*self.scale)
-        self.hostAttributes.createNew(self.hostScreen,1 ,boxRect, self.font_op,'1')
+        self.hostAttributes.createNew(self.hostScreen,1 ,boxRect, self.font_op, offset1, '1')
         boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4+30*self.scale,40*self.scale,30*self.scale)
-        self.hostAttributes.createNew(self.hostScreen,15, boxRect, self.font_op ,"Mastering MSU")
+        self.hostAttributes.createNew(self.hostScreen,15, boxRect, self.font_op , offset1, "Mastering MSU")
         boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4+60*self.scale,40*self.scale,30*self.scale)
-        self.hostAttributes.createNew(self.hostScreen,15 ,boxRect, self.font_op,"Player 1")
+        self.hostAttributes.createNew(self.hostScreen,15 ,boxRect, self.font_op, offset1, "Player 1")
 
         #LFG form Fields
         self.lfgAttributes = EntryBoxSet(self.scale)
@@ -84,7 +91,17 @@ to determine the inital screen'''
         #Local Form Fields
         self.localAttributes = EntryBoxSet(self.scale)
         boxRect = Rect(self.localScreen.get_width()/3+200*self.scale, self.localScreen.get_height()/4,40*self.scale,30*self.scale)
-        self.localAttributes.createNew(self.localScreen,1 ,boxRect, self.font_op ,'1')
+        self.localAttributes.createNew(self.localScreen,1 ,boxRect, self.font_op, offset3, '6')
+        self.localAttributes.getBox('0').setMaxChar(1)
+
+        #Boxes for Dean Selection
+        self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, offset3)
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
+        self.deanBoxes.newBox()
         
         #Render Text
         self.hostText = self.font_op(40*self.scale, 'berlin').render("Please select game attributes.",1,(0,0,0))
@@ -93,6 +110,9 @@ to determine the inital screen'''
         self.gameNameText = self.font_op(20*self.scale, 'berlin').render("Name of Game",1,(0,0,0))
         self.hostNameText = self.font_op(20*self.scale, 'berlin').render("Name of Host",1,(0,0,0))
 
+        #For changing entry box sets
+        self.entBoxes = [self.hostAttributes, self.lfgAttributes, self.localAttributes]
+
 
         
 
@@ -100,8 +120,7 @@ to determine the inital screen'''
     def buttonClick(self):
         '''determine what happens when the mouse is clicked'''
         #Takes action if a button is clicked
-        mouseX, mouseY = pygame.mouse.get_pos()
-        print(mouseX, mouseY)
+        mouseX, mouseY = pygame.mouse.get_pos() 
         if self.gameTypeRadio.checkButton(mouseX, mouseY):
             self.gameOpt = self.gameTypeRadio.getCurrent()
             return
@@ -113,6 +132,14 @@ to determine the inital screen'''
             self.gameExit = True
             self.nextScreen = 'start'
             return
+        if self.gameOpt == 2 and self.localAttributes.isClicked(mouseX, mouseY):
+            self.enterForm = True
+        elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
+            self.enterForm = True
+        elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
+            self.enterForm = True
+        else:
+            self.enterForm = False
             
     def alwaysDraw(self):
         '''Screen that is always drawn no matter which radio button is selected should be run before other draw functions'''
@@ -173,20 +200,54 @@ to determine the inital screen'''
         self.localScreen.blit(self.playersNumText, textRect)
 
         self.localAttributes.draw()
+        self.deanBoxes.drawBoxes()
+
+    def enteringForm(self, event):
+        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
+        
+        if event.key == K_ESCAPE:
+            self.enterForm = False
+        elif event.key == K_BACKSPACE:
+            self.entBoxes[self.gameOpt].getFocused().deleteText()
+        elif event.key <= 127 and event.key >= 32 and (self.entBoxes[self.gameOpt].getFocused().getMaxChar() == -1 or\
+             len(self.entBoxes[self.gameOpt].getFocused().getText()) < self.entBoxes[self.gameOpt].getFocused().getMaxChar()): #Only accept regular ascii characters (ignoring certain special characters)
+            checkCaps = pygame.key.get_pressed()
+            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
+                index = CHARS.index(chr(event.key))
+                currText = self.entBoxes[self.gameOpt].getFocused().getText()
+                self.entBoxes[self.gameOpt].getFocused().setText(currText+CHARSCAPS[index])
+            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
+                index = CHARS.index(chr(event.key))
+                if index < 26: #Only caps lock regular alphabet
+                    currText = self.entBoxes[self.gameOpt].getFocused().getText()
+                    self.entBoxes[self.gameOpt].getFocused().setText(currText+CHARSCAPS[index])
+                else:
+                    currText = self.entBoxes[self.gameOpt].getFocused().getText()
+                    self.entBoxes[self.gameOpt].getFocused().setText(currText+chr(event.key))
+            else:
+                currText = self.entBoxes[self.gameOpt].getFocused().getText()
+                self.entBoxes[self.gameOpt].getFocused().setText(currText+chr(event.key))
 
 
 
     
     def run(self):
         '''Draw lobby and handle lobby events'''
+        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         self.load(0)
         self.gameExit = False
+        #server = gameClient()
+        #result = cmdList.get()
         while not self.gameExit:
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.buttonClick()
                 if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
+                    if self.enterForm:
+                        self.enteringForm(event)
+                    if event.key == K_ESCAPE and not self.enterForm:
                         pygame.quit()
                         sys.exit()
                         break
@@ -195,8 +256,6 @@ to determine the inital screen'''
             self.parent.blit(self.screen, (0,0))
             pygame.display.update()
         #remove these when integrating
-        pygame.quit()
-        sys.exit()
         return self.nextScreen  
             
 

@@ -1,5 +1,6 @@
 import pygame, sys
 from pygame.locals import *
+import Colors
 
 class Controls:
 
@@ -24,7 +25,7 @@ class Controls:
 
 class Button:
 
-    def __init__(self, parent, rect, label = "", bgcolor=(255, 255, 255), fontcolor=(0, 0, 0)):
+    def __init__(self, parent, rect, label = "", bgcolor=Colors.LIGHTGRAY, fontcolor=(0, 0, 0)):
 
         self.area = parent.subsurface(rect)
         self.font = pygame.font.Font( None, 30)
@@ -55,8 +56,6 @@ class Button:
         pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
                                               self.area.get_height()), 5)
     def wasClicked(self, mouseX, mouseY):
-        print(-self.left + mouseX, "is greater" , self.width)
-        print(-self.top + mouseY, "is greater" ,self.height)
         return (-self.left + mouseX < self.width) and\
                 (-self.top + mouseY > 0)
         
