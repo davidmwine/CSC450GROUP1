@@ -7,12 +7,12 @@ class Player(object):
 
     def __init__(self, name, college, board, bldgs, scale = 1):
         """
-        'bldgs' should be a list of all the buildings, with attributes
+        'bldgs' should be a Buildings object, with attributes of buildings
         initialized from the creation of the game board.
         """
         self.scale = scale
         self.board = board
-        self.bldgs = bldgs
+        self.allBldgs = bldgs
         self.name = name
         self.college = college
         self.dollars = 1500000
@@ -20,7 +20,8 @@ class Player(object):
         self.pointsPerRound = 0
         self.buildings = []     # buildings that the player owns
         self.position = 0
-        self.playerToken = Token(self.getColor(), self.position, self.board, self.bldgs, self.scale)
+        self.playerToken = Token(self.getColor(), self.position, self.board,
+                                 self.allBldgs.getBuildingList(), self.scale)
 
     def getName(self):
         return self.name
@@ -90,25 +91,92 @@ class Player(object):
             return -1   # or whatever we want to do here...
 
 
+    def getPossibleUpgrades(self):
+        """
+        Returns a tuple containing three lists:
+        [0]: the names of buildings the player can upgrade to bachelors level
+        [1]: the names of buildings the player can upgrade to masters level
+        [2]: the names of buildings the player can upgrade to doctorate level
+        """
+        allAcadBuildings = self.allBldgs.getAcademicBuildings()
+        acad = []   # will contain indices of the player's academic buildings
+        for building in self.buildings:
+            if building.getPurpose() == 'academic':
+                acad.append(allAcadBuildings.index(building.getName()))
+
+        twoInARow = []      # for keeping track of consecutive buildings
+        threeOrMore = []
+
+        if len(acad) == 0:
+            return ([], [], [])
+
+        startOfRun = acad[0]
+        previous = acad[0]
+        for x in acad:
+            # We might need to add buildings to the lists if we've reached
+            # the end of a run or if we've reached the end of the list.
+            if x != previous + 1:
+                endOfRun = previous
+                runLength = acad.index(x) - acad.index(startOfRun)
+            elif acad.index(x) == len(acad) - 1 and x == previous + 1:
+                endOfRun = x
+                runLength = acad.index(x) - acad.index(startOfRun) + 1
+
+            # If the runs were long enough, add buildings to the lists.
+            if runLength > 2:
+                for i in range(acad.index(startOfRun), acad.index(endOfRun) + 1):
+                    threeOrMore.append(acad[i])
+                    twoInARow.append(acad[i])
+            elif runLength == 2:
+                twoInARow.append(startOfRun)
+                twoInARow.append(endOfRun)
+
+            # If runLength was set to be >0, that means we reached the end of a
+            # run, so we need to start over.
+            if runLength > 0:    
+                startOfRun = x
+                runLength = 0
+                
+            previous = x        
+
+        # From the lists of eligible buildings compiled above, remove the ones
+        # which have already been upgraded.  Then convert the indices to names.
+        bachelors = []
+        if len(acad) >= 2:
+            for i in range(len(acad)):
+                building = self.allBldgs.getBuilding( allAcadBuildings[acad[i]] )
+                if building.getDegreeLvl() == "Associate":
+                    bachelors.append( building.getName() )
+
+        masters = []    
+        for i in range(len(twoInARow)):
+            building = self.allBldgs.getBuilding( allAcadBuildings[twoInARow[i]] )
+            if building.getDegreeLvl() == "Associate" or building.getDegreeLvl() == "Bachelor":
+                masters.append( building.getName() )
+
+        doctorates = []    
+        for i in range(len(threeOrMore)):
+            building = self.allBldgs.getBuilding( allAcadBuildings[threeOrMore[i]] )
+            if building.getDegreeLvl() != "Doctorate":
+                doctorates.append( building.getName() )
+
+        return (bachelors, masters, doctorates)
+
+
     def increasePosition(self, spaces):
         self.position += spaces
-        numBuildings = len(self.bldgs)
+        numBuildings = self.allBldgs.getNumBuildings()
         if self.position > numBuildings:    # if we've passed Carrington
             self.points += self.pointsPerRound
             self.dollars += 200000
         self.position %= numBuildings
         self.playerToken.moveToken(spaces)
 
-    def startToken(self):
-        self.playerToken.displayToken()
-
-    def removeToken(self):
-        self.playerToken.clearToken()
-
 
     def createToken(self, board, scale):
         """Used for re-creating the tokens after the screen has been resized."""
-        self.playerToken = Token(self.getColor(), self.position, board, self.bldgs, scale)
+        self.playerToken = Token(self.getColor(), self.position, board,
+                                 self.allBldgs.getBuildingList(), scale)
 
     def startToken(self):
         self.playerToken.displayToken()
@@ -119,4 +187,5 @@ class Player(object):
     def displayWheel(self, percentage, location):
         self.playerToken.drawWheel(percentage, location)
 
-        
+
+            

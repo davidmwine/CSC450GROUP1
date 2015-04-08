@@ -253,11 +253,26 @@ class Buildings(object):
     def getNumBuildings(self):
         return len(self.buildings)
 
+    def getBuilding(self, name):
+        """Given the name of a building, returns its Building object."""
+        for building in self.buildings:
+            if building.name == name:
+                return building
+
+    def getAcademicBuildings(self):
+        """Returns a list of the names of all the academic buildings."""
+        acadBuildings = []
+        for building in self.buildings:
+            if building.purpose == 'academic':
+                acadBuildings.append(building.name)
+        return acadBuildings        
+
 
 def main():
+    '''
     # Testing
     buildings = Buildings().getBuildingList()
-
+    
     print(Buildings().getNumBuildings())
 
     for building in range(len(buildings)):
@@ -268,7 +283,10 @@ def main():
         print(buildings[building].getRect())
         print(buildings[building].getColor())
         print()
-
+    '''
+    print(Buildings().getAcademicBuildings())
+    print(Buildings().getBuilding('Glass Hall').getSequence())
+    
 
 if __name__ == '__main__':
     main()        
