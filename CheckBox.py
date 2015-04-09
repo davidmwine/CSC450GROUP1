@@ -19,8 +19,8 @@ class CheckBox(object):
         '''draw() draws the checkbox, and an x in the middle if the checkbox is checked'''
         pygame.draw.rect(self.screen, (255, 255, 255), Rect((self.x, self.y), (self.w, self.w)), 0)
         if self.checked:
-            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y), (self.x + self.w, self.y + self.w))
-            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y + self.w), (self.x + self.w, self.y))
+            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y), (self.x + self.w, self.y + self.w), 2)
+            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y + self.w), (self.x + self.w, self.y), 2)
 
     def setChecked(self, x, y):
         '''setChecked(x, y) takes an x and y location of a clicked mouse, and
