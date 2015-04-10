@@ -140,6 +140,12 @@ class GameArea(object):
             if mouseX > self.controls.getWidth() / 2 \
             and mouseX < 3 * self.controls.getWidth() / 4 \
             and mouseY > self.height - self.controls.getHeight():
+                pass
+
+            # Upgrade Button
+            if mouseX > 3 * self.controls.getWidth() / 4 \
+            and mouseX < self.controls.getWidth() \
+            and mouseY > self.height - self.controls.getHeight():    
                 self.turn.showUpgradeOptions()
     
 
@@ -429,13 +435,16 @@ class GameArea(object):
         # This data will eventually be obtained from the lobby / setup menu.
         p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        '''
         p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildingsObj, self.scale)
     
         self.players = [p1, p2, p3, p4, p5, p6]
-                
+        '''
+        self.players = [p1, p2]
+        
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
         self.refreshPlayersDisplay()

@@ -14,7 +14,7 @@ class Controls:
         self.menu = Button(self.area, Rect((0,0,) + buttonwh), "Menu") 
         self.roll = Button(self.area, Rect((self.width/4,0,) + buttonwh), "Roll")
         self.trade = Button(self.area, Rect((self.width*2/4,0) + buttonwh), "Trade")
-        self.help = Button(self.area, Rect((self.width*3/4,0) + buttonwh), "Help") 
+        self.help = Button(self.area, Rect((self.width*3/4,0) + buttonwh), "Upgrade") 
 
     def getWidth(self):
         return self.width
