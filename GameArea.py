@@ -435,16 +435,19 @@ class GameArea(object):
         # This data will eventually be obtained from the lobby / setup menu.
         p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-        '''
+    
         p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildingsObj, self.scale)
         p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-    
-        self.players = [p1, p2, p3, p4, p5, p6]
-        '''
-        self.players = [p1, p2]
+        with open('FlagFile.txt') as flags:
+            playercount = int(flags.readline().split(":"    )[1])
         
+
+        self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
+        print(self.players)
+                                                
+
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
         self.refreshPlayersDisplay()
