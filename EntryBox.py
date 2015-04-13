@@ -94,9 +94,13 @@ class EntryBoxSet():
     def getFocused(self):
         return self.focused
 
-    def draw(self):
-        for i in self.entryBoxes:
-            self.entryBoxes.get(i).draw()
+    def draw(self, val = -1):
+        if val > -1: #KEYS MUST BE STRINGS OF INTEGERS IN ORDER OF BEING CREATED TO WORK
+            for i in range(val):
+                self.entryBoxes.get(str(i)).draw()
+        else:
+            for i in self.entryBoxes:
+                self.entryBoxes.get(i).draw()
     
 
 

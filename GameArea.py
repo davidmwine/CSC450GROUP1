@@ -315,7 +315,7 @@ class GameArea(object):
         self.playersDisplay.selectPlayer(self.playerIndex)
         self.refreshPlayersDisplay()
         
-        Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
         self.popupMenu.makePopupMenu()
         self.popupMenu.gameOptions()
         self.popupMenu.loadButtons()

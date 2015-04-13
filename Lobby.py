@@ -90,23 +90,54 @@ to determine the inital screen'''
 
         #Local Form Fields
         self.localAttributes = EntryBoxSet(self.scale)
-        boxRect = Rect(self.localScreen.get_width()/3+200*self.scale, self.localScreen.get_height()/4,40*self.scale,30*self.scale)
-        self.localAttributes.createNew(self.localScreen,1 ,boxRect, self.font_op, offset3, '6')
+        currHeight = self.localScreen.get_height()/24
+        boxRect = Rect(self.localScreen.get_width()/7, currHeight,40*self.scale,30*self.scale)
+        self.localAttributes.createNew(self.localScreen, 1 ,boxRect, self.font_op, offset3, '6')
         self.localAttributes.getBox('0').setMaxChar(1)
+        for i in range(6):
+            currHeight += self.localScreen.get_height()/7
+            boxRect = Rect(self.localScreen.get_width()/7, currHeight,40*self.scale,30*self.scale)
+            self.localAttributes.createNew(self.localScreen, 8,boxRect, self.font_op, offset3, 'Player ' + str(i+1))
+            self.localAttributes.getBox(str(i+1)).setMaxChar(8)
 
         #Boxes for Dean Selection
-        self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, offset3)
-        self.deanBoxes.newBox()
-        self.deanBoxes.newBox()
-        self.deanBoxes.newBox()
-        self.deanBoxes.newBox()
-        self.deanBoxes.newBox()
-        self.deanBoxes.newBox()
+        self.boxNum = 6
+        currPos = [self.localScreen.get_width()/4,\
+                             self.localScreen.get_height()/2 - self.localScreen.get_height()/8]
+        width = self.localScreen.get_width()/4 - self.localScreen.get_width()/16
+        height = self.localScreen.get_height()/4
+        rect1 = Rect(currPos[0], currPos[1], width, height)
+        currPos[0] += self.localScreen.get_width()/4
+        rect2 = Rect(currPos[0], currPos[1], width, height)
+        currPos[0] += self.localScreen.get_width()/4
+        rect3 = Rect(currPos[0], currPos[1], width, height)
+        currPos[0] = self.localScreen.get_width()/4
+        currPos[1] += self.localScreen.get_height()/2 - self.localScreen.get_height()/6
+        rect4 = Rect(currPos[0], currPos[1], width, height)
+        currPos[0] += self.localScreen.get_width()/4
+        rect5 = Rect(currPos[0], currPos[1], width, height)
+        currPos[0] += self.localScreen.get_width()/4
+        rect6 = Rect(currPos[0], currPos[1], width, height)
+        currPos[0] += self.localScreen.get_width()/4
+        self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, offset3, width, height)
+        self.deanBoxes.newBox(rect1)
+        self.deanBoxes.newBox(rect2)
+        self.deanBoxes.newBox(rect3)
+        self.deanBoxes.newBox(rect4)
+        self.deanBoxes.newBox(rect5)
+        self.deanBoxes.newBox(rect6)
         
         #Render Text
         self.hostText = self.font_op(40*self.scale, 'berlin').render("Please select game attributes.",1,(0,0,0))
         self.lfgText = self.font_op(40*self.scale, 'berlin').render("Please select a game to join.",1,(0,0,0))
         self.playersNumText = self.font_op(20*self.scale, 'berlin').render("Number of Players",1,(0,0,0))
+        self.player1Text = self.font_op(20*self.scale, 'berlin').render("Player 1 Name",1,(0,0,0))
+        self.player2Text = self.font_op(20*self.scale, 'berlin').render("Player 2 Name",1,(0,0,0))
+        self.player3Text = self.font_op(20*self.scale, 'berlin').render("Player 3 Name",1,(0,0,0))
+        self.player4Text = self.font_op(20*self.scale, 'berlin').render("Player 4 Name",1,(0,0,0))
+        self.player5Text = self.font_op(20*self.scale, 'berlin').render("Player 5 Name",1,(0,0,0))
+        self.player6Text = self.font_op(20*self.scale, 'berlin').render("Player 6 Name",1,(0,0,0))
+        self.playerTextList = [self.player1Text, self.player2Text, self.player3Text, self.player4Text, self.player5Text, self.player6Text]
         self.gameNameText = self.font_op(20*self.scale, 'berlin').render("Name of Game",1,(0,0,0))
         self.hostNameText = self.font_op(20*self.scale, 'berlin').render("Name of Host",1,(0,0,0))
 
@@ -196,11 +227,21 @@ to determine the inital screen'''
         textRect = (((self.localScreen.get_width() - self.hostText.get_width())/2, self.localScreen.get_height()/10))
         self.localScreen.blit(self.hostText, textRect)
 
-        textRect = textRect = ((self.localScreen.get_width()/3, self.localScreen.get_height()/4))
+        textRect = textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24))
         self.localScreen.blit(self.playersNumText, textRect)
 
-        self.localAttributes.draw()
-        self.deanBoxes.drawBoxes()
+        try: #Try to display the number of boxes equal to the value in the box, if failed, display most recent correct value
+            if 2 <= int(self.localAttributes.getBox('0').getText()) <= 6:
+                self.deanBoxes.drawBoxes(int(self.localAttributes.getBox('0').getText()))
+                self.boxNum = int(self.localAttributes.getBox('0').getText())
+            else:
+                self.deanBoxes.drawBoxes(self.boxNum)
+        except:
+            self.deanBoxes.drawBoxes(self.boxNum)
+        for i in range(self.boxNum): #Display only boxes for number of players
+            textRect = textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24 + (i+1)*self.localScreen.get_height()/7))
+            self.localScreen.blit(self.playerTextList[i], textRect)
+        self.localAttributes.draw(self.boxNum+1)
 
     def enteringForm(self, event):
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
@@ -240,6 +281,7 @@ to determine the inital screen'''
         self.gameExit = False
         #server = gameClient()
         #result = cmdList.get()
+        pygame.key.set_repeat(75, 75)
         while not self.gameExit:
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
@@ -248,9 +290,11 @@ to determine the inital screen'''
                     if self.enterForm:
                         self.enteringForm(event)
                     if event.key == K_ESCAPE and not self.enterForm:
-                        pygame.quit()
-                        sys.exit()
-                        break
+                        return "start"
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                    return 0
             self.alwaysDraw()
             self.gameType[self.gameOpt]()
             self.parent.blit(self.screen, (0,0))
