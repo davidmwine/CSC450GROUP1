@@ -92,9 +92,9 @@ to determine the inital screen'''
         #Local Form Fields
         self.localAttributes = EntryBoxSet(self.scale)
         currHeight = self.localScreen.get_height()/24
-        boxRect = Rect(self.localScreen.get_width()/7, currHeight,40*self.scale,30*self.scale)
-        self.localAttributes.createNew(self.localScreen, 1 ,boxRect, self.font_op, self.offset3, '6')
-        self.localAttributes.getBox('0').setMaxChar(1)
+        boxRect = Rect(self.localScreen.get_width()/7, currHeight,50*self.scale,30*self.scale)
+        self.localAttributes.newDropDown(self.localScreen, boxRect, self.font_op, self.scale, self.offset3, ['2', '3', '4', '5', '6'])
+        #self.localAttributes.getBox('0').setMaxChar(1)
         for i in range(6):
             currHeight += self.localScreen.get_height()/7
             boxRect = Rect(self.localScreen.get_width()/7, currHeight,160*self.scale,30*self.scale)
@@ -176,6 +176,11 @@ to determine the inital screen'''
                     currInd = self.deanBoxes.getBox(i).getCurrIndex()
                     currLock = self.deanBoxes.getBox(i).getIsLocked()
                     self.deanBoxes.updateLocks(currInd, currLock)
+            #else:
+                #currInd = self.deanBoxes.getBox(i).getCurrIndex()
+                #currLock = not self.deanBoxes.getBox(i).getIsLocked()
+                #self.deanBoxes.updateLocks(currInd, currLock)
+                #self.deanBoxes.getBox(i).setLocks(self.deanBoxes.getBox(0).getLocks()) #Make sure undisplayed boxes have up to date locks
         for i in range(self.boxNum):
             self.deanBoxes.getBox(i).isClicked(mouseX - self.offset3[0], mouseY - self.offset3[1])
         if self.gameTypeRadio.checkButton(mouseX, mouseY):
@@ -189,8 +194,9 @@ to determine the inital screen'''
             self.gameExit = True
             self.nextScreen = 'start'
             return
-        if self.gameOpt == 2 and self.localAttributes.isClicked(mouseX, mouseY):
-            self.enterForm = True
+        if self.gameOpt == 2 and self.localAttributes.isClicked(mouseX, mouseY, '0'):
+            if not self.localAttributes.getBox('0').hasFocus(): #If a drop down, has special interaction
+                self.enterForm = True
         elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
             self.enterForm = True
         elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
@@ -273,7 +279,10 @@ to determine the inital screen'''
                 self.checkBoxes[i].undoChecked()
                 self.deanBoxes.unlock(i)
                 self.localAttributes.getBox(str(i+1)).setText("Player " + str(i+1))
-        self.localAttributes.draw(self.boxNum+1)
+                currInd = self.deanBoxes.getBox(i).getCurrIndex()
+                currLock = self.deanBoxes.getBox(i).getIsLocked()
+                self.deanBoxes.updateLocks(currInd, currLock)
+        self.localAttributes.draw(self.boxNum+1, '0')
 
     def enteringForm(self, event):
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'

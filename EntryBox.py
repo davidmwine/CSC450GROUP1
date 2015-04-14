@@ -59,6 +59,68 @@ class EntryBox():
         else:
            return False
 
+class DropDown(object):
+
+    def __init__(self, parent, rect, font_op, scale, offset, vals):
+        self.parent = parent
+        self.menu = vals
+        self.font_op = font_op
+        self.rect = rect
+        self.area = parent.subsurface(self.rect)
+        self.scale = scale
+        self.offset = offset
+        self.currVal = self.menu[-1]
+        self.focus = False
+
+    def draw(self):
+        self.area.fill((255, 255, 255))
+        pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),\
+                                             self.area.get_height()), 2)
+        text = self.font_op(20*self.scale, 'berlin').render(self.currVal,1,(0,0,0))
+        self.area.blit(text, (10*self.scale,0))
+        pygame.draw.polygon(self.area,(0,0,0),((6*self.area.get_width()/10,\
+                                            3*self.area.get_height()/8),\
+                                            (8*self.area.get_width()/10,\
+                                            3*self.area.get_height()/8),\
+                                               (7*self.area.get_width()/10,\
+                                                5*self.area.get_height()/8), 2))
+        if self.focus:
+            pygame.draw.rect(self.parent, (255,255,255), (self.rect.left, self.rect.top+self.area.get_height(), self.area.get_width(),\
+                                                    len(self.menu)*self.area.get_height()), 0)
+            pygame.draw.rect(self.parent, (0,0,0), (self.rect.left, self.rect.top+self.area.get_height(), self.area.get_width(),\
+                                                    len(self.menu)*self.area.get_height()), 2)
+            for i in range(len(self.menu)):
+                text = self.font_op(20*self.scale, 'berlin').render(self.menu[i],1,(0,0,0))
+                width = self.font_op(20*self.scale, 'berlin').size(" " + "W")[0]
+                self.parent.blit(text, (width*self.scale + self.rect.left, self.rect.top+(i+1)*self.area.get_height()))
+
+    def getText(self):
+        return self.currVal
+
+    def hasFocus(self):
+        return self.focus
+
+    def giveFocus(self):
+        self.focus = not self.focus
+
+    def takeFocus(self):    
+        self.focus = False
+
+    def isClicked(self, mousex, mousey):
+        if(self.rect.left< mousex-self.offset[0]< self.rect.right+self.area.get_width()) and (self.rect.top< mousey-self.offset[1]< self.rect.top+self.area.get_height()):
+           return True
+        else:
+           return False
+
+    def isSelected(self, mousex, mousey):
+        if not self.focus:
+            return False
+        return False
+
+    def setNewVal(self, mousex, mousey):
+        pass
+
+
 
 class EntryBoxSet():
 
@@ -74,15 +136,34 @@ class EntryBoxSet():
         self.entryBoxes[name] = EntryBox(parent, length, position , font_op, self.scale, offset ,start_text)
         return self.entryBoxes[name]
 
-    def isClicked(self, mousex, mousey):
+    def newDropDown(self, parent, rect, font_op, scale, offset, vals, name = ''):
+        if name == '':
+            name = str(len(self.entryBoxes))
+        #print(name)
+        self.entryBoxes[name] = DropDown(parent, rect, font_op, scale, offset, vals)
+        return self.entryBoxes[name]
+
+    def isClicked(self, mousex, mousey, dropDownKey = ''):
         result = False
         for i in self.entryBoxes.keys():
-            if self.entryBoxes[i].isClicked(mousex, mousey):
+            if self.entryBoxes[i].isClicked(mousex, mousey) and (dropDownKey == '' or not self.entryBoxes[dropDownKey].isSelected(mousex, mousey)):
                 result = True
                 self.entryBoxes[i].giveFocus()
                 if not self.focused is None:
                     self.focused.takeFocus()
-                self.focused = self.entryBoxes[i]
+                if self.entryBoxes[i].hasFocus():
+                    self.focused = self.entryBoxes[i]
+                else:
+                    self.focused = None
+            elif dropDownKey != '' and self.entryBoxes[dropDownKey].isSelected(mousex, mousey):
+                result = True
+                self.entryBoxes[dropDownKey].setNewVal()
+            elif dropDownKey != '' and not self.entryBoxes[dropDownKey].isSelected(mousex, mousey)\
+                 and self.entryBoxes[dropDownKey].hasFocus() and not self.entryBoxes[dropDownKey].isClicked(mousex, mousey):
+                result = False
+                self.entryBoxes[dropDownKey].takeFocus()
+                self.focused = None
+                                                
         return result
             
     def getBoxes(self):
@@ -94,13 +175,16 @@ class EntryBoxSet():
     def getFocused(self):
         return self.focused
 
-    def draw(self, val = -1):
+    def draw(self, val = -1, dropDownKey = ''):
         if val > -1: #KEYS MUST BE STRINGS OF INTEGERS IN ORDER OF BEING CREATED TO WORK
             for i in range(val):
+                #print(val)
                 self.entryBoxes.get(str(i)).draw()
         else:
             for i in self.entryBoxes:
                 self.entryBoxes.get(i).draw()
+        if dropDownKey != '' and self.entryBoxes.get(dropDownKey).hasFocus():
+            self.entryBoxes.get(dropDownKey).draw()
     
 
 
