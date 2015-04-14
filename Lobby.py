@@ -9,6 +9,7 @@ from TextWrap import *
 from EntryBox import EntryBoxSet
 from Client import *
 from DeanBox import *
+from CheckBox import CheckBox
 
 
 class Lobby():
@@ -66,10 +67,10 @@ to determine the inital screen'''
         
         #init screens
         self.hostScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
-        offset1 = [self.width/10, self.height/3]
+        self.offset1 = [self.width/10, self.height/3]
         self.lfgScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*5/8, self.height*2/3-self.height/10)
         self.localScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
-        offset3 = [self.width/10, self.height/3]
+        self.offset3 = [self.width/10, self.height/3]
         
         #chat Box
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
@@ -79,11 +80,11 @@ to determine the inital screen'''
         #Host form fields
         self.hostAttributes = EntryBoxSet(self.scale)
         boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4,40*self.scale,30*self.scale)
-        self.hostAttributes.createNew(self.hostScreen,1 ,boxRect, self.font_op, offset1, '1')
+        self.hostAttributes.createNew(self.hostScreen,1 ,boxRect, self.font_op, self.offset1, '1')
         boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4+30*self.scale,40*self.scale,30*self.scale)
-        self.hostAttributes.createNew(self.hostScreen,15, boxRect, self.font_op , offset1, "Mastering MSU")
+        self.hostAttributes.createNew(self.hostScreen,15, boxRect, self.font_op , self.offset1, "Mastering MSU")
         boxRect = Rect(self.hostScreen.get_width()/3+200*self.scale, self.hostScreen.get_height()/4+60*self.scale,40*self.scale,30*self.scale)
-        self.hostAttributes.createNew(self.hostScreen,15 ,boxRect, self.font_op, offset1, "Player 1")
+        self.hostAttributes.createNew(self.hostScreen,15 ,boxRect, self.font_op, self.offset1, "Player 1")
 
         #LFG form Fields
         self.lfgAttributes = EntryBoxSet(self.scale)
@@ -92,18 +93,18 @@ to determine the inital screen'''
         self.localAttributes = EntryBoxSet(self.scale)
         currHeight = self.localScreen.get_height()/24
         boxRect = Rect(self.localScreen.get_width()/7, currHeight,40*self.scale,30*self.scale)
-        self.localAttributes.createNew(self.localScreen, 1 ,boxRect, self.font_op, offset3, '6')
+        self.localAttributes.createNew(self.localScreen, 1 ,boxRect, self.font_op, self.offset3, '6')
         self.localAttributes.getBox('0').setMaxChar(1)
         for i in range(6):
             currHeight += self.localScreen.get_height()/7
-            boxRect = Rect(self.localScreen.get_width()/7, currHeight,40*self.scale,30*self.scale)
-            self.localAttributes.createNew(self.localScreen, 8,boxRect, self.font_op, offset3, 'Player ' + str(i+1))
+            boxRect = Rect(self.localScreen.get_width()/7, currHeight,160*self.scale,30*self.scale)
+            self.localAttributes.createNew(self.localScreen, 8,boxRect, self.font_op, self.offset3, 'Player ' + str(i+1))
             self.localAttributes.getBox(str(i+1)).setMaxChar(8)
 
         #Boxes for Dean Selection
         self.boxNum = 6
-        currPos = [self.localScreen.get_width()/4,\
-                             self.localScreen.get_height()/2 - self.localScreen.get_height()/8]
+        currPos = [self.localScreen.get_width()/4 + self.localScreen.get_width()/20,\
+                             self.localScreen.get_height()/4]
         width = self.localScreen.get_width()/4 - self.localScreen.get_width()/16
         height = self.localScreen.get_height()/4
         rect1 = Rect(currPos[0], currPos[1], width, height)
@@ -111,7 +112,7 @@ to determine the inital screen'''
         rect2 = Rect(currPos[0], currPos[1], width, height)
         currPos[0] += self.localScreen.get_width()/4
         rect3 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] = self.localScreen.get_width()/4
+        currPos[0] = self.localScreen.get_width()/4 + self.localScreen.get_width()/20
         currPos[1] += self.localScreen.get_height()/2 - self.localScreen.get_height()/6
         rect4 = Rect(currPos[0], currPos[1], width, height)
         currPos[0] += self.localScreen.get_width()/4
@@ -119,17 +120,33 @@ to determine the inital screen'''
         currPos[0] += self.localScreen.get_width()/4
         rect6 = Rect(currPos[0], currPos[1], width, height)
         currPos[0] += self.localScreen.get_width()/4
-        self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, offset3, width, height)
-        self.deanBoxes.newBox(rect1)
-        self.deanBoxes.newBox(rect2)
-        self.deanBoxes.newBox(rect3)
-        self.deanBoxes.newBox(rect4)
-        self.deanBoxes.newBox(rect5)
-        self.deanBoxes.newBox(rect6)
+        self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, self.offset3, width, height)
+        default1 = 'Arts and Letters'
+        default2 = 'Business'
+        default3 = 'Education'
+        default4 = 'Health and Human Services'
+        default5 = 'Humanities and Public Affairs'
+        default6 = 'Agriculture'
+        self.deanBoxes.newBox(rect1, default1)
+        self.deanBoxes.newBox(rect2, default2)
+        self.deanBoxes.newBox(rect3, default3)
+        self.deanBoxes.newBox(rect4, default4)
+        self.deanBoxes.newBox(rect5, default5)
+        self.deanBoxes.newBox(rect6, default6)
+
+        #CheckBoxes for dean selection
+        self.checkBoxes = []
+        for i in range(6):
+            rect = self.deanBoxes.getBox(i).getRect()
+            x = rect.left - self.scale*60
+            y = rect.top + rect.height/2 - self.scale*20
+            w = self.scale*40
+            self.checkBoxes.append(CheckBox(self.localScreen, x, y, w))
         
         #Render Text
         self.hostText = self.font_op(40*self.scale, 'berlin').render("Please select game attributes.",1,(0,0,0))
         self.lfgText = self.font_op(40*self.scale, 'berlin').render("Please select a game to join.",1,(0,0,0))
+        self.CheckBoxText = self.font_op(40*self.scale, 'berlin').render("Click on Checkboxes to Select or Deselect Dean",1,(0,0,0))
         self.playersNumText = self.font_op(20*self.scale, 'berlin').render("Number of Players",1,(0,0,0))
         self.player1Text = self.font_op(20*self.scale, 'berlin').render("Player 1 Name",1,(0,0,0))
         self.player2Text = self.font_op(20*self.scale, 'berlin').render("Player 2 Name",1,(0,0,0))
@@ -151,7 +168,16 @@ to determine the inital screen'''
     def buttonClick(self):
         '''determine what happens when the mouse is clicked'''
         #Takes action if a button is clicked
-        mouseX, mouseY = pygame.mouse.get_pos() 
+        mouseX, mouseY = pygame.mouse.get_pos()
+        for i in range(len(self.checkBoxes)):
+            if i <= self.boxNum: #If box is displayed check it
+                if self.checkBoxes[i].setChecked(mouseX - self.offset3[0], mouseY - self.offset3[1]):
+                    self.deanBoxes.lock(i)
+                    currInd = self.deanBoxes.getBox(i).getCurrIndex()
+                    currLock = self.deanBoxes.getBox(i).getIsLocked()
+                    self.deanBoxes.updateLocks(currInd, currLock)
+        for i in range(self.boxNum):
+            self.deanBoxes.getBox(i).isClicked(mouseX - self.offset3[0], mouseY - self.offset3[1])
         if self.gameTypeRadio.checkButton(mouseX, mouseY):
             self.gameOpt = self.gameTypeRadio.getCurrent()
             return
@@ -224,10 +250,10 @@ to determine the inital screen'''
         
         self.localScreen.fill((255,255,255))
         
-        textRect = (((self.localScreen.get_width() - self.hostText.get_width())/2, self.localScreen.get_height()/10))
-        self.localScreen.blit(self.hostText, textRect)
+        textRect = (((self.localScreen.get_width() - (6*self.CheckBoxText.get_width()/5)), self.localScreen.get_height()/24))
+        self.localScreen.blit(self.CheckBoxText, textRect)
 
-        textRect = textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24))
+        textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24))
         self.localScreen.blit(self.playersNumText, textRect)
 
         try: #Try to display the number of boxes equal to the value in the box, if failed, display most recent correct value
@@ -239,8 +265,14 @@ to determine the inital screen'''
         except:
             self.deanBoxes.drawBoxes(self.boxNum)
         for i in range(self.boxNum): #Display only boxes for number of players
-            textRect = textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24 + (i+1)*self.localScreen.get_height()/7))
+            textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24 + (i+1)*self.localScreen.get_height()/7))
             self.localScreen.blit(self.playerTextList[i], textRect)
+            self.checkBoxes[i].draw()
+        if self.boxNum < 6:
+            for i in range (self.boxNum, 6):
+                self.checkBoxes[i].undoChecked()
+                self.deanBoxes.unlock(i)
+                self.localAttributes.getBox(str(i+1)).setText("Player " + str(i+1))
         self.localAttributes.draw(self.boxNum+1)
 
     def enteringForm(self, event):

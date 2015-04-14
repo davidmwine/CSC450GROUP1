@@ -54,7 +54,7 @@ class EntryBox():
         self.focus = False
 
     def isClicked(self, mousex, mousey):
-        if(self.x_start< mousex-self.offset[0]< self.x_start+self.width) and (self.y_start< mousey-self.offset[1]< self.y_start+self.height):
+        if(self.x_start< mousex-self.offset[0]< self.x_start+self.area.get_width()) and (self.y_start< mousey-self.offset[1]< self.y_start+self.area.get_height()):
            return True
         else:
            return False
