@@ -205,7 +205,7 @@ to determine the inital screen'''
         self.startButton.redraw()
         self.backButton.redraw()
         self.optButton.redraw()
-        self.chatBox.redraw()
+        #self.chatBox.redraw()
         
         
         
