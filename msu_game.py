@@ -7,6 +7,7 @@ from StartMenu import Start
 from OptionsMenu import Options
 from GameArea import GameArea
 from Sound import Sound
+from OnlineLobby import OnlineLobby
 from Lobby import Lobby
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the display
@@ -66,12 +67,13 @@ class Game(object):
         optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.click, self.bgMusic)
         playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
-        
+        Olobby = OnlineLobby(self.fontOp, self.screen, self.ratio)
         while True:
             if playGame.getScale() != self.screen.get_height()/1080:
                 self.ratio = self.screen.get_height()/1080
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
+                Olobby = Lobby(self.fontOp, self.screen, self.ratio)
             if self.nextScreen == "game":
                 self.nextScreen = playGame.play()
             if self.nextScreen == "lobby":

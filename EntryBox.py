@@ -5,7 +5,7 @@ from TextWrap import *
 
 class EntryBox():
 
-    def __init__(self, parent, length, position ,font_op, scale , offset, start_text = ''):
+    def __init__(self, parent, length, position ,font_op, scale , offset, start_text = '', maxChar = -1):
         self.parent = parent
         self.len = length
         self.font_op = font_op
@@ -19,7 +19,7 @@ class EntryBox():
         self.focus = False
         self.scale = scale
         self.offset = offset #For isClick to know proper location
-        self.maxChar = -1
+        self.maxChar = maxChar
 
     def draw(self):
         self.area.fill((255,255,255))
@@ -150,10 +150,9 @@ class EntryBoxSet():
         self.scale = scale
         self.focused = None
 
-    def createNew(self,parent, length, position , font_op , offset,start_text = '', name = ''):
-        if name == '':
-            name = str(len(self.entryBoxes))
-        self.entryBoxes[name] = EntryBox(parent, length, position , font_op, self.scale, offset ,start_text)
+    def createNew(self,parent, length, position , font_op , offset,start_text = '', maxChar = -1):
+        name = str(len(self.entryBoxes))
+        self.entryBoxes[name] = EntryBox(parent, length, position , font_op, self.scale, offset ,start_text, maxChar)
         return self.entryBoxes[name]
 
     def newDropDown(self, parent, rect, font_op, scale, offset, vals, name = ''):
