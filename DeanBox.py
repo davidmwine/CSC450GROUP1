@@ -120,9 +120,8 @@ class DeanBoxes(object):
         return self.boxes[val]
 
     def drawBoxes(self, val):
-        if val >=2 and val <= 6:
-            for i in range(val):
-                self.boxes[i].draw()
+        for i in range(val):
+            self.boxes[i].draw()
 
     def unlock(self, val):
         self.boxes[val].unlock()
