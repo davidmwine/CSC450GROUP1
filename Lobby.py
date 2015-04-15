@@ -170,6 +170,9 @@ to determine the inital screen'''
                 #self.deanBoxes.getBox(i).setLocks(self.deanBoxes.getBox(0).getLocks()) #Make sure undisplayed boxes have up to date locks
         for i in range(self.boxNum):
             self.deanBoxes.getBox(i).isClicked(mouseX - self.offset3[0], mouseY - self.offset3[1])
+        #if self.gameTypeRadio.checkButton(mouseX, mouseY):
+        #    self.gameOpt = self.gameTypeRadio.getCurrent()
+        #    return
         if self.startButton.wasClicked(mouseX, mouseY):
             self.gameExit = True
             self.nextScreen = 'game'
@@ -179,13 +182,13 @@ to determine the inital screen'''
             self.gameExit = True
             self.nextScreen = 'start'
             return
-        if self.gameOpt == 2 and self.localAttributes.isClicked(mouseX, mouseY, '0'):
+        if self.localAttributes.isClicked(mouseX, mouseY, '0'):
             if not self.localAttributes.getBox('0').hasFocus(): #If a drop down, has special interaction
                 self.enterForm = True
-        elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
-            self.enterForm = True
-        elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
-            self.enterForm = True
+        #elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
+        #    self.enterForm = True
+        #elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
+        #    self.enterForm = True
         else:
             self.enterForm = False
 
@@ -202,7 +205,7 @@ to determine the inital screen'''
         self.startButton.redraw()
         self.backButton.redraw()
         self.optButton.redraw()
-        self.chatBox.redraw()
+        #self.chatBox.redraw()
         
         
         
