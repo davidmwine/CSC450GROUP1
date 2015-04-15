@@ -2,15 +2,15 @@ import pygame
 import sys
 import os
 from pygame.locals import *
-from lobby import Lobby
+from SignIn import SignIn
 
 
 def main():
     pygame.init()
-    scale = .75
+    scale = .50
     screen = pygame.display.set_mode((int(1920*scale), int(1080*scale)))
     
-    lobby = Lobby(font_op, screen, scale)
+    lobby = SignIn(screen, font_op)
     lobby.run()
 
 

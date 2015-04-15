@@ -170,9 +170,6 @@ to determine the inital screen'''
                 #self.deanBoxes.getBox(i).setLocks(self.deanBoxes.getBox(0).getLocks()) #Make sure undisplayed boxes have up to date locks
         for i in range(self.boxNum):
             self.deanBoxes.getBox(i).isClicked(mouseX - self.offset3[0], mouseY - self.offset3[1])
-        if self.gameTypeRadio.checkButton(mouseX, mouseY):
-            self.gameOpt = self.gameTypeRadio.getCurrent()
-            return
         if self.startButton.wasClicked(mouseX, mouseY):
             self.gameExit = True
             self.nextScreen = 'game'
