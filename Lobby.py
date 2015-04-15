@@ -203,6 +203,11 @@ to determine the inital screen'''
             self.enterForm = True
         else:
             self.enterForm = False
+
+    def checkMousePos(self):
+        mouseX, mouseY = pygame.mouse.get_pos()
+        self.localAttributes.getBox('0').setIfHovered(mouseX - self.offset3[0], mouseY - self.offset3[1])
+        
             
     def alwaysDraw(self):
         '''Screen that is always drawn no matter which radio button is selected should be run before other draw functions'''
@@ -262,14 +267,8 @@ to determine the inital screen'''
         textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24))
         self.localScreen.blit(self.playersNumText, textRect)
 
-        try: #Try to display the number of boxes equal to the value in the box, if failed, display most recent correct value
-            if 2 <= int(self.localAttributes.getBox('0').getText()) <= 6:
-                self.deanBoxes.drawBoxes(int(self.localAttributes.getBox('0').getText()))
-                self.boxNum = int(self.localAttributes.getBox('0').getText())
-            else:
-                self.deanBoxes.drawBoxes(self.boxNum)
-        except:
-            self.deanBoxes.drawBoxes(self.boxNum)
+        self.boxNum = int(self.localAttributes.getBox('0').getText())
+        self.deanBoxes.drawBoxes(self.boxNum)
         for i in range(self.boxNum): #Display only boxes for number of players
             textRect = ((self.localScreen.get_width()/100, self.localScreen.get_height()/24 + (i+1)*self.localScreen.get_height()/7))
             self.localScreen.blit(self.playerTextList[i], textRect)
@@ -336,6 +335,7 @@ to determine the inital screen'''
                     pygame.quit()
                     sys.exit()
                     return 0
+            self.checkMousePos()
             self.alwaysDraw()
             self.gameType[self.gameOpt]()
             self.parent.blit(self.screen, (0,0))

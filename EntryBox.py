@@ -71,6 +71,8 @@ class DropDown(object):
         self.offset = offset
         self.currVal = self.menu[-1]
         self.focus = False
+        self.hovered = False
+        self.hovIndex = -1
 
     def draw(self):
         self.area.fill((255, 255, 255))
@@ -87,12 +89,14 @@ class DropDown(object):
         if self.focus:
             pygame.draw.rect(self.parent, (255,255,255), (self.rect.left, self.rect.top+self.area.get_height(), self.area.get_width(),\
                                                     len(self.menu)*self.area.get_height()), 0)
-            pygame.draw.rect(self.parent, (0,0,0), (self.rect.left, self.rect.top+self.area.get_height(), self.area.get_width(),\
-                                                    len(self.menu)*self.area.get_height()), 2)
+            if self.hovered:
+                pygame.draw.rect(self.parent, (3, 132, 243), (self.rect.left, self.rect.top+(self.hovIndex)*self.area.get_height(),\
+                                                                  self.area.get_width(), self.area.get_height()), 0)
             for i in range(len(self.menu)):
+                pygame.draw.rect(self.parent, (0,0,0), (self.rect.left, self.rect.top+(i+1)*self.area.get_height(),\
+                                                      self.area.get_width(), self.area.get_height()), 2)
                 text = self.font_op(20*self.scale, 'berlin').render(self.menu[i],1,(0,0,0))
-                width = self.font_op(20*self.scale, 'berlin').size(" " + "W")[0]
-                self.parent.blit(text, (width*self.scale + self.rect.left, self.rect.top+(i+1)*self.area.get_height()))
+                self.parent.blit(text, (10*self.scale + self.rect.left, self.rect.top+(i+1)*self.area.get_height()))
 
     def getText(self):
         return self.currVal
@@ -106,20 +110,36 @@ class DropDown(object):
     def takeFocus(self):    
         self.focus = False
 
+    def takeHover(self):
+        self.hover = False
+
     def isClicked(self, mousex, mousey):
         if(self.rect.left< mousex-self.offset[0]< self.rect.right+self.area.get_width()) and (self.rect.top< mousey-self.offset[1]< self.rect.top+self.area.get_height()):
            return True
         else:
            return False
 
-    def isSelected(self, mousex, mousey):
+    def isSelected(self):
         if not self.focus:
             return False
+        elif self.hovered:
+            return True
         return False
 
-    def setNewVal(self, mousex, mousey):
-        pass
+    def setNewVal(self):
+        self.currVal = self.menu[self.hovIndex-1]
 
+    def setIfHovered(self, mousex, mousey):
+        if not self.focus:
+            self.hovered = False
+        elif self.rect.left < mousex < self.rect.right and\
+             self.rect.bottom < mousey < self.rect.bottom + (len(self.menu))*self.area.get_height():
+            self.hovered = True
+            locInBox = (mousey - self.rect.bottom)%self.area.get_height()
+            topOfBox = mousey - locInBox
+            self.hovIndex = int(topOfBox/self.area.get_height())
+        else:
+            self.hovered = False
 
 
 class EntryBoxSet():
@@ -146,7 +166,8 @@ class EntryBoxSet():
     def isClicked(self, mousex, mousey, dropDownKey = ''):
         result = False
         for i in self.entryBoxes.keys():
-            if self.entryBoxes[i].isClicked(mousex, mousey) and (dropDownKey == '' or not self.entryBoxes[dropDownKey].isSelected(mousex, mousey)):
+            if self.entryBoxes[i].isClicked(mousex, mousey) and (dropDownKey == '' or not self.entryBoxes[dropDownKey].isSelected()):
+                #If box clicked and not clicked in area of a focused drop down
                 result = True
                 self.entryBoxes[i].giveFocus()
                 if not self.focused is None:
@@ -155,13 +176,17 @@ class EntryBoxSet():
                     self.focused = self.entryBoxes[i]
                 else:
                     self.focused = None
-            elif dropDownKey != '' and self.entryBoxes[dropDownKey].isSelected(mousex, mousey):
+            elif dropDownKey != '' and self.entryBoxes[dropDownKey].isSelected(): #If clicked in a focused dropdown
                 result = True
                 self.entryBoxes[dropDownKey].setNewVal()
-            elif dropDownKey != '' and not self.entryBoxes[dropDownKey].isSelected(mousex, mousey)\
+                self.entryBoxes[dropDownKey].takeFocus()
+                self.entryBoxes[dropDownKey].takeHover()
+            elif dropDownKey != '' and not self.entryBoxes[dropDownKey].isSelected()\
                  and self.entryBoxes[dropDownKey].hasFocus() and not self.entryBoxes[dropDownKey].isClicked(mousex, mousey):
+                #If clicked outside of a focused drop down, take away the focus
                 result = False
                 self.entryBoxes[dropDownKey].takeFocus()
+                self.entryBoxes[dropDownKey].takeHover()
                 self.focused = None
                                                 
         return result
