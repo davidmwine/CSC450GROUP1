@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+import os
 import sys
 from Player import Player
 from Building import Buildings
@@ -135,6 +136,19 @@ class GameArea(object):
                 self.diceRolled = True
                 self.rollDice()
 
+            # Trade Button
+            if mouseX > self.controls.getWidth() / 2 \
+            and mouseX < 3 * self.controls.getWidth() / 4 \
+            and mouseY > self.height - self.controls.getHeight():
+                pass
+
+            # Upgrade Button
+            if mouseX > 3 * self.controls.getWidth() / 4 \
+            and mouseX < self.controls.getWidth() \
+            and mouseY > self.height - self.controls.getHeight():    
+                self.turn.showUpgradeOptions()
+    
+
             # OK Button in Message Box
             if self.turn.okMsgDisplayed:
                 okRect = pygame.Rect(Turn.msgRect.x + self.turn.okRect.x,
@@ -147,7 +161,7 @@ class GameArea(object):
                         self.playersDisplay.updatePlayer(
                             self.players.index(self.turn.owner))
                         self.turn.feeMsgDisplayed = False
-                    self.turn.okMsgDisplayed = False
+                    self.turn.okMsgDisplayed = False    
                     self.endTurn()
 
             # Yes/No Button in Message Box
@@ -166,7 +180,23 @@ class GameArea(object):
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buyMsgDisplayed = False
                     self.endTurn()
-                    
+
+            # Upgrade Message Box (checkboxes and OK button)
+            if self.turn.upgradeDisplayed:
+                # Make checkboxes look checked when clicked.
+                self.turn.checkUpgrades(mouseX, mouseY)
+                
+                okUpgradeRect = pygame.Rect(Turn.upgradeRect.x + self.turn.okUpgradeRect.x,
+                                 Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
+                                 self.turn.okUpgradeRect.width, self.turn.okUpgradeRect.height)
+                if okUpgradeRect.collidepoint(pygame.mouse.get_pos()):
+                    # Once the player clicks OK, complete desired upgrades and update display.
+                    self.turn.upgrade()
+                    self.playersDisplay.selectPlayer(Turn.count % len(self.players))
+                    self.refreshPlayersDisplay()
+                    self.turn.upgradeDisplayed = False
+                    self.resumeTurn()
+                                        
 
         # menu open
         else:
@@ -178,11 +208,7 @@ class GameArea(object):
                     and mouseY> self.boardArea.get_height() / 2 - 80 \
                     and mouseY< self.boardArea.get_height() / 2 - 50:
                         self.popupMenu.setPopupActive(False)
-                        self.refreshGameBoard()
-                        if not self.diceRolled:
-                            self.turn.beginTurn()
-                        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
-                            self.turn.handleLanding()
+                        self.resumeTurn()
                         
                     # save game
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
@@ -223,7 +249,7 @@ class GameArea(object):
 
             # in game options
             else:
-                # change resolution (NOT WORKING)
+                # change resolution
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
                     self.resizeScreen(change)
@@ -256,6 +282,14 @@ class GameArea(object):
         pygame.display.update()
 
 
+    def resumeTurn(self):    
+        self.refreshGameBoard()
+        if not self.diceRolled:
+            self.turn.beginTurn()
+        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
+            self.turn.handleLanding()
+            
+
     def resizeScreen(self, newSize):
         """
         Resizes the screen and redraws all the components at the new scale.
@@ -281,7 +315,7 @@ class GameArea(object):
         self.playersDisplay.selectPlayer(self.playerIndex)
         self.refreshPlayersDisplay()
         
-        Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
         self.popupMenu.makePopupMenu()
         self.popupMenu.gameOptions()
         self.popupMenu.loadButtons()
@@ -307,7 +341,7 @@ class GameArea(object):
         self.refreshGameBoard()
         while count < self.roll[1] + self.roll[2]:
             self.clock.tick(30)
-            self.turn.moveToken()
+            self.player.increasePosition(1)
             count += 1
             if count == self.roll[1] + self.roll[2]:
                 self.midRoll = False
@@ -390,7 +424,8 @@ class GameArea(object):
 
     def play(self):
 
-        self.buildings = Buildings().getBuildingList()
+        self.buildingsObj = Buildings()
+        self.buildings = self.buildingsObj.getBuildingList()
 
         # Game Board
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
@@ -398,14 +433,20 @@ class GameArea(object):
         self.refreshDisplay()
 
         # This data will eventually be obtained from the lobby / setup menu.
-        p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildings, self.scale)
-        p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildings, self.scale)
-        p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildings, self.scale)
-        p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildings, self.scale)
-        p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildings, self.scale)
-        p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildings, self.scale)
+        p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+    
+        p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        with open('FlagFile.txt') as flags:
+            playercount = int(flags.readline().split(":"    )[1])
+        
 
-        self.players = [p1, p2, p3, p4, p5, p6]
+        self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
+        print(self.players)
+                                                
 
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
@@ -414,7 +455,7 @@ class GameArea(object):
         
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
-        Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
         Turn.initializeTurnCount()
         
         pygame.key.set_repeat(75, 75)
@@ -462,7 +503,8 @@ class GameArea(object):
 
 
 def main():
-    screen = GameArea(False, 2/3)
+    pygame.init()
+    screen = GameArea(pygame.display.Info(), False, 0.5)
     screen.play()
 
 
