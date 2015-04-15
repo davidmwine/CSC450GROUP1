@@ -5,6 +5,7 @@ import sys
 from Player import Player
 from Building import Buildings
 import Colors
+import GameInfo
 from PlayersDisplay import PlayersDisplay
 from Board import GameBoard
 from Controls import Controls
@@ -433,18 +434,23 @@ class GameArea(object):
         self.refreshDisplay()
 
         # This data will eventually be obtained from the lobby / setup menu.
-        p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-        p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        self.players = []
+        if not GameInfo.ONLINEGAME:
+            for i in range(GameInfo.PLAYERNUM):
+                p = Player(GameInfo.PLAYERS[i], GameInfo.PLAYERDEANS[i], self.gameBoard.getGB(), self.buildingsObj, self.scale)
+                self.players.append(p)
+        #p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildingsObj, self.scale)
     
-        p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-        p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-        p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-        p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildingsObj, self.scale)
-        with open('FlagFile.txt') as flags:
-            playercount = int(flags.readline().split(":"    )[1])
+        #p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #with open('FlagFile.txt') as flags:
+        #    playercount = int(flags.readline().split(":"    )[1])
         
 
-        self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
+        #self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
         print(self.players)
                                                 
 

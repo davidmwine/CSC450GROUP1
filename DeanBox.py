@@ -46,6 +46,9 @@ class DeanBox(object):
     def getRect(self):
         return self.rect
 
+    def getCurrDean(self):
+        return self.currColl
+
     def setLocked(self):
         self.locked = not self.locked
         if self.locked:

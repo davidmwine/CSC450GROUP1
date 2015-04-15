@@ -2,6 +2,7 @@ import pygame, sys, os
 from pygame.locals import *
 from Player import Player
 import Colors
+import GameInfo
 from ChatBoxCopy import ChatBox
 from RadioButton import RadioGroup
 from Controls import Button
@@ -176,6 +177,11 @@ to determine the inital screen'''
         if self.startButton.wasClicked(mouseX, mouseY):
             self.gameExit = True
             self.nextScreen = 'game'
+            GameInfo.ONLINEGAME = False
+            GameInfo.PLAYERNUM = self.boxNum
+            for i in range(self.boxNum):
+                GameInfo.PLAYERS.append(self.localAttributes.getBox(str(i+1)).getText())
+                GameInfo.PLAYERDEANS.append(self.deanBoxes.getBox(i).getCurrDean())
             self.setFlags()
             return
         if self.backButton.wasClicked(mouseX, mouseY):
