@@ -53,6 +53,21 @@ class EntryBox():
     def takeFocus(self):    
         self.focus = False
 
+    def getLeft(self):
+        return self.area.get_offset()[0]
+
+    def getRight(self):
+        return self.area.get_offset()[0] + self.area.get_width() 
+
+    def getTop(self):
+        return self.area.get_offset()[1]
+
+    def getBottom(self):
+        return self.area.get_offset()[1] + self.area.get_height()
+
+    def getHeight(self):
+        return self.area.get_height()
+
     def isClicked(self, mousex, mousey):
         xoffset, yoffset = self.area.get_abs_offset()
         if(xoffset < mousex<self.area.get_width() +xoffset and yoffset < mousey <self.area.get_height() + yoffset):
