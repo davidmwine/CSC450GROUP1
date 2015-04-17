@@ -53,12 +53,60 @@ class EntryBox():
     def takeFocus(self):    
         self.focus = False
 
-    def isClicked(self, mousex, mousey):
-        if(self.x_start< mousex-self.offset[0]< self.x_start+self.area.get_width()) and (self.y_start< mousey-self.offset[1]< self.y_start+self.area.get_height()):
-           return True
-        else:
-           return False
+    def getLeft(self):
+        return self.area.get_offset()[0]
 
+    def getRight(self):
+        return self.area.get_offset()[0] + self.area.get_width() 
+
+    def getTop(self):
+        return self.area.get_offset()[1]
+
+    def getBottom(self):
+        return self.area.get_offset()[1] + self.area.get_height()
+
+    def getHeight(self):
+        return self.area.get_height()
+
+    def isClicked(self, mousex, mousey):
+        xoffset, yoffset = self.area.get_abs_offset()
+        if(xoffset < mousex<self.area.get_width() +xoffset and yoffset < mousey <self.area.get_height() + yoffset):
+            return True
+        else:
+            return False
+        #if(self.x_start< mousex-self.offset[0]< self.x_start+self.area.get_width()) and (self.y_start< mousey-self.offset[1]< self.y_start+self.area.get_height()):
+         #  return True
+        #else:
+         #  return False
+
+         
+    def textEntry(self,event):
+        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
+        if event.key == K_ESCAPE:
+            self.focus = False
+        elif event.key == K_BACKSPACE:
+            self.deleteText()
+        elif event.key <= 127 and event.key >= 32 and (self.getMaxChar() == -1 or\
+             len(self.getText()) < self.getMaxChar()): #Only accept regular ascii characters (ignoring certain special characters)
+            checkCaps = pygame.key.get_pressed()
+            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
+                index = CHARS.index(chr(event.key))
+                currText = self.getText()
+                self.setText(currText+CHARSCAPS[index])
+            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
+                index = CHARS.index(chr(event.key))
+                if index < 26: #Only caps lock regular alphabet
+                    currText = self.getText()
+                    self.setText(currText+CHARSCAPS[index])
+                else:
+                    currText = self.getText()
+                    self.setText(currText+chr(event.key))
+            else:
+                currText = self.getText()
+                self.setText(currText+chr(event.key))
+        
+        
 class DropDown(object):
 
     def __init__(self, parent, rect, font_op, scale, offset, vals):
@@ -114,10 +162,15 @@ class DropDown(object):
         self.hover = False
 
     def isClicked(self, mousex, mousey):
-        if(self.rect.left< mousex-self.offset[0]< self.rect.right+self.area.get_width()) and (self.rect.top< mousey-self.offset[1]< self.rect.top+self.area.get_height()):
-           return True
+        xoffset, yoffset = self.area.get_abs_offset()
+        if(xoffset < mousex<self.area.get_width() +xoffset and yoffset < mousey <self.area.get_height    + yoffset):
+            return True
         else:
-           return False
+            return False
+        #if(self.rect.left< mousex-self.offset[0]< self.rect.right+self.area.get_width()) and (self.rect.top< mousey-self.offset[1]< self.rect.top+self.area.get_height()):
+        #   return True
+       # else:
+       #    return False
 
     def isSelected(self):
         if not self.focus:

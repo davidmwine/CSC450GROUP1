@@ -177,7 +177,7 @@ to determine the inital screen'''
                     self.buttonClick()
                 if event.type == KEYDOWN:
                     if self.enterForm:
-                        self.enteringForm(event)
+                        self.hostAttributes.getFocused().textEntry(event)
                     if event.key == K_ESCAPE and not self.enterForm:
                         pygame.quit()
                         sys.exit()
