@@ -103,10 +103,10 @@ class Rules(object):
             self.rulesHeader = 'Objective'
             self.rulesWords = ['Each player plays as the dean of one of the seven',
                                'colleges at MSU: ',
-                               u'\u2022 Agriculture             \u2022 Health and Human Services',
-                               u'\u2022 Arts and Letters    \u2022 Humanities and Public Affairs',
-                               u'\u2022 Business               \u2022 Natural and Applied Sciences',
-                               u'\u2022 Education', 
+                               '\u2022 Agriculture             \u2022 Health and Human Services',
+                               '\u2022 Arts and Letters    \u2022 Humanities and Public Affairs',
+                               '\u2022 Business               \u2022 Natural and Applied Sciences',
+                               '\u2022 Education', 
                                'The winner is the dean who, while avoiding bankruptcy,',
                                'can graduate the most students with the highest',
                                'degrees. (See Graduate Points.)']
@@ -127,11 +127,11 @@ class Rules(object):
                                'on campus. There are five "types" of buildings,',
                                'plus the corner spaces.  See the following pages',
                                'for more details about the different types of buildings.',
-                               u'\u2022 Academic Buildings',
-                               u'\u2022 Sports Venues',
-                               u'\u2022 Bear Chest Spaces',
-                               u'\u2022 Utilities',
-                               u'\u2022 Stealable Buildings']
+                               '\u2022 Academic Buildings',
+                               '\u2022 Sports Venues',
+                               '\u2022 Bear Chest Spaces',
+                               '\u2022 Utilities',
+                               '\u2022 Stealable Buildings']
             
         if self.rulesPage == 5:
             self.rulesHeader = 'Academic Buildings'
@@ -147,10 +147,10 @@ class Rules(object):
 
         if self.rulesPage == 6:
             self.rulesHeader = 'Sports Venues'
-            self.rulesWords = [u'\u2022 Hammons Field',
-                               u'\u2022 JQH Arena',
-                               u'\u2022 Allison South Stadium',
-                               u'\u2022 Plaster Sports Complex',
+            self.rulesWords = ['\u2022 Hammons Field',
+                               '\u2022 JQH Arena',
+                               '\u2022 Allison South Stadium',
+                               '\u2022 Plaster Sports Complex',
                                'Sports venue spaces on the board have a green',
                                'border around their trapezoid. If a player lands on a',
                                'sports venue that is currently unowned, he or she can',
@@ -161,8 +161,8 @@ class Rules(object):
 
         if self.rulesPage == 7:
             self.rulesHeader = 'Stealable Buildings'
-            self.rulesWords = [u'\u2022 Plaster Student Union',
-                               u'\u2022 University Bookstore',
+            self.rulesWords = ['\u2022 Plaster Student Union',
+                               '\u2022 University Bookstore',
                                'Each of these buildings generates $50,000 for the',
                                'owner on each turn that he/she owns it.  They can be',
                                'bought (from the bank) when a player lands on them,',
@@ -173,15 +173,15 @@ class Rules(object):
             self.rulesHeader = 'Utilities'
             self.rulesWords = ['These buildings cannot be owned.  When a player',
                                'lands on one of them, he/she must pay a fee:',
-                               u'\u2022 Power House: $200,000 fee',
-                               u'\u2022 Central Maintenance: $50,000 per building owned']
+                               '\u2022 Power House: $200,000 fee',
+                               '\u2022 Central Maintenance: $50,000 per building owned']
             
         if self.rulesPage == 9:
             self.rulesHeader = 'Bear Chest Spaces'
-            self.rulesWords = [u'\u2022 Foster Recreation Center',
-                               u'\u2022 Juanita K Hammons',
-                               u'\u2022 Hammons Student Center',
-                               u'\u2022 Meyer Library',
+            self.rulesWords = ['\u2022 Foster Recreation Center',
+                               '\u2022 Juanita K Hammons',
+                               '\u2022 Hammons Student Center',
+                               '\u2022 Meyer Library',
                                'Bear chest spaces have no trapezoid.  When a player',
                                'lands on one of them, a card from the center of the',
                                'board is turned over and its instructions are followed.']
@@ -244,20 +244,20 @@ class Rules(object):
                                'are an increased number of Graduate Points and',
                                'receiving increased fees when other players land on',
                                'the building:',
-                               u'\u2022 Associate level: 10% of current building cost',
-                               u'\u2022 Bachelor level: 20% of current building cost',
-                               u'\u2022 Master level: 30% of current building cost',
-                               u'\u2022 Doctoral level: 40% of current building cost']
+                               '\u2022 Associate level: 10% of current building cost',
+                               '\u2022 Bachelor level: 20% of current building cost',
+                               '\u2022 Master level: 30% of current building cost',
+                               '\u2022 Doctoral level: 40% of current building cost']
 
         if self.rulesPage == 16:
             self.rulesHeader = 'Graduate Points'
             self.rulesWords = ['When a player passes Carrington Hall, he/she',
                                'receives Graduate Points based on the number',
                                'of buildings owned and their degree levels.',
-                               u'\u2022 Associate level: 1 Graduate Point per building',
-                               u'\u2022 Bachelor level: 2 Graduate Points per building',
-                               u'\u2022 Master level: 3 Graduate Points per building',
-                               u'\u2022 Doctoral level: 4 Graduate Points per building',
+                               '\u2022 Associate level: 1 Graduate Point per building',
+                               '\u2022 Bachelor level: 2 Graduate Points per building',
+                               '\u2022 Master level: 3 Graduate Points per building',
+                               '\u2022 Doctoral level: 4 Graduate Points per building',
                                'The first player to earn 50 graduate points wins the',
                                'game.  The game can also be won if all other players',
                                'go bankrupt.']
