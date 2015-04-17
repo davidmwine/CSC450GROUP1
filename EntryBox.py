@@ -164,6 +164,7 @@ class EntryBoxSet():
 
     def isClicked(self, mousex, mousey, dropDownKey = ''):
         result = False
+        self.focused = None
         for i in self.entryBoxes.keys():
             if self.entryBoxes[i].isClicked(mousex, mousey) and (dropDownKey == '' or not self.entryBoxes[dropDownKey].isSelected()):
                 #If box clicked and not clicked in area of a focused drop down
@@ -171,10 +172,7 @@ class EntryBoxSet():
                 self.entryBoxes[i].giveFocus()
                 if not self.focused is None:
                     self.focused.takeFocus()
-                if self.entryBoxes[i].hasFocus():
-                    self.focused = self.entryBoxes[i]
-                else:
-                    self.focused = None
+                self.focused = self.entryBoxes[i]
             elif dropDownKey != '' and self.entryBoxes[dropDownKey].isSelected(): #If clicked in a focused dropdown
                 result = True
                 self.entryBoxes[dropDownKey].setNewVal()
@@ -186,8 +184,7 @@ class EntryBoxSet():
                 result = False
                 self.entryBoxes[dropDownKey].takeFocus()
                 self.entryBoxes[dropDownKey].takeHover()
-                self.focused = None
-                                                
+                self.focused = None                   
         return result
             
     def getBoxes(self):

@@ -140,4 +140,5 @@ class DeanBoxes(object):
             lockSet -= set([currInd])
         for i in self.boxes:
             i.setLocks(list(lockSet))
+        return lockSet
 
