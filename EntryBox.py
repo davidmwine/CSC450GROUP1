@@ -163,7 +163,7 @@ class DropDown(object):
 
     def isClicked(self, mousex, mousey):
         xoffset, yoffset = self.area.get_abs_offset()
-        if(xoffset < mousex<self.area.get_width() +xoffset and yoffset < mousey <self.area.get_height    + yoffset):
+        if(xoffset < mousex<self.area.get_width() +xoffset and yoffset < mousey <self.area.get_height()+ yoffset):
             return True
         else:
             return False
