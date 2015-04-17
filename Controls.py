@@ -66,6 +66,8 @@ class Button:
         self.height = self.area.get_height()
         self.left = rect[0]
         self.top = rect[1]
+        self.right = rect[2]
+        self.bottom = rect[3]
         self.bgcolor = bgcolor
         self.fontcolor = fontcolor
         self.text = label
@@ -92,6 +94,8 @@ class Button:
         xoffset, yoffset = self.area.get_abs_offset()
         return xoffset < mouseX<self.area.get_width() +xoffset \
                and yoffset <mouseY <self.area.get_height() + yoffset
+        #return (self.left < mouseX < self.left + self.width) and\
+        #        (self.top < mouseY < self.top + self.height)
         
         
 

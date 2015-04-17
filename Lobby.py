@@ -2,6 +2,7 @@ import pygame, sys, os
 from pygame.locals import *
 from Player import Player
 import Colors
+import GameInfo
 from ChatBoxCopy import ChatBox
 from RadioButton import RadioGroup
 from Controls import Button
@@ -10,6 +11,7 @@ from EntryBox import EntryBoxSet
 from Client import *
 from DeanBox import *
 from CheckBox import CheckBox
+from PopupMenu import PopupMenu
 
 
 class Lobby():
@@ -29,6 +31,10 @@ class Lobby():
 
         #booleans
         self.enterForm = False
+        self.canStart = False
+        self.errorMessageDisplayed = False
+        self.deanError = True
+        self.playerError = False
 
         #return on exit
         self.nextScreen = ''
@@ -156,41 +162,77 @@ to determine the inital screen'''
         '''determine what happens when the mouse is clicked'''
         #Takes action if a button is clicked
         mouseX, mouseY = pygame.mouse.get_pos()
-        for i in range(len(self.checkBoxes)):
-            if i <= self.boxNum: #If box is displayed check it
-                if self.checkBoxes[i].setChecked(mouseX - self.offset3[0], mouseY - self.offset3[1]):
-                    self.deanBoxes.lock(i)
-                    currInd = self.deanBoxes.getBox(i).getCurrIndex()
-                    currLock = self.deanBoxes.getBox(i).getIsLocked()
-                    self.deanBoxes.updateLocks(currInd, currLock)
-            #else:
-                #currInd = self.deanBoxes.getBox(i).getCurrIndex()
-                #currLock = not self.deanBoxes.getBox(i).getIsLocked()
-                #self.deanBoxes.updateLocks(currInd, currLock)
-                #self.deanBoxes.getBox(i).setLocks(self.deanBoxes.getBox(0).getLocks()) #Make sure undisplayed boxes have up to date locks
-        for i in range(self.boxNum):
-            self.deanBoxes.getBox(i).isClicked(mouseX - self.offset3[0], mouseY - self.offset3[1])
-        #if self.gameTypeRadio.checkButton(mouseX, mouseY):
-        #    self.gameOpt = self.gameTypeRadio.getCurrent()
-        #    return
-        if self.startButton.wasClicked(mouseX, mouseY):
-            self.gameExit = True
-            self.nextScreen = 'game'
-            self.setFlags()
-            return
-        if self.backButton.wasClicked(mouseX, mouseY):
-            self.gameExit = True
-            self.nextScreen = 'start'
-            return
-        if self.localAttributes.isClicked(mouseX, mouseY, '0'):
-            if not self.localAttributes.getBox('0').hasFocus(): #If a drop down, has special interaction
-                self.enterForm = True
-        #elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
-        #    self.enterForm = True
-        #elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
-        #    self.enterForm = True
+        #If an error message is being displayed, disable all other interactions
+        if not self.errorMessageDisplayed:
+            for i in range(len(self.checkBoxes)):
+                if i <= self.boxNum: #If box is displayed check it
+                    if self.checkBoxes[i].setChecked(mouseX - self.offset3[0], mouseY - self.offset3[1]):
+                        self.deanBoxes.lock(i)
+                        currInd = self.deanBoxes.getBox(i).getCurrIndex()
+                        currLock = self.deanBoxes.getBox(i).getIsLocked()
+                        locks = self.deanBoxes.updateLocks(currInd, currLock)
+                        if len(locks) == self.boxNum:
+                            self.canStart = True
+                            self.deanError = False
+                        else:
+                            self.canStart = False
+                            self.deanError = True
+                #else:
+                    #currInd = self.deanBoxes.getBox(i).getCurrIndex()
+                    #currLock = not self.deanBoxes.getBox(i).getIsLocked()
+                    #self.deanBoxes.updateLocks(currInd, currLock)
+                    #self.deanBoxes.getBox(i).setLocks(self.deanBoxes.getBox(0).getLocks()) #Make sure undisplayed boxes have up to date locks
+            for i in range(self.boxNum):
+                self.deanBoxes.getBox(i).isClicked(mouseX - self.offset3[0], mouseY - self.offset3[1])
+            #if self.gameTypeRadio.checkButton(mouseX, mouseY):
+            #    self.gameOpt = self.gameTypeRadio.getCurrent()
+            #    return
+            #if not self.canStart:
+            #    pass
+            if self.startButton.wasClicked(mouseX, mouseY):
+                checkDict = {}
+                for i in range(self.boxNum):
+                    checkText = self.localAttributes.getBox(str(i+1)).getText()
+                    if checkText not in checkDict and len(checkText) > 0:
+                        checkDict[checkText] = 0
+                        self.playerError = False
+                        self.canStart = True
+                    else:
+                        self.playerError = True
+                        self.canStart = False
+                        self.errorMessageDisplayed = True
+                        break
+                if self.canStart:
+                    self.gameExit = True
+                    self.nextScreen = 'game'
+                    GameInfo.ONLINEGAME = False
+                    GameInfo.PLAYERNUM = self.boxNum
+                    for i in range(self.boxNum):
+                        GameInfo.PLAYERS.append(self.localAttributes.getBox(str(i+1)).getText())
+                        GameInfo.PLAYERDEANS.append(self.deanBoxes.getBox(i).getCurrDean())
+                    self.setFlags()
+                    return
+                else:
+                    self.errorMessageDisplayed = True
+            if self.backButton.wasClicked(mouseX, mouseY):
+                self.gameExit = True
+                self.nextScreen = 'start'
+                return
+            if self.localAttributes.isClicked(mouseX, mouseY, '0'):
+                if not self.localAttributes.getBox('0').hasFocus(): #If a drop down, has special interaction
+                    self.enterForm = True
+            #elif self.gameOpt == 1 and self.lfgAttributes.isClicked(mouseX, mouseY):
+            #    self.enterForm = True
+            #elif self.gameOpt == 0 and self.hostAttributes.isClicked(mouseX, mouseY):
+            #    self.enterForm = True
+            else:
+                self.enterForm = False
+        #If error message is displayed wait for user interaction
         else:
             self.enterForm = False
+            if self.okPos[0] < mouseX < self.okPos[0] + self.okPos[2] and\
+               self.okPos[1] < mouseY < self.okPos[1] + self.okPos[3]:
+                self.errorMessageDisplayed = False
 
     def checkMousePos(self):
         mouseX, mouseY = pygame.mouse.get_pos()
@@ -235,7 +277,13 @@ to determine the inital screen'''
                 self.localAttributes.getBox(str(i+1)).setText("Player " + str(i+1))
                 currInd = self.deanBoxes.getBox(i).getCurrIndex()
                 currLock = self.deanBoxes.getBox(i).getIsLocked()
-                self.deanBoxes.updateLocks(currInd, currLock)
+                locks = self.deanBoxes.updateLocks(currInd, currLock)
+                if len(locks) == self.boxNum:
+                    self.canStart = True
+                    self.deanError = False
+                else:
+                    self.canStart = False
+                    self.deanError = True
         self.localAttributes.draw(self.boxNum+1, '0')
 
     def enteringForm(self, event):
@@ -264,6 +312,31 @@ to determine the inital screen'''
             else:
                 currText = focusedBox.getText()
                 focusedBox.setText(currText+chr(event.key))
+
+    def displayError(self):
+        errorScreen = self.screen.subsurface(self.width/4, self.height/4, self.width/2, self.height/2)
+        errorScreen.fill((Colors.LIGHTGRAY))
+        if self.deanError:
+            text = self.font_op(60*self.scale, 'helvetica').render("Please make sure all players",1,(0,0,0))
+            text2 = self.font_op(60*self.scale, 'helvetica').render("have selected their dean",1,(0,0,0))
+            errorScreen.blit(text, (errorScreen.get_width()/2 - text.get_width()/2, 20*self.scale))
+            errorScreen.blit(text2, (errorScreen.get_width()/2 - text2.get_width()/2, 100*self.scale))
+        elif self.playerError:
+            text = self.font_op(60*self.scale, 'helvetica').render("Please make sure each",1,(0,0,0))
+            text2 = self.font_op(60*self.scale, 'helvetica').render("player name is unique, and",1,(0,0,0))
+            text3 = self.font_op(60*self.scale, 'helvetica').render("at least 1 character long",1,(0,0,0))
+            errorScreen.blit(text, (errorScreen.get_width()/2 - text.get_width()/2, 20*self.scale))
+            errorScreen.blit(text2, (errorScreen.get_width()/2 - text2.get_width()/2, 100*self.scale))
+            errorScreen.blit(text3, (errorScreen.get_width()/2 - text3.get_width()/2, 180*self.scale))
+        self.okButton = pygame.Surface((140*self.scale, 80*self.scale))
+        self.okButton.fill(Colors.MEDGRAY)
+        okText = self.font_op(60*self.scale, 'helvetica').render("OK",1,(0,0,0))
+        textRect = okText.get_rect()
+        textRect.center = self.okButton.get_rect().center
+        self.okButton.blit(okText, textRect)
+        errorScreen.blit(self.okButton, (errorScreen.get_width()/2 - self.okButton.get_width()/2, 4*errorScreen.get_height()/5))
+        self.okPos = [errorScreen.get_width()/2 - self.okButton.get_width()/2 + self.width/4,\
+                      4*errorScreen.get_height()/5 + self.height/4, self.okButton.get_width(), self.okButton.get_height()]
 
     def setFlags(self):
         File = open('FlagFile.txt', 'w')
@@ -294,6 +367,8 @@ to determine the inital screen'''
                     return 0
             self.checkMousePos()
             self.alwaysDraw()
+            if self.errorMessageDisplayed:
+                self.displayError()
             self.parent.blit(self.screen, (0,0))
             pygame.display.update()
         #remove these when integrating
