@@ -172,10 +172,8 @@ to determine the inital screen'''
                         currLock = self.deanBoxes.getBox(i).getIsLocked()
                         locks = self.deanBoxes.updateLocks(currInd, currLock)
                         if len(locks) == self.boxNum:
-                            self.canStart = True
                             self.deanError = False
                         else:
-                            self.canStart = False
                             self.deanError = True
                 #else:
                     #currInd = self.deanBoxes.getBox(i).getCurrIndex()
@@ -196,12 +194,14 @@ to determine the inital screen'''
                     if checkText not in checkDict and len(checkText) > 0:
                         checkDict[checkText] = 0
                         self.playerError = False
-                        self.canStart = True
                     else:
                         self.playerError = True
-                        self.canStart = False
                         self.errorMessageDisplayed = True
                         break
+                if self.playerError or self.deanError:
+                    self.canStart = False
+                else:
+                    self.canStart = True
                 if self.canStart:
                     self.gameExit = True
                     self.nextScreen = 'game'
@@ -279,10 +279,8 @@ to determine the inital screen'''
                 currLock = self.deanBoxes.getBox(i).getIsLocked()
                 locks = self.deanBoxes.updateLocks(currInd, currLock)
                 if len(locks) == self.boxNum:
-                    self.canStart = True
                     self.deanError = False
                 else:
-                    self.canStart = False
                     self.deanError = True
         self.localAttributes.draw(self.boxNum+1, '0')
 
