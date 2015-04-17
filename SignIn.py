@@ -15,6 +15,7 @@ class SignIn():
         temprect = Rect(parent.get_width()/2-200,
                         parent.get_height()/2-200, 400,400)
         self.area = parent.subsurface(temprect)
+        self.parent = parent
         self.width = 400
         self.height = 400
         self.font_op = font_op
@@ -86,6 +87,8 @@ class SignIn():
                 f.write(self.userList[self.selected])
                 f.close
             except TypeError:
+                errorTxt = self.font_op(30,'berlin').render("A User Was Not Selected",1,Colors.WHITE,Colors.BLACK)
+                self.parent.blit(errorTxt, ((self.parent.get_width()-errorTxt.get_width())/2,20))
                 f.close
                 return
             self.next = 'Olobby'
@@ -154,7 +157,7 @@ class SignIn():
                         return 0
             self.draw()
             pygame.display.update()
-        pygame.quit()
+        return self.next
             
         
             

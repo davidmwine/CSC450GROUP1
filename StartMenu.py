@@ -3,6 +3,7 @@ from pygame.locals import *
 import os
 import sys
 import random
+from SignIn import SignIn
 
 class Start(object):
     def __init__(self, screen, fontOp, yOffset, intro, click, bgMusic):
@@ -258,4 +259,6 @@ class Start(object):
         if self.optionsOn:
             return "options"
         if self.gameOn:
-            return "lobby"
+            self.screen.fill((0,0,0))
+            signIn = SignIn(self.screen, self.fontOp)
+            return signIn.run()

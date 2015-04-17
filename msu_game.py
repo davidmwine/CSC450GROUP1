@@ -78,6 +78,8 @@ class Game(object):
                 self.nextScreen = playGame.play()
             if self.nextScreen == "lobby":
                 self.nextScreen = lobby.run()
+            if self.nextScreen == "Olobby":
+                self.nextScreen = Olobby.run()
             elif self.nextScreen == "start":
                 if self.splashShow:
                     startMenu.splash()
