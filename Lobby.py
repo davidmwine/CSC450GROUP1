@@ -196,6 +196,7 @@ to determine the inital screen'''
                     if checkText not in checkDict and len(checkText) > 0:
                         checkDict[checkText] = 0
                         self.playerError = False
+                        self.canStart = True
                     else:
                         self.playerError = True
                         self.canStart = False
