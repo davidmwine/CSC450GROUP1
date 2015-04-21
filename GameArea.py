@@ -1,9 +1,11 @@
 import pygame
 from pygame.locals import *
+import os
 import sys
 from Player import Player
 from Building import Buildings
 import Colors
+import GameInfo
 from PlayersDisplay import PlayersDisplay
 from Board import GameBoard
 from Controls import Controls
@@ -13,11 +15,10 @@ from PopupMenu import PopupMenu
 from Cards import Cards
 from Turn import Turn
 
-
 class GameArea(object):
 
 
-    def __init__(self, parent=False, scale=1):
+    def __init__(self, screenInfo, parent=False, scale=1):
         """Overall function for the Game Area Screen.  Takes a parent surface
         and scale as optional paramaters.  If no parent is passed this will be
         the pygame screen, else it drawn on the main screen.  Scale defaults to
@@ -29,6 +30,7 @@ class GameArea(object):
         self.scale = scale
         self.width = int(self.scale*1920)
         self.height = int(self.scale*1080)
+        self.infoScreen = screenInfo #For making fullscreen if fullscreen resolution
         
         self.clock = pygame.time.Clock()
         self.playerIndex = 0
@@ -46,6 +48,8 @@ class GameArea(object):
         self.cardDraw = False
         self.diceRolled = False
         self.midRoll = False
+
+        self.rulesPage = 1 #initialize rules page to start at 1
         
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
@@ -134,6 +138,19 @@ class GameArea(object):
                 self.diceRolled = True
                 self.rollDice()
 
+            # Trade Button
+            if mouseX > self.controls.getWidth() / 2 \
+            and mouseX < 3 * self.controls.getWidth() / 4 \
+            and mouseY > self.height - self.controls.getHeight():
+                pass
+
+            # Upgrade Button
+            if mouseX > 3 * self.controls.getWidth() / 4 \
+            and mouseX < self.controls.getWidth() \
+            and mouseY > self.height - self.controls.getHeight():    
+                self.turn.showUpgradeOptions()
+    
+
             # OK Button in Message Box
             if self.turn.okMsgDisplayed:
                 okRect = pygame.Rect(Turn.msgRect.x + self.turn.okRect.x,
@@ -146,7 +163,7 @@ class GameArea(object):
                         self.playersDisplay.updatePlayer(
                             self.players.index(self.turn.owner))
                         self.turn.feeMsgDisplayed = False
-                    self.turn.okMsgDisplayed = False
+                    self.turn.okMsgDisplayed = False    
                     self.endTurn()
 
             # Yes/No Button in Message Box
@@ -165,44 +182,85 @@ class GameArea(object):
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buyMsgDisplayed = False
                     self.endTurn()
-                    
+
+            # Upgrade Message Box (checkboxes and OK button)
+            if self.turn.upgradeDisplayed:
+                # Make checkboxes look checked when clicked.
+                self.turn.checkUpgrades(mouseX, mouseY)
+                
+                okUpgradeRect = pygame.Rect(Turn.upgradeRect.x + self.turn.okUpgradeRect.x,
+                                 Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
+                                 self.turn.okUpgradeRect.width, self.turn.okUpgradeRect.height)
+                if okUpgradeRect.collidepoint(pygame.mouse.get_pos()):
+                    # Once the player clicks OK, complete desired upgrades and update display.
+                    self.turn.upgrade()
+                    self.playersDisplay.selectPlayer(Turn.count % len(self.players))
+                    self.refreshPlayersDisplay()
+                    self.turn.upgradeDisplayed = False
+                    self.resumeTurn()
+                                        
 
         # menu open
         else:
             if not self.popupMenu.getOptionsActive():
                 if not self.popupMenu.getExitCheckActive():
-                    # resume game
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 80 \
-                    and mouseY< self.boardArea.get_height() / 2 - 50:
-                        self.popupMenu.setPopupActive(False)
-                        self.refreshGameBoard()
-                        if not self.diceRolled:
-                            self.turn.beginTurn()
-                        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
-                            self.turn.handleLanding()
+                    if not self.popupMenu.getRulesActive():
+                        # resume game
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 - 80 \
+                        and mouseY< self.boardArea.get_height() / 2 - 50:
+                            self.popupMenu.setPopupActive(False)
+                            self.resumeTurn()
                         
-                    # save game
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 40 \
-                    and mouseY< self.boardArea.get_height() / 2 - 10:
-                        pass # NEED TO IMPLEMENT
-                    # game options
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 \
-                    and mouseY< self.boardArea.get_height() / 2 + 30:
-                        self.popupMenu.setOptionsActive(True)
-                        self.popupMenu.gameOptions()
-                    # exit game
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 + 40 \
-                    and mouseY< self.boardArea.get_height() / 2 + 70:
-                        self.popupMenu.setExitCheckActive(True)
-                        self.popupMenu.exitCheck()
+                        # game rules
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 - 40 \
+                        and mouseY< self.boardArea.get_height() / 2 - 10:
+                            self.popupMenu.setRulesActive(True)
+                            self.popupMenu.rules(self.rulesPage)
+                        # game options
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 \
+                        and mouseY< self.boardArea.get_height() / 2 + 30:
+                            self.popupMenu.setOptionsActive(True)
+                            self.popupMenu.gameOptions()
+                        # exit game
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 + 40 \
+                        and mouseY< self.boardArea.get_height() / 2 + 70:
+                            self.popupMenu.setExitCheckActive(True)
+                            self.popupMenu.exitCheck()
+
+                    # In rules menu
+                    else:
+                        # back
+                        if mouseX > self.boardArea.get_width() / 2 - 50 \
+                        and mouseX < self.boardArea.get_width() / 2 + 50 \
+                        and mouseY> self.boardArea.get_height() / 2 + 95 \
+                        and mouseY< self.boardArea.get_height() / 2 + 125:
+                            self.popupMenu.setRulesActive(False)
+                            self.popupMenu.makePopupMenu()
+                        # next rule
+                        if mouseX > self.boardArea.get_width() / 2 + 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 160 \
+                        and mouseY> self.boardArea.get_height() / 2 + 95 \
+                        and mouseY< self.boardArea.get_height() / 2 + 115 \
+                        and self.rulesPage < 17:
+                            self.rulesPage += 1
+                            self.popupMenu.rules(self.rulesPage)
+                        # previous rule
+                        if mouseX > self.boardArea.get_width() / 2 - 160 \
+                        and mouseX < self.boardArea.get_width() / 2 - 100 \
+                        and mouseY> self.boardArea.get_height() / 2 + 95 \
+                        and mouseY< self.boardArea.get_height() / 2 + 115 \
+                        and self.rulesPage > 1:
+                            self.rulesPage -= 1
+                            self.popupMenu.rules(self.rulesPage)
+                        
                 # exiting game - double check
                 else:
                     # yes - exit
@@ -215,17 +273,25 @@ class GameArea(object):
                     # no - go back to menu
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 20 \
-                    and mouseY< self.boardArea.get_height() / 2 + 10:
+                    and mouseY> self.boardArea.get_height() / 2 - 20*2 \
+                    and mouseY< self.boardArea.get_height() / 2 + 10*2:
                         self.popupMenu.setExitCheckActive(False)
                         self.popupMenu.makePopupMenu()
 
             # in game options
             else:
-                # change resolution (NOT WORKING)
+                # change resolution
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
                     self.resizeScreen(change)
+    
+                # Change sound
+                if mouseX > self.boardArea.get_width()/2 - 22 \
+                and mouseX < self.boardArea.get_width()/2 + 22 \
+                and mouseY > self.boardArea.get_height()/2 + 168*self.scale \
+                and mouseY < self.boardArea.get_height()/2 + 230*self.scale:
+                    self.popupMenu.soundChange()
+                   
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \
@@ -255,12 +321,24 @@ class GameArea(object):
         pygame.display.update()
 
 
+    def resumeTurn(self):    
+        self.refreshGameBoard()
+        if not self.diceRolled:
+            self.turn.beginTurn()
+        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
+            self.turn.handleLanding()
+            
+
     def resizeScreen(self, newSize):
         """
         Resizes the screen and redraws all the components at the new scale.
         Called when the user selects a new resolution option.
         """
-        self.area = pygame.display.set_mode(newSize)
+        if self.infoScreen.current_h == newSize[1]\
+           and self.infoScreen.current_w == newSize[0]:
+            self.area = pygame.display.set_mode(newSize, pygame.FULLSCREEN)
+        else:
+            self.area = pygame.display.set_mode(newSize)
         self.scale = newSize[0] / 1920
         self.width = int(self.scale*1920)
         self.height = int(self.scale*1080)
@@ -276,7 +354,7 @@ class GameArea(object):
         self.playersDisplay.selectPlayer(self.playerIndex)
         self.refreshPlayersDisplay()
         
-        Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
         self.popupMenu.makePopupMenu()
         self.popupMenu.gameOptions()
         self.popupMenu.loadButtons()
@@ -302,7 +380,7 @@ class GameArea(object):
         self.refreshGameBoard()
         while count < self.roll[1] + self.roll[2]:
             self.clock.tick(30)
-            self.turn.moveToken()
+            self.player.increasePosition(1)
             count += 1
             if count == self.roll[1] + self.roll[2]:
                 self.midRoll = False
@@ -385,7 +463,8 @@ class GameArea(object):
 
     def play(self):
 
-        self.buildings = Buildings().getBuildingList()
+        self.buildingsObj = Buildings()
+        self.buildings = self.buildingsObj.getBuildingList()
 
         # Game Board
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
@@ -393,14 +472,25 @@ class GameArea(object):
         self.refreshDisplay()
 
         # This data will eventually be obtained from the lobby / setup menu.
-        p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildings, self.scale)
-        p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildings, self.scale)
-        p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildings, self.scale)
-        p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildings, self.scale)
-        p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildings, self.scale)
-        p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildings, self.scale)
+        self.players = []
+        if not GameInfo.ONLINEGAME:
+            for i in range(GameInfo.PLAYERNUM):
+                p = Player(GameInfo.PLAYERS[i], GameInfo.PLAYERDEANS[i], self.gameBoard.getGB(), self.buildingsObj, self.scale)
+                self.players.append(p)
+        #p1 = Player("player1", "Agriculture", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p2 = Player("player2", "Arts and Letters", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+    
+        #p3 = Player("player3", "Natural and Applied Sciences", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p4 = Player("player4", "Education", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p5 = Player("player5", "Health and Human Services", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #p6 = Player("player6", "Humanities and Public Affairs", self.gameBoard.getGB(), self.buildingsObj, self.scale)
+        #with open('FlagFile.txt') as flags:
+        #    playercount = int(flags.readline().split(":"    )[1])
+        
 
-        self.players = [p1, p2, p3, p4, p5, p6]
+        #self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
+        print(self.players)
+                                                
 
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
@@ -409,7 +499,7 @@ class GameArea(object):
         
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
-        Turn.setStaticVariables(self.scale, self.area, self.buildings)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
         Turn.initializeTurnCount()
         
         pygame.key.set_repeat(75, 75)
@@ -457,7 +547,8 @@ class GameArea(object):
 
 
 def main():
-    screen = GameArea(False, 2/3)
+    pygame.init()
+    screen = GameArea(pygame.display.Info(), False, 0.5)
     screen.play()
 
 
