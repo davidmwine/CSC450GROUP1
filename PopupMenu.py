@@ -3,7 +3,7 @@ import sys
 import os
 from Controls import Button
 from RadioButton import RadioGroup
-
+from Sound import Sound
 
 class PopupMenu(object):
     def __init__(self, parent):
@@ -19,6 +19,7 @@ class PopupMenu(object):
         self.optionActive = False
         self.exitCheckActive = False
         self.rulesActive = False
+        self.bgMusic = Sound('start_menu')
 
     def loadButtons(self):
         # RADIO BUTTON GROUP
@@ -29,6 +30,10 @@ class PopupMenu(object):
         self.resolveButton.newButton(self.area.get_width() / 2 + 20, self.area.get_height() / 2 + 5, 5)
         #self.resolveButton.newButton(self._area.get_width() / 2 + 20, self._area.get_height() / 2 + 25, 5) #4:3 not supported yet
         self.resolveButton.setCurrent(self.resOpt)
+
+        #Sound buttons
+        self.img_on = pygame.image.load(os.path.join("img", "on_small.png")).convert_alpha()
+        self.img_off = pygame.image.load(os.path.join("img", "off_small.png")).convert_alpha()
         
     def changeResolution(self, X, Y):
         # supposed to check radio button and return whichever resolution was selected
@@ -78,6 +83,29 @@ class PopupMenu(object):
         self.area.blit(self.resolutionText4, (self.area.get_width() / 2 + 30, self.area.get_height() / 2))
         #self._area.blit(self.resolutionText5, (self._area.get_width() / 2 + 30, self._area.get_height() / 2 + 20)) #4:3 not supported yet
         self.resolveButton.draw()
+
+        #Sound heading
+        self.textSound = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Sound", True, (94, 0, 9))
+        self.area.blit(self.textSound, (self.area.get_width() / 2 - (0.5 * self.textSound.get_width()), self.area.get_height() - 65))
+
+        #Sound button - On initial popup
+        if pygame.mixer.get_busy():
+            self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
+        else:
+            self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
+   
+    def soundChange(self):
+        #Sound button
+        if not pygame.mixer.get_busy():
+            self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
+        else:
+            self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
+
+        # Stop or start sound
+        if pygame.mixer.get_busy():
+            pygame.mixer.stop()
+        else:
+            self.bgMusic.play()       
 
     def rules(self, pageNum=None):
         self.popupActive = True

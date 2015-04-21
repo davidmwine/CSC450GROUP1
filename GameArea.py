@@ -15,7 +15,6 @@ from PopupMenu import PopupMenu
 from Cards import Cards
 from Turn import Turn
 
-
 class GameArea(object):
 
 
@@ -274,8 +273,8 @@ class GameArea(object):
                     # no - go back to menu
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 20 \
-                    and mouseY< self.boardArea.get_height() / 2 + 10:
+                    and mouseY> self.boardArea.get_height() / 2 - 20*2 \
+                    and mouseY< self.boardArea.get_height() / 2 + 10*2:
                         self.popupMenu.setExitCheckActive(False)
                         self.popupMenu.makePopupMenu()
 
@@ -285,6 +284,14 @@ class GameArea(object):
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
                     self.resizeScreen(change)
+    
+                # Change sound
+                if mouseX > self.boardArea.get_width()/2 - 22 \
+                and mouseX < self.boardArea.get_width()/2 + 22 \
+                and mouseY > self.boardArea.get_height()/2 + 168*self.scale \
+                and mouseY < self.boardArea.get_height()/2 + 230*self.scale:
+                    self.popupMenu.soundChange()
+                   
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \

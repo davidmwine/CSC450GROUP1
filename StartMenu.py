@@ -1,3 +1,4 @@
+'''Start menu with game options, rules, and lobby '''
 import pygame
 from pygame.locals import *
 import os
@@ -6,14 +7,14 @@ import random
 from SignIn import SignIn
 
 class Start(object):
-    def __init__(self, screen, fontOp, yOffset, intro, click, bgMusic):
+    def __init__(self, screen, fontOp, yOffset, intro, bgMusic):
         self.screen = screen
         self.fontOp = fontOp
         self.yOffset = yOffset
         self.gameActive = 0  #Is the game running or not
         self.percentOfMax = self.screen.get_height()/1080
         #self.quitGame = False
-        self.soundRunning = 0
+        self.soundRunning = pygame.mixer.get_busy() 
         self.loadImages()
         self.menuOn = True
         self.rulesOn = False
@@ -21,7 +22,7 @@ class Start(object):
         self.clock = pygame.time.Clock()
         self.extraPad = self.screen.get_height()/16
         self.intro = intro
-        self.click = click
+        #self.click = click
         self.bgMusic = bgMusic
 
     def backToStart(self):
@@ -148,7 +149,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textRules.get_width()\
            and mouseY > (70+self.screen.get_height()/4+self.yOffset+75*self.gameActive)+self.extraPad\
            and mouseY < (80+self.screen.get_height()/4+self.yOffset+self.textRules.get_height()+75*self.gameActive)+self.extraPad:
-            self.click.play()
+            #self.click.play()
             self.menuOn = False
             self.gameOn = False
             self.optionsOn = False
@@ -158,7 +159,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textOptions.get_width()\
            and mouseY > (145+self.screen.get_height()/4+self.yOffset+75*self.gameActive)+self.extraPad\
            and mouseY < (155+self.screen.get_height()/4+self.yOffset+self.textOptions.get_height()+75*self.gameActive)+self.extraPad:
-            self.click.play()
+            #self.click.play()
             self.menuOn = False
             self.rulesOn = False
             self.gameOn = False
@@ -168,7 +169,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textStart.get_width()\
            and mouseY > (self.screen.get_height()/4+self.yOffset-5)+self.extraPad \
            and mouseY < (self.screen.get_height()/4+self.yOffset+self.textStart.get_height()+5)+self.extraPad:
-            self.click.play() 
+            #self.click.play() 
             self.menuOn = False
             self.rulesOn = False
             self.optionsOn = False
@@ -178,7 +179,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textExit.get_width()\
            and mouseY > (220+self.screen.get_height()/4+self.yOffset+75*self.gameActive)+self.extraPad\
            and mouseY < (230+self.screen.get_height()/4+self.yOffset+self.textExit.get_height()+75*self.gameActive)+self.extraPad:
-            self.click.play()  
+            #self.click.play()  
             self.leaveGame()
         
 
@@ -232,7 +233,7 @@ class Start(object):
 
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    self.click.play()
+                    #self.click.play()
                     self.leaveGame()
                 #if event.type == KEYDOWN:
                     #if event.key == K_ESCAPE:
