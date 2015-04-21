@@ -49,6 +49,8 @@ class GameArea(object):
         self.cardDraw = False
         self.diceRolled = False
         self.midRoll = False
+
+        self.rulesPage = 1 #initialize rules page to start at 1
         
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
@@ -203,34 +205,63 @@ class GameArea(object):
         else:
             if not self.popupMenu.getOptionsActive():
                 if not self.popupMenu.getExitCheckActive():
-                    # resume game
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 80 \
-                    and mouseY< self.boardArea.get_height() / 2 - 50:
-                        self.popupMenu.setPopupActive(False)
-                        self.resumeTurn()
+                    if not self.popupMenu.getRulesActive():
+                        # resume game
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 - 80 \
+                        and mouseY< self.boardArea.get_height() / 2 - 50:
+                            self.popupMenu.setPopupActive(False)
+                            self.resumeTurn()
                         
-                    # save game
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 40 \
-                    and mouseY< self.boardArea.get_height() / 2 - 10:
-                        pass # NEED TO IMPLEMENT
-                    # game options
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 \
-                    and mouseY< self.boardArea.get_height() / 2 + 30:
-                        self.popupMenu.setOptionsActive(True)
-                        self.popupMenu.gameOptions()
-                    # exit game
-                    if mouseX > self.boardArea.get_width() / 2 - 100 \
-                    and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 + 40 \
-                    and mouseY< self.boardArea.get_height() / 2 + 70:
-                        self.popupMenu.setExitCheckActive(True)
-                        self.popupMenu.exitCheck()
+                        # game rules
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 - 40 \
+                        and mouseY< self.boardArea.get_height() / 2 - 10:
+                            self.popupMenu.setRulesActive(True)
+                            self.popupMenu.rules(self.rulesPage)
+                        # game options
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 \
+                        and mouseY< self.boardArea.get_height() / 2 + 30:
+                            self.popupMenu.setOptionsActive(True)
+                            self.popupMenu.gameOptions()
+                        # exit game
+                        if mouseX > self.boardArea.get_width() / 2 - 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 100 \
+                        and mouseY> self.boardArea.get_height() / 2 + 40 \
+                        and mouseY< self.boardArea.get_height() / 2 + 70:
+                            self.popupMenu.setExitCheckActive(True)
+                            self.popupMenu.exitCheck()
+
+                    # In rules menu
+                    else:
+                        # back
+                        if mouseX > self.boardArea.get_width() / 2 - 50 \
+                        and mouseX < self.boardArea.get_width() / 2 + 50 \
+                        and mouseY> self.boardArea.get_height() / 2 + 95 \
+                        and mouseY< self.boardArea.get_height() / 2 + 125:
+                            self.popupMenu.setRulesActive(False)
+                            self.popupMenu.makePopupMenu()
+                        # next rule
+                        if mouseX > self.boardArea.get_width() / 2 + 100 \
+                        and mouseX < self.boardArea.get_width() / 2 + 160 \
+                        and mouseY> self.boardArea.get_height() / 2 + 95 \
+                        and mouseY< self.boardArea.get_height() / 2 + 115 \
+                        and self.rulesPage < 17:
+                            self.rulesPage += 1
+                            self.popupMenu.rules(self.rulesPage)
+                        # previous rule
+                        if mouseX > self.boardArea.get_width() / 2 - 160 \
+                        and mouseX < self.boardArea.get_width() / 2 - 100 \
+                        and mouseY> self.boardArea.get_height() / 2 + 95 \
+                        and mouseY< self.boardArea.get_height() / 2 + 115 \
+                        and self.rulesPage > 1:
+                            self.rulesPage -= 1
+                            self.popupMenu.rules(self.rulesPage)
+                        
                 # exiting game - double check
                 else:
                     # yes - exit
