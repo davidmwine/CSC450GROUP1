@@ -19,8 +19,6 @@ class PopupMenu(object):
         self.optionActive = False
         self.exitCheckActive = False
         self.rulesActive = False
-
-        self.musicOff = pygame.mixer.get_busy()
         self.bgMusic = Sound('start_menu')
 
     def loadButtons(self):

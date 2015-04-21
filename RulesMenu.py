@@ -56,6 +56,7 @@ class Rules(object):
             and mouseY > self.screen.get_height()/8+self.yOffset+390 \
             and mouseY < self.screen.get_height()/8+self.yOffset+self.imgArrowleft.get_height()+400:
                 #self.click.play()
+
                 self.rulesNextPage(-1)
                 return True
         #Next page
