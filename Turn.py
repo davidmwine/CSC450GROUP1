@@ -17,6 +17,7 @@ class Turn(object):
         self.okMsgDisplayed = False     # True if any OK message is displayed
         self.feeMsgDisplayed = False
         self.upgradeDisplayed = False   # True if upgrade screen is displayed
+        self.cardDraw = False   # True if player landed on a card space
 
 
     @staticmethod
@@ -52,8 +53,10 @@ class Turn(object):
         and giving instructions to roll the dice.
         """
         print("------- " + self.player.getName() + "'s turn -------")
+        # If a player owns a stealable building, add that turn's profit to their $.
+        self.player.addDollars(50000 * self.player.getNumStealable())
         (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
-                Turn.font, self.player.getName() + "'s turn. Click 'Roll'")
+                Turn.font, self.player.getName() + "'s turn. Roll Dice.")
         if (size == "small"):
             Turn.smallMsgSurface.blit(msgBox, (0, 0))
         else:    
@@ -78,29 +81,80 @@ class Turn(object):
         position = self.player.getPosition()
         self.building = Turn.buildings.getBuildingList()[position]
         print("Token landed on", self.building.getName())
+        
         if self.building.getPurpose() == "special":
-            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                Turn.font, "Special message about " + self.building.getName())
+            if self.building.getName() == "Carrington Hall":
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, "Welcome to Carrington Hall!")
+            elif self.building.getName() == "Bear Park North":
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, "Welcome to Bear Park North! Lose a turn!")
+            elif self.building.getName() == "Bear Park South":
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, "Welcome to Bear Park South! Take an extra turn!")    
+            elif self.building.getName() == "Accreditation Review":
+                (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, "Welcome to Accreditation Review!")
             Turn.msgSurface.blit(msgBox, (0, 0))
             self.okMsgDisplayed = True
-        else:    
+            
+        elif self.building.getPurpose() == "card":
+            self.cardDraw = True
+            (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
+                Turn.font, "Welcome to " + self.building.getName() + "! Draw a card.")
+            Turn.smallMsgSurface.blit(msgBox, (0, 0))
+                
+        elif self.building.getPurpose() == "utility":
+            if self.building.getName() == "Power House":
+                self.feeAmt = 200000;
+            elif self.building.getName() == "Central Stores & Maintenance":
+                self.feeAmt = 50000 * self.player.getNumBuildings()
+            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, "You pay ${:,.0f} to {}.".format(self.feeAmt,
+                                                        self.building.getName()))
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.okMsgDisplayed = True
+            self.feeMsgDisplayed = True    
+        
+        else:    # ownable buildings
             self.owner = self.building.getOwner()
             if self.owner == self.player:
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "You already own " + self.building.getName() + ".")
                 Turn.msgSurface.blit(msgBox, (0, 0))
                 self.okMsgDisplayed = True
+                
             elif self.owner == None:
-                (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                if self.building.getPurpose() == "stealable":
+                    (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                    Turn.scale, Turn.msgRect, Turn.font,
+                    "Do you want to buy " + self.building.getName()
+                    + "? It will generate $50,000 profit for you on each turn.")
+                else:    
+                    (msgBox, self.yesRect, self.noRect) = displayMsgYN(
                     Turn.scale, Turn.msgRect, Turn.font,
                     "Do you want to buy " + self.building.getName() + "?")
                 Turn.msgSurface.blit(msgBox, (0, 0))
-                self.buyMsgDisplayed = True  
+                self.buyMsgDisplayed = True
+                
             elif self.owner != self.player:
-                self.feeAmt = self.building.getFeeAmount()
+                if self.building.getPurpose() == "stealable":
+                    (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                        Turn.scale, Turn.msgRect, Turn.font,
+                        "Do you want to buy " + self.building.getName()
+                        + " and steal it from " + self.owner.getName()
+                        + "? It will generate $50,000 profit for you on each turn.")
+                    Turn.msgSurface.blit(msgBox, (0, 0))
+                    self.buyMsgDisplayed = True
+                    return
+            
+                if self.building.getPurpose() == "academic":
+                    self.feeAmt = self.building.getFeeAmount(Turn.buildings.getCurrentPrice())
+                elif self.building.getPurpose() == "sports":
+                    self.feeAmt = 1000 * self.player.getPoints()
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                    Turn.font, "You pay $" + str(self.feeAmt) + " to " +
-                                self.owner.getName() + ".")
+                    Turn.font, "You pay ${:,.0f} to {}.".format(self.feeAmt,
+                                                        self.owner.getName()))
                 Turn.msgSurface.blit(msgBox, (0, 0))
                 self.okMsgDisplayed = True
                 self.feeMsgDisplayed = True
@@ -108,16 +162,31 @@ class Turn(object):
 
     def buy(self):
         """Takes care of bookkeeping once player clicked Yes to buy building"""
-        self.player.subtractDollars(self.building.getPrice())
+        self.player.subtractDollars(Turn.buildings.getCurrentPrice())
         self.player.addBuilding(self.building)
         self.building.setOwner(self.player)
         self.building.setColor(self.player.getColor())
+        if self.building.getPurpose() == 'academic':
+            self.player.addPointsPerRound(1)
 
 
     def chargeFees(self):
         """If building is already owned, fees are paid to owner."""
         self.player.subtractDollars(self.feeAmt)
-        self.owner.addDollars(self.feeAmt)
+        if self.owner != None:
+            self.owner.addDollars(self.feeAmt)
+
+
+    def steal(self):
+        """Takes care of bookkeeping when player buys a stealable building."""
+        if self.owner != None:
+            self.owner.removeBuilding(self.building)
+            self.owner.removeStealable(self.building.getName())
+        self.player.subtractDollars(Turn.buildings.getCurrentPrice())
+        self.player.addBuilding(self.building)
+        self.player.addStealable(self.building.getName())
+        self.building.setOwner(self.player)
+        self.building.setColor(self.player.getColor())
 
 
     def showUpgradeOptions(self):
@@ -272,6 +341,7 @@ class Turn(object):
             if self.bachelorCheckboxes[i].getChecked():
                 building = Turn.buildings.getBuilding(self.bachelors[i])
                 self.player.subtractDollars(100000)
+                self.player.addPointsPerRound(1)
                 building.setDegreeLvl("Bachelor")
 
         for i in range(len(self.masters)):
@@ -279,8 +349,10 @@ class Turn(object):
                 building = Turn.buildings.getBuilding(self.masters[i])
                 if building.getDegreeLvl() == "Associate":
                     self.player.subtractDollars(250000)
+                    self.player.addPointsPerRound(2)
                 else:
                     self.player.subtractDollars(150000)
+                    self.player.addPointsPerRound(1)
                 building.setDegreeLvl("Master")
 
         for i in range(len(self.doctorates)):
@@ -288,9 +360,12 @@ class Turn(object):
                 building = Turn.buildings.getBuilding(self.doctorates[i])
                 if building.getDegreeLvl() == "Associate":
                     self.player.subtractDollars(500000)
+                    self.player.addPointsPerRound(3)
                 elif building.getDegreeLvl() == "Bachelor":
                     self.player.subtractDollars(400000)
+                    self.player.addPointsPerRound(2)
                 else:
                     self.player.subtractDollars(250000)
+                    self.player.addPointsPerRound(1)
                 building.setDegreeLvl("Doctorate")
                 
