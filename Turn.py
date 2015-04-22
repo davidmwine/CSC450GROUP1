@@ -7,8 +7,9 @@ from CheckBox import CheckBox
 class Turn(object):
     """Contains most of the methods related to the game logic of a player's turn."""     
 
-    def __init__(self, player):
+    def __init__(self, player, playerIndex):
         self.player = player
+        self.playerIndex = playerIndex
         self.roll = 0
         self.building = None    # Will hold building space that is landed on
         self.owner = None   # Will hold the owner of the building landed on
@@ -16,17 +17,23 @@ class Turn(object):
         self.buyMsgDisplayed = False
         self.okMsgDisplayed = False     # True if any OK message is displayed
         self.feeMsgDisplayed = False
+        self.cardLandingMsgDisplayed = False    
         self.upgradeDisplayed = False   # True if upgrade screen is displayed
         self.cardDraw = False   # True if player landed on a card space
+        self.ableToRoll = False # True only when a player is allowed to roll dice
 
 
     @staticmethod
     def initializeTurnCount():
         Turn.count = -1     # This will be incremented to 0 for the first turn.
+                            # Note that, in order to keep track of rounds, it
+                            # this variable doesn't count actual turns; for
+                            # example, if a player loses a turn, this is still
+                            # incremented.
 
 
     @staticmethod
-    def setStaticVariables(scale, parent, buildings):
+    def setStaticVariables(scale, parent, buildings, playerCount):
         """
         These variables are used by and related to the other methods in this
         class, but are not closely related to individual players' turns
@@ -35,6 +42,7 @@ class Turn(object):
         Turn.scale = scale
         Turn.parent = parent
         Turn.buildings = buildings
+        Turn.extraAndLostTurns = [0] * playerCount
         Turn.font = pygame.font.Font(None, int(50*scale))
         Turn.msgRect = pygame.Rect(440*scale, 250*scale,
                                    560*scale, 400*scale)
@@ -47,29 +55,51 @@ class Turn(object):
         Turn.upgradeSurface = parent.subsurface(Turn.upgradeRect)
 
 
-    def beginTurn(self):
+    def beginTurn(self, extraOrLost):
         """
         Displays a message indicating which player's turn it is
-        and giving instructions to roll the dice.
+        and giving instructions to roll the dice.  Also, displays messages
+        regarding lost or extra turns.
         """
+
+        # If a player has lost a turn, display this fact.
+        if extraOrLost == -1:
+            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                    Turn.font, self.player.getName() + " has lost this turn.")
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.okMsgDisplayed = True
+            return
+        
         print("------- " + self.player.getName() + "'s turn -------")
         # If a player owns a stealable building, add that turn's profit to their $.
         self.player.addDollars(50000 * self.player.getNumStealable())
-        (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
+
+        # If this is a player's extra turn, indicate that.
+        if extraOrLost == 1:
+            (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
+                Turn.font, self.player.getName() + "'s extra turn. Roll Dice.")
+        else:    
+            (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
                 Turn.font, self.player.getName() + "'s turn. Roll Dice.")
+
+        self.ableToRoll = True    
+            
         if (size == "small"):
             Turn.smallMsgSurface.blit(msgBox, (0, 0))
         else:    
             Turn.msgSurface.blit(msgBox, (0, 0))
             
         
-    def setDiceRoll(self, roll):
+    def setDiceRoll(self, roll1, roll2):
         """
         Sets the value of the dice (as obtained from GameArea) for use in the
-        Turn class.
+        Turn class.  Arranges to give the player an extra turn if doubles rolled.
         """
-        print("Dice Rolled:", roll)
-        self.roll = roll
+        self.roll = roll1 + roll2
+        print("Dice Rolled:", self.roll)
+        # Give the player an extra turn for rolling doubles.
+        if roll1 == roll2:
+            Turn.extraAndLostTurns[self.playerIndex] += 1
         pygame.time.wait(1000)
 
 
@@ -89,9 +119,11 @@ class Turn(object):
             elif self.building.getName() == "Bear Park North":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to Bear Park North! Lose a turn!")
+                Turn.extraAndLostTurns[self.playerIndex] -= 1
             elif self.building.getName() == "Bear Park South":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                    Turn.font, "Welcome to Bear Park South! Take an extra turn!")    
+                    Turn.font, "Welcome to Bear Park South! Take an extra turn!")
+                Turn.extraAndLostTurns[self.playerIndex] += 1
             elif self.building.getName() == "Accreditation Review":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to Accreditation Review!")
@@ -103,6 +135,7 @@ class Turn(object):
             (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
                 Turn.font, "Welcome to " + self.building.getName() + "! Draw a card.")
             Turn.smallMsgSurface.blit(msgBox, (0, 0))
+            self.cardLandingMsgDisplayed = True
                 
         elif self.building.getPurpose() == "utility":
             if self.building.getName() == "Power House":

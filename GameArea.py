@@ -137,7 +137,7 @@ class GameArea(object):
                 self.popupMenu.makePopupMenu()
 
             # Roll Button
-            if mouseX > self.controls.getWidth()/4\
+            if self.turn.ableToRoll and mouseX > self.controls.getWidth()/4\
             and mouseX < self.controls.getWidth()/2\
             and mouseY > self.height-self.controls.getHeight():
                 # Update player's $ before they have to make a decision.
@@ -145,6 +145,7 @@ class GameArea(object):
                 self.refreshPlayersDisplay()
                 self.roll = (1,0)
                 self.diceRolled = True
+                self.turn.ableToRoll = False
                 self.rollDice()
 
             # Trade Button
@@ -171,12 +172,13 @@ class GameArea(object):
                     (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect,
                         Turn.msgRect, Turn.font, "Click cards again to end turn.")
                     Turn.smallMsgSurface.blit(msgBox, (0, 0))
+                    self.turn.cardLandingMsgDisplayed = False
                 elif self.cardDisplayed:    # card is face up
                     self.cardDisplayed = False
                     self.endTurn()
 
             # Dice
-            if (not self.turn.upgradeDisplayed
+            if (self.turn.ableToRoll and not self.turn.upgradeDisplayed
             and mouseX > self.dice.getXPosition()
             and mouseX < self.dice.getXPosition() + self.dice.getWidth()
             and mouseY > self.dice.getYPosition()
@@ -186,6 +188,7 @@ class GameArea(object):
                 self.refreshPlayersDisplay()
                 self.roll = (1,0)
                 self.diceRolled = True
+                self.turn.ableToRoll = False
                 self.rollDice()
     
             # OK Button in Message Box
@@ -363,12 +366,20 @@ class GameArea(object):
         pygame.display.update()
 
 
-    def resumeTurn(self):    
+    def resumeTurn(self):
+        """
+        Used to resume a player's turn after they opened the menu
+        or upgrade options.
+        """
         self.refreshGameBoard()
         if not self.diceRolled:
-            self.turn.beginTurn()
-        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
+            self.turn.beginTurn(self.extraOrLost)
+        elif (self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed
+        or self.turn.cardLandingMsgDisplayed):
             self.turn.handleLanding()
+        elif self.cardDisplayed:    # card is face up
+            self.cardDisplayed = False
+            self.endTurn()
             
 
     def resizeScreen(self, newSize):
@@ -410,7 +421,7 @@ class GameArea(object):
                 self.roll = self.dice.roll()
                 self.rollTime = 0
                 self.refreshDisplay()
-        self.turn.setDiceRoll(self.roll[1] + self.roll[2])
+        self.turn.setDiceRoll(self.roll[1], self.roll[2])
         self.move()
 
 
@@ -545,7 +556,6 @@ class GameArea(object):
 
         #self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
         print(self.players)
-                                                
 
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
@@ -554,7 +564,7 @@ class GameArea(object):
         
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
-        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players))
         Turn.initializeTurnCount()
         
         pygame.key.set_repeat(75, 75)
@@ -584,26 +594,42 @@ class GameArea(object):
 
                 
             if not self.midTurn:    # If it's a new player's turn...
-                self.playersDisplay.updatePlayer(Turn.count % len(self.players))
-                Turn.count += 1
 
-                # At the appropriate times, update the round number and
-                # the price of buildings.
-                if Turn.count % len(self.players) == 0:
-                    self.round += 1
-                    if (self.round > 0
-                    and self.round % self.roundsBeforePriceIncrease == 0):
-                        self.buildingsObj.increasePrice()
-                        
-                self.playerIndex = Turn.count % len(self.players)
-                self.player = self.players[self.playerIndex]
-                self.playersDisplay.selectPlayer(self.playerIndex)
-                self.refreshPlayersDisplay()
-                self.updatePlayerPosition()
+                # If the previous player has an extra turn... 
+                if Turn.extraAndLostTurns[self.playerIndex] > 0:
+                    Turn.extraAndLostTurns[self.playerIndex] -= 1
+                    self.extraOrLost = 1
+
+                else:
+                    self.extraOrLost = 0
+                    self.playersDisplay.updatePlayer(Turn.count % len(self.players))
+                    Turn.count += 1     # Note: this doesn't count actual turns;
+                                        # it's still incremented for a lost turn.
+
+                    # At the appropriate times, update the round number and
+                    # the price of buildings.
+                    if Turn.count % len(self.players) == 0:
+                        self.round += 1
+                        if (self.round > 0
+                        and self.round % self.roundsBeforePriceIncrease == 0):
+                            self.buildingsObj.increasePrice()
+                            
+                    self.playerIndex = Turn.count % len(self.players)
+
+                    # If this player has lost a turn...
+                    if Turn.extraAndLostTurns[self.playerIndex] < 0:
+                        Turn.extraAndLostTurns[self.playerIndex] += 1
+                        self.extraOrLost = -1
+
+                    self.player = self.players[self.playerIndex]
+                    self.playersDisplay.selectPlayer(self.playerIndex)
+                    self.refreshPlayersDisplay()
+                    self.updatePlayerPosition()
+                    
                 self.refreshGameBoard()
                 self.midTurn = True
-                self.turn = Turn(self.player)
-                self.turn.beginTurn()        
+                self.turn = Turn(self.player, self.playerIndex)
+                self.turn.beginTurn(self.extraOrLost)        
                 
             self.refreshDisplay()
             
