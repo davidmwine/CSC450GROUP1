@@ -22,7 +22,6 @@ class Token(object):
 
     def moveToken(self, spaces):
         redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
         redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
                                          (int(redrawRect.width - 3), int(redrawRect.height - 3)))
@@ -56,7 +55,6 @@ class Token(object):
 
     def clearToken(self):
         redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
         redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
                                          (int(redrawRect.width - 3), int(redrawRect.height - 3)))

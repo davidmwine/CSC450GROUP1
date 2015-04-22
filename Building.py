@@ -15,17 +15,15 @@ class Building(object):
         self.image = pygame.image.load(os.path.join("img","buildings",image))
 
         if purpose == 'academic':
-            self.color = Colors.LIGHTGRAY
-            self.buildingColor = Colors.LIGHTGRAY
-        elif purpose == 'special':
+            self.color = Colors.MEDGRAY
+        elif purpose == 'stealable':
             self.color = Colors.BLUE
-            self.buildingColor = Colors.BLUE
         elif purpose == 'sports':
             self.color = Colors.GREEN
-            self.buildingColor = Colors.GREEN
-        elif purpose == 'support':
+        elif purpose == 'card':
             self.color = Colors.WHITE
-            self.buildingColor = Colors.WHITE
+        elif purpose == 'utility':
+            self.color = Colors.BLACK
 
     def getImage(self):
         return self.image
@@ -56,20 +54,13 @@ class Building(object):
     
     def setColor(self, color):
         self.color = color
-
-    def getBuildingColor(self):
-        return self.buildingColor
         
 
 class OwnableBuilding(Building):    
-    def __init__(self, name, sequence, purpose, image, price=200000):
+    def __init__(self, name, sequence, purpose, image):
         Building.__init__(self, name, sequence, purpose, image)
         self.owner = None           # Which dean 'owns' building
-        self.price = price          # Inital purchase price
         self.renovation = False     # Under Renovation (similar to mortgage)
-
-    def getPrice(self): 
-        return self.price
 
     def getOwner(self):
         return self.owner
@@ -86,27 +77,25 @@ class OwnableBuilding(Building):
         elif self.renovation == True:
             self.renovation = False    
         
-
-class NonAcademicBuilding(OwnableBuilding):
-
-    def __init__(self, name, sequence, purpose, image, price=200000):
-        OwnableBuilding.__init__(self, name, sequence, purpose, image)
-        self.costNonAcademic = 10000     # Cost to other deans for non-academic building fees
-
-    def getFeeAmount(self):
-        return self.costNonAcademic
-
     
 class AcademicBuilding(OwnableBuilding):
 
-    def __init__(self, name, sequence, image, price=200000):
+    def __init__(self, name, sequence, image):
         OwnableBuilding.__init__(self, name, sequence, 'academic', image)
         self.degreeLvl = 'Associate'
-        self.baseGrads = 10             # Base number of grad points earned
-        self.costAssociate = 10000      # Cost to other deans for associate lvl classes
-        self.costBachelor = 20000       # Cost to other deans for bachelor lvl classes
-        self.costMaster = 30000         # Cost to other deans for master lvl classes
-        self.costDoctorate = 40000      # Cost to other deans for doctorate lvl classes
+        
+    @staticmethod
+    def setFeePercentages():
+        """
+        The fees for landing on an academic building are a percentage of the
+        current building cost.  They depend on the degree level of the building
+        but are otherwise the same for all buildings.  This method sets those
+        percentages.
+        """
+        AcademicBuilding.associateFeePercent = 0.1
+        AcademicBuilding.bachelorFeePercent = 0.2
+        AcademicBuilding.masterFeePercent = 0.3
+        AcademicBuilding.doctorateFeePercent = 0.4
 
     def getDegreeLvl(self):
         return self.degreeLvl
@@ -114,15 +103,19 @@ class AcademicBuilding(OwnableBuilding):
     def setDegreeLvl(self, degLvl):
         self.degreeLvl = degLvl
 
-    def getFeeAmount(self):
+    def getFeeAmount(self, buildingCost):
+        """
+        Returns the amount of the fees charged to a player for landing on
+        an academic building, given the current building cost.
+        """
         if self.degreeLvl == 'Associate':
-            return self.costAssociate
+            return buildingCost * AcademicBuilding.associateFeePercent
         elif self.degreeLvl == 'Bachelor':
-            return self.costBachelor
+            return buildingCost * AcademicBuilding.bachelorFeePercent
         elif self.degreeLvl == 'Master':
-            return self.costMaster
+            return buildingCost * AcademicBuilding.masterFeePercent
         elif self.degreeLvl == 'Doctorate':
-            return self.costDoctorate
+            return buildingCost * AcademicBuilding.doctorateFeePercent
 
 
 class Buildings(object):
@@ -130,6 +123,12 @@ class Buildings(object):
     # These have been reordered to reflect the new board layout.
 
     def __init__(self):
+
+        self.currentPrice = 200000  # current price of all ownable buildings
+        self.priceIncreasePercentage = 0.2  # percentage the price increases by
+                                            # when it increases every n rounds
+
+        AcademicBuilding.setFeePercentages()
 
         self.buildings = []
         
@@ -143,31 +142,31 @@ class Buildings(object):
         self.buildings.append( AcademicBuilding('Cheek Hall',
                                         len(self.buildings), "CheekHall.png") )
         
-        self.buildings.append( NonAcademicBuilding('University Bookstore',
-                                        len(self.buildings), 'support',
+        self.buildings.append( OwnableBuilding('University Bookstore',
+                                        len(self.buildings), 'stealable',
                                         "UniversityBookstore.png") )
         
-        self.buildings.append( NonAcademicBuilding('Hammons Field',
+        self.buildings.append( OwnableBuilding('Hammons Field',
                                         len(self.buildings), 'sports',
                                         "HammonsField.png") )
         
         self.buildings.append( AcademicBuilding('Greenwood Lab School',
                                         len(self.buildings), "GreenwoodLabSchool.png") )
         
-        self.buildings.append( NonAcademicBuilding('Foster Recreation Center',
-                                        len(self.buildings), 'support',
+        self.buildings.append( Building('Foster Recreation Center',
+                                        len(self.buildings), 'card',
                                         "FosterRecreationCenter.png") )
         
-        self.buildings.append( NonAcademicBuilding('Juanita K Hammons',
-                                        len(self.buildings), 'support',
+        self.buildings.append( Building('Juanita K Hammons',
+                                        len(self.buildings), 'card',
                                         "JuanitaKHammons.png") )
         
         self.buildings.append( Building('Bear Park North',
                                         len(self.buildings), 'special',
                                         "BearParkNorth.png") )
         
-        self.buildings.append( NonAcademicBuilding('Hammons Student Center',
-                                        len(self.buildings), 'support',
+        self.buildings.append( Building('Hammons Student Center',
+                                        len(self.buildings), 'card',
                                         "HammonsStudentCenter.png") )
         
         self.buildings.append( AcademicBuilding('Brick City',
@@ -176,27 +175,26 @@ class Buildings(object):
         self.buildings.append( AcademicBuilding('Kings St Annex',
                                         len(self.buildings), "KingsStreetAnnex.png") )
         
-        self.buildings.append( NonAcademicBuilding('JQH Arena',
-                                        len(self.buildings), 'sports',
-                                        "JQHArena.png") )
+        self.buildings.append( OwnableBuilding('JQH Arena', len(self.buildings),
+                                        'sports', "JQHArena.png") )
         
-        self.buildings.append( NonAcademicBuilding('Forsythe Athletics Center',
-                                        len(self.buildings), 'support',
+        self.buildings.append( AcademicBuilding('Forsythe Athletics Center',
+                                        len(self.buildings),
                                         "ForsytheAthleticsCenter.png") )
         
         self.buildings.append( AcademicBuilding('McDonald Arena',
                                         len(self.buildings), "McDonaldArena.png") )
         
-        self.buildings.append( NonAcademicBuilding('Plaster Student Union',
-                                        len(self.buildings), 'support',
+        self.buildings.append( OwnableBuilding('Plaster Student Union',
+                                        len(self.buildings), 'stealable',
                                         "PlasterStudentUnion.png") )
         
         self.buildings.append( Building('Bear Park South',
                                         len(self.buildings), 'special',
                                         "BearParkSouth.png") )
         
-        self.buildings.append( NonAcademicBuilding('Meyer Library',
-                                        len(self.buildings), 'support',
+        self.buildings.append( Building('Meyer Library',
+                                        len(self.buildings), 'card',
                                         "MeyerLibrary.png") )
         
         self.buildings.append( AcademicBuilding('Glass Hall',
@@ -205,7 +203,7 @@ class Buildings(object):
         self.buildings.append( AcademicBuilding('Strong Hall',
                                         len(self.buildings), "StrongHall.png") )
         
-        self.buildings.append( NonAcademicBuilding('Allison South Stadium',
+        self.buildings.append( OwnableBuilding('Allison South Stadium',
                                         len(self.buildings), 'sports',
                                         "AllisonSouthStadium.png") )
         
@@ -215,16 +213,16 @@ class Buildings(object):
         self.buildings.append( AcademicBuilding('Temple Hall',
                                         len(self.buildings), "TempleHall.png") )
         
-        self.buildings.append( NonAcademicBuilding('Central Stores & Maintenance',
-                                        len(self.buildings), 'support',
+        self.buildings.append( Building('Central Stores & Maintenance',
+                                        len(self.buildings), 'utility',
                                         "CentralMaintenance.png") )
         
         self.buildings.append( Building('Accreditation Review',
                                         len(self.buildings), 'special',
                                         "AccreditationReview.png") )
 
-        self.buildings.append( NonAcademicBuilding('Power House',
-                                        len(self.buildings), 'support',
+        self.buildings.append( Building('Power House',
+                                        len(self.buildings), 'utility',
                                         "PowerHouse.png") )
         
         self.buildings.append( AcademicBuilding('Karls Hall',
@@ -233,7 +231,7 @@ class Buildings(object):
         self.buildings.append( AcademicBuilding('Craig Hall',
                                         len(self.buildings), "CraigHall.png") )
         
-        self.buildings.append( NonAcademicBuilding('Plaster Sports Complex',
+        self.buildings.append( OwnableBuilding('Plaster Sports Complex',
                                         len(self.buildings), 'sports',
                                         "PlasterSportsComplex.png") )
         
@@ -265,7 +263,15 @@ class Buildings(object):
         for building in self.buildings:
             if building.purpose == 'academic':
                 acadBuildings.append(building.name)
-        return acadBuildings        
+        return acadBuildings
+
+    def getCurrentPrice(self):
+        """Gets the current price of all ownable buildings."""
+        return self.currentPrice
+
+    def increasePrice(self):
+        """Increases the price of all ownable buildings by the set percentage."""
+        self.currentPrice *= (1 + self.priceIncreasePercentage)
 
 
 def main():

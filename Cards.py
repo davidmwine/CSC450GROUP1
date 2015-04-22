@@ -12,6 +12,18 @@ class Cards():
         self.cardPos = 0  #Card position(index) in the deck
         self.initDeck()
         self.loadImages()
+
+    def getXPosition(self):
+        return self.area.get_offset()[0]
+
+    def getYPosition(self):
+        return self.area.get_offset()[1]
+
+    def getWidth(self):
+        return self.width
+
+    def getHeight(self):
+        return self.height
         
     def initDeck(self):
         for card in range(self.cardsInDeck):

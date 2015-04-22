@@ -91,17 +91,23 @@ class PlayersDisplay(object):
         self.pd.blit(text, (220*c, self.playerHeight*i + 4))
 
         # Points
-        text = font.render(str(self.players[i].getPoints()) + ' pts',
-                           True, Color('black'))
+        points = self.players[i].getPoints()
+        if points == 1:
+            text = font.render(str(points) + ' point', True, Color('black'))
+        else:
+            text = font.render(str(points) + ' points', True, Color('black'))
         self.pd.blit(text, (20*c, self.playerHeight*i + 50*c))
         
         # Points per round
-        text = font.render(str(self.players[i].getPointsPerRound()) + ' pts/round',
-                           True, Color('black'))
+        points = self.players[i].getPointsPerRound()
+        if points == 1:
+            text = font.render(str(points) + ' point / round', True, Color('black'))
+        else:
+            text = font.render(str(points) + ' points / round', True, Color('black'))
         self.pd.blit(text, (250*c, self.playerHeight*i + 50*c))
 
         # Dollars
-        text = font.render('${:,d}'.format(self.players[i].getDollars()),
+        text = font.render('${:,.0f}'.format(self.players[i].getDollars()),
                            True, Color('black'))
         self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
 
