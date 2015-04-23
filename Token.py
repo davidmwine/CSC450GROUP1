@@ -28,7 +28,7 @@ class Token(object):
         self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
         self.prevX = self.rect.left
         self.prevY = self.rect.top
-        self.position += 1
+        self.position += spaces     
         numBuildings = Buildings().getNumBuildings()
         self.position %= numBuildings
         
