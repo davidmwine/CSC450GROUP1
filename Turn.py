@@ -21,15 +21,15 @@ class Turn(object):
         self.upgradeDisplayed = False   # True if upgrade screen is displayed
         self.cardDraw = False   # True if player landed on a card space
         self.ableToRoll = False # True only when a player is allowed to roll dice
-
+        self.landed = False     # True if player has landed on a space for the turn
+        
 
     @staticmethod
     def initializeTurnCount():
         Turn.count = -1     # This will be incremented to 0 for the first turn.
-                            # Note that, in order to keep track of rounds, it
-                            # this variable doesn't count actual turns; for
-                            # example, if a player loses a turn, this is still
-                            # incremented.
+                            # Note that, in order to keep track of rounds, this
+                            # variable doesn't count actual turns; for example,
+                            # if a player loses a turn, this is still incremented.
 
 
     @staticmethod
@@ -74,13 +74,19 @@ class Turn(object):
         # If a player owns a stealable building, add that turn's profit to their $.
         self.player.addDollars(50000 * self.player.getNumStealable())
 
-        # If this is a player's extra turn, indicate that.
-        if extraOrLost == 1:
+        # If the player is in Accreditation Review, display appropriate message.
+        if self.player.inAccreditationReview:
             (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
-                Turn.font, self.player.getName() + "'s extra turn. Roll Dice.")
+                Turn.font, self.player.getName() + " is stuck in Accreditation "
+                    + "Review. Roll dice to see if you pass.")
+
+        # If this is a player's extra turn, indicate that.
+        elif extraOrLost == 1:
+            (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
+                Turn.font, self.player.getName() + "'s extra turn. Roll dice.")
         else:    
             (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
-                Turn.font, self.player.getName() + "'s turn. Roll Dice.")
+                Turn.font, self.player.getName() + "'s turn. Roll dice.")
 
         self.ableToRoll = True    
             
@@ -93,14 +99,38 @@ class Turn(object):
     def setDiceRoll(self, roll1, roll2):
         """
         Sets the value of the dice (as obtained from GameArea) for use in the
-        Turn class.  Arranges to give the player an extra turn if doubles rolled.
+        Turn class. Arranges to give the player an extra turn if doubles were
+        rolled. If player is in Accreditation Review, arranges to have this roll
+        check that result rather than moving the player.
         """
         self.roll = roll1 + roll2
         print("Dice Rolled:", self.roll)
         # Give the player an extra turn for rolling doubles.
         if roll1 == roll2:
             Turn.extraAndLostTurns[self.playerIndex] += 1
-        pygame.time.wait(1000)
+        if self.player.inAccreditationReview:
+            self.checkAccreditation()
+            
+
+    def checkAccreditation(self):
+        """
+        Checks dice roll to determine whether player has passed
+        Accreditation Review and displays appropriate message.
+        """
+        if self.roll % 2 == 0:
+            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                Turn.font, "You rolled an even number and passed "
+                + "Accreditation Review! You're free to go!")
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.okMsgDisplayed = True
+        else:
+            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                Turn.font, "You rolled an odd number so you didn't pass "
+                + "Accreditation Review. You must pay $100,000 to make "
+                + "required improvements and try again next turn.")
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.okMsgDisplayed = True
+            self.player.subtractDollars(100000)
 
 
     def handleLanding(self):
@@ -108,6 +138,7 @@ class Turn(object):
         This method handles what comes next after a player lands on a space,
         (e.g., buying the building or paying fees to another player).
         """
+        self.landed = True
         position = self.player.getPosition()
         self.building = Turn.buildings.getBuildingList()[position]
         print("Token landed on", self.building.getName())
@@ -118,7 +149,7 @@ class Turn(object):
                     Turn.font, "Welcome to Carrington Hall!")
             elif self.building.getName() == "Bear Park North":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                    Turn.font, "Welcome to Bear Park North! Lose a turn!")
+                    Turn.font, "Welcome to Bear Park North!  Lose a turn!")
                 Turn.extraAndLostTurns[self.playerIndex] -= 1
             elif self.building.getName() == "Bear Park South":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
@@ -126,7 +157,9 @@ class Turn(object):
                 Turn.extraAndLostTurns[self.playerIndex] += 1
             elif self.building.getName() == "Accreditation Review":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                    Turn.font, "Welcome to Accreditation Review!")
+                    Turn.font, "Welcome to Accreditation Review! On your next "
+                            + "turn, you can roll to find out if you passed.")
+                self.player.inAccreditationReview = True
             Turn.msgSurface.blit(msgBox, (0, 0))
             self.okMsgDisplayed = True
             
@@ -186,8 +219,8 @@ class Turn(object):
                 elif self.building.getPurpose() == "sports":
                     self.feeAmt = 1000 * self.player.getPoints()
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                    Turn.font, "You pay ${:,.0f} to {}.".format(self.feeAmt,
-                                                        self.owner.getName()))
+                    Turn.font, "Welcome to {}! You pay ${:,.0f} to {}.".format(
+                        self.building.getName(), self.feeAmt, self.owner.getName()))
                 Turn.msgSurface.blit(msgBox, (0, 0))
                 self.okMsgDisplayed = True
                 self.feeMsgDisplayed = True

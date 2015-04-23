@@ -168,14 +168,23 @@ class GameArea(object):
                 if self.turn.cardDraw:  # player landed on card space
                     self.turn.cardDraw = False
                     self.cardDisplayed = True
-                    self.currentCard = self.cards.drawCard(self.scale)
+                    self.currentCard = self.cards.drawCard(self.scale, self.player)
                     (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect,
-                        Turn.msgRect, Turn.font, "Click cards again to end turn.")
+                        Turn.msgRect, Turn.font,
+                        "Click cards again to take this action.")
                     Turn.smallMsgSurface.blit(msgBox, (0, 0))
                     self.turn.cardLandingMsgDisplayed = False
                 elif self.cardDisplayed:    # card is face up
                     self.cardDisplayed = False
-                    self.endTurn()
+                    self.cards.performAction(self.currentCard, self.player)
+                    if self.cards.movementCard:
+                        self.player.removeToken()   
+                        self.updatePlayerPosition()
+                        self.refreshGameBoard()
+                        self.cards.movementCard = False
+                        self.turn.handleLanding()
+                    else:    
+                        self.endTurn()
 
             # Dice
             if (self.turn.ableToRoll and not self.turn.upgradeDisplayed
@@ -197,15 +206,22 @@ class GameArea(object):
                                  Turn.msgRect.y + self.turn.okRect.y,
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
-                    # If applicable, charge fees and update playersDisplay.
-                    if self.turn.feeMsgDisplayed:
-                        self.turn.chargeFees()
-                        if self.turn.owner != None:
-                            self.playersDisplay.updatePlayer(
-                                self.players.index(self.turn.owner))
-                        self.turn.feeMsgDisplayed = False
-                    self.turn.okMsgDisplayed = False    
-                    self.endTurn()
+                    self.turn.okMsgDisplayed = False
+                    # If player just passed Accreditation Review...
+                    if (self.player.inAccreditationReview
+                    and self.turn.roll % 2 == 0
+                    and not self.turn.landed):
+                        self.player.inAccreditationReview = False
+                        self.move()
+                    else:    
+                        # If applicable, charge fees and update playersDisplay.
+                        if self.turn.feeMsgDisplayed:
+                            self.turn.chargeFees()
+                            if self.turn.owner != None:
+                                self.playersDisplay.updatePlayer(
+                                    self.players.index(self.turn.owner))
+                            self.turn.feeMsgDisplayed = False
+                        self.endTurn()
 
             # Yes/No Button in Message Box
             if self.turn.buyMsgDisplayed:
@@ -374,13 +390,19 @@ class GameArea(object):
         self.refreshGameBoard()
         if not self.diceRolled:
             self.turn.beginTurn(self.extraOrLost)
+        # If the player just rolled to see if they passed Accreditation Review    
+        elif (self.player.inAccreditationReview and not self.turn.landed):
+            self.turn.checkAccreditation()
         elif (self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed
         or self.turn.cardLandingMsgDisplayed):
             self.turn.handleLanding()
         elif self.cardDisplayed:    # card is face up
-            self.cardDisplayed = False
-            self.endTurn()
-            
+            self.cards.displayCard(self.currentCard, self.scale)
+            (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect,
+                            Turn.msgRect, Turn.font,
+                            "Click cards again to take this action.")
+            Turn.smallMsgSurface.blit(msgBox, (0, 0))
+
 
     def resizeScreen(self, newSize):
         """
@@ -400,6 +422,8 @@ class GameArea(object):
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
         for player in self.players:
             player.createToken(self.gameBoard.getGB(), self.scale)
+            player.startToken()     # These undo each other, but are needed
+            player.removeToken()    # to initialize instance variables.
         self.updatePlayerPosition()
         self.refreshGameBoard()
         
@@ -422,7 +446,8 @@ class GameArea(object):
                 self.rollTime = 0
                 self.refreshDisplay()
         self.turn.setDiceRoll(self.roll[1], self.roll[2])
-        self.move()
+        if not self.player.inAccreditationReview:
+            self.move()
 
 
     def move(self):

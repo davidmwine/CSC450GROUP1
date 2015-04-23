@@ -47,10 +47,8 @@ class Cards():
     def cardDescription(self, card):
         if card == 0:
             text = "Go to Accreditation Review."
-            self.goToSpace("Accreditation Review")
         if card == 1:
             text = "Go enjoy a baseball game at Hammons Field."
-            self.goToSpace("Hammons Field")
             
         '''
         if card == 0:
@@ -67,6 +65,16 @@ class Cards():
             text = "Get abducted by aliens... again."
         '''    
         return text
+
+
+    def performAction(self, card, player):
+        """Performs the action printed on the card that was drawn."""
+        self.player = player    # the player who drew the card
+        if card == 0:
+            self.goToSpace("Accreditation Review")
+        if card == 1:
+            self.goToSpace("Hammons Field")
+
 
     def displayCard(self, card, scale):
         if card == "back":
