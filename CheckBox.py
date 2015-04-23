@@ -17,10 +17,13 @@ class CheckBox(object):
 
     def draw(self):
         '''draw() draws the checkbox, and an x in the middle if the checkbox is checked'''
-        pygame.draw.rect(self.screen, (255, 255, 255), Rect((self.x, self.y), (self.w, self.w)), 0)
+        pygame.draw.rect(self.screen, (200,200,200), Rect((self.x, self.y), (self.w, self.w)), 0)
+        pygame.draw.rect(self.screen, (0, 0, 0), Rect((self.x, self.y), (self.w, self.w)), 1)
         if self.checked:
-            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y), (self.x + self.w, self.y + self.w), 2)
-            pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y + self.w), (self.x + self.w, self.y), 2)
+            pygame.draw.rect(self.screen, (0, 0, 0), Rect((self.x + self.w/10, self.y + self.w/10), \
+                                                          (self.w - self.w/5, self.w - self.w/5)), 0)
+            #pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y), (self.x + self.w, self.y + self.w), 2)
+            #pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y + self.w), (self.x + self.w, self.y), 2)
 
     def setChecked(self, x, y):
         '''setChecked(x, y) takes an x and y location of a clicked mouse, and
@@ -33,3 +36,6 @@ class CheckBox(object):
     def getChecked(self):
         '''getChecked() returns the value of self.checked'''
         return self.checked
+
+    def undoChecked(self):
+        self.checked = False

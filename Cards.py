@@ -1,4 +1,5 @@
 import pygame, sys, random, os
+from Building import Buildings
 
 class Cards():
     def __init__(self, parent):
@@ -8,10 +9,24 @@ class Cards():
         self.area = parent.subsurface((self.parent.get_width()//2 - self.width//2), 
                 (self.parent.get_height()//2 - self.height//2), self.width, self.height)
         self.cardDeck = []
-        self.cardsInDeck = 6  #Number of cards in the deck
+        self.cardsInDeck = 2  #Number of cards in the deck
         self.cardPos = 0  #Card position(index) in the deck
         self.initDeck()
         self.loadImages()
+
+        self.movementCard = False
+
+    def getXPosition(self):
+        return self.area.get_offset()[0]
+
+    def getYPosition(self):
+        return self.area.get_offset()[1]
+
+    def getWidth(self):
+        return self.width
+
+    def getHeight(self):
+        return self.height
         
     def initDeck(self):
         for card in range(self.cardsInDeck):
@@ -31,6 +46,12 @@ class Cards():
 
     def cardDescription(self, card):
         if card == 0:
+            text = "Go to Accreditation Review."
+        if card == 1:
+            text = "Go enjoy a baseball game at Hammons Field."
+            
+        '''
+        if card == 0:
             text = "Move back 3 spaces and stuff. You are going the wrong way."
         if card == 1:
             text = "Here's a nice puppy to play with."
@@ -42,7 +63,18 @@ class Cards():
             text = "Proceed to the dump."
         if card == 5:
             text = "Get abducted by aliens... again."
+        '''    
         return text
+
+
+    def performAction(self, card, player):
+        """Performs the action printed on the card that was drawn."""
+        self.player = player    # the player who drew the card
+        if card == 0:
+            self.goToSpace("Accreditation Review")
+        if card == 1:
+            self.goToSpace("Hammons Field")
+
 
     def displayCard(self, card, scale):
         if card == "back":
@@ -91,7 +123,9 @@ class Cards():
                         lineText += word + character
                     word = ""
     
-    def drawCard(self, scale):
+    def drawCard(self, scale, player):
+        self.player = player    # the player who drew this card
+        
         if self.cardPos == len(self.cardDeck):
             random.shuffle(self.cardDeck)
             self.cardPos = 0
@@ -99,4 +133,24 @@ class Cards():
         self.cardPos += 1
         self.displayCard(card, scale)
         return card
+
+
+    # Methods for card actions
+    
+    def goToSpace(self, destination):
+        """
+        Moves player's token to destination. If player passes Carrington,
+        he/she gets $200,000. Arranges for an action to be taken based on
+        the destination space.
+        """
+        playerPosition = self.player.getPosition()
+        destinationPosition = Buildings().getBuildingNames().index(destination)
+        if destinationPosition > playerPosition:
+            spaces = destinationPosition - playerPosition
+        else:
+            spaces = Buildings().getNumBuildings() + destinationPosition - playerPosition
+        self.player.increasePosition(spaces)
+        self.movementCard = True
+        
+
         

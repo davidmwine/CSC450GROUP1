@@ -20,6 +20,8 @@ class Player(object):
         self.pointsPerRound = 0
         self.buildings = []     # buildings that the player owns
         self.position = 0
+        self.ownsPSU = False
+        self.ownsBookstore = False
         self.playerToken = Token(self.getColor(), self.position, self.board,
                                  self.allBldgs.getBuildingList(), self.scale)
 
@@ -49,6 +51,9 @@ class Player(object):
 
     def getBuildingNames(self):
         return [building.getName() for building in self.buildings]
+
+    def getNumBuildings(self):
+        return len(self.buildings)
 
     def getPosition(self):
         return self.position
@@ -89,6 +94,25 @@ class Player(object):
             self.buildings.remove(building)
         else:
             return -1   # or whatever we want to do here...
+
+
+    def addStealable(self, buildingName):
+        if buildingName == "Plaster Student Union":
+            self.ownsPSU = True
+        if buildingName == "University Bookstore":
+            self.ownsBookstore = True
+
+
+    def removeStealable(self, buildingName):
+        if buildingName == "Plaster Student Union":
+            self.ownsPSU = False
+        if buildingName == "University Bookstore":
+            self.ownsBookstore = False
+
+
+    def getNumStealable(self):
+        """Returns the number of stealable buildings the player owns."""
+        return int(self.ownsPSU) + int(self.ownsBookstore)
 
 
     def getPossibleUpgrades(self):
@@ -190,7 +214,7 @@ class Player(object):
     def increasePosition(self, spaces):
         self.position += spaces
         numBuildings = self.allBldgs.getNumBuildings()
-        if self.position > numBuildings:    # if we've passed Carrington
+        if self.position >= numBuildings:    # if we've passed Carrington
             self.points += self.pointsPerRound
             self.dollars += 200000
         self.position %= numBuildings

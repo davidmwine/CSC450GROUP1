@@ -22,40 +22,39 @@ class Token(object):
 
     def moveToken(self, spaces):
         redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
         redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
                                          (int(redrawRect.width - 3), int(redrawRect.height - 3)))
         self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
         self.prevX = self.rect.left
         self.prevY = self.rect.top
-        self.position += 1
+        self.position += spaces     
         numBuildings = Buildings().getNumBuildings()
         self.position %= numBuildings
-        if 0 <= self.position <= 8 or 16 <= self.position <= 24:
-            self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
-                             int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
-                             (self.size, self.size))
-        else:
-            self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
-                             int(self.buildings[self.position].getRect().top + self.scale*10)),\
-                             (self.size, self.size))
-        self.token = pygame.draw.rect(self.board, self.color, self.rect)
+        
+        self.displayToken()
 
     def displayToken(self):
-        if 0 <= self.position <= 8 or 16 <= self.position <= 24:
+        if 9 <= self.position <= 15:
             self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
+                             int(self.buildings[self.position].getRect().top + self.scale*8)),\
+                             (self.size, self.size))
+        elif self.position == 0 or self.position == 24:
+            self.rect = pygame.Rect((int(self.buildings[self.position].getRect().left + self.scale*10),\
                              int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
                              (self.size, self.size))
+        elif 25 <= self.position <= 31:
+            self.rect = pygame.Rect((int(self.buildings[self.position].getRect().left + self.scale*10),\
+                             int(self.buildings[self.position].getRect().top + self.scale*8)),\
+                             (self.size, self.size))    
         else:
             self.rect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
-                             int(self.buildings[self.position].getRect().top + self.scale*2)),\
-                             (self.size, self.size))
+                             int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
+                             (self.size, self.size)) 
         self.token = pygame.draw.rect(self.board, self.color, self.rect)
 
     def clearToken(self):
         redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
         redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
                                          (int(redrawRect.width - 3), int(redrawRect.height - 3)))
@@ -66,14 +65,14 @@ class Token(object):
         angle = percentage*360 #Size of angle
         startAng = angle*location #Where the angle starts on the wheel
         stopAng = startAng + angle #Where angle ends on the wheel
-        if 0 <= self.position <= 8 or 16 <= self.position <= 24:
-            wheelRect = pygame.Rect((int(self.buildings[self.position].getRect().left + self.scale*10),\
-                             int(self.buildings[self.position].getRect().bottom - self.scale*50)),\
-                             (self.size, self.size))
-        else:
+        if self.position == 0 or self.position == 24 or 9 <= self.position <= 15:
             wheelRect = pygame.Rect((int(self.buildings[self.position].getRect().right - self.scale*50),\
-                                 int(self.buildings[self.position].getRect().bottom - self.scale*42)),\
+                                 int(self.buildings[self.position].getRect().bottom - self.scale*45)),\
                                  (self.size, self.size))
+        else:
+            wheelRect = pygame.Rect((int(self.buildings[self.position].getRect().left + self.scale*10),\
+                             int(self.buildings[self.position].getRect().bottom - self.scale*45)),\
+                             (self.size, self.size))
         
         pygame.draw.arc(self.board, self.color, wheelRect, startAng*math.pi/180, stopAng*math.pi/180, self.size//2)
         '''for d in range(int(startAng), int(stopAng)):

@@ -44,12 +44,11 @@ class GameBoard(object):
         
         for building in range(len(buildings)):
             seq = buildings[building].getSequence()
-            cellColor = buildings[building].getColor()
             cellName = buildings[building].getName()
             cellImage = buildings[building].getImage()
-            
-            print(seq, cellColor, cellName)
-                
+            if buildings[building].getPurpose() != 'special':
+                cellColor = buildings[building].getColor()
+                            
             # Side 1 (Top of screen)
             if seq / 8.0 < 1:
                 side = 1
@@ -65,7 +64,6 @@ class GameBoard(object):
                     # Store pointList in building object
                     buildings[building].setPointList(pointList)
                     
-                rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
                 # Load cell image
@@ -91,7 +89,6 @@ class GameBoard(object):
                     # Store pointList in building object
                     buildings[building].setPointList(pointList)
                     
-                rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
                 # Load cell image
@@ -118,7 +115,6 @@ class GameBoard(object):
                     # Store pointList in building object
                     buildings[building].setPointList(pointList)
                     
-                rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
                 # Load cell image
@@ -145,7 +141,6 @@ class GameBoard(object):
                     # Store pointList in building object
                     buildings[building].setPointList(pointList)
                     
-                rect = pygame.draw.rect(self.board, cellColor, (x_pos, y_pos, cellWidth, cellHeight))
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
                 # Load cell image
@@ -154,9 +149,6 @@ class GameBoard(object):
                 
                 # Store rect in building object
                 buildings[building].setRect(rect)
-
-            #remove this (needed for image dimesions)
-            print(cellWidth, cellHeight)
                 
 
     def getGB(self):
@@ -167,10 +159,8 @@ class GameBoard(object):
         rect = building.getRect()
         name = building.getName()
         pointList = building.getPointList()
-        #pygame.draw.rect(self.board, color, rect)
         pygame.draw.polygon(self.board, color, pointList)
         pygame.draw.polygon(self.board, color, pointList, 1)
-        #self.board.blit(self.boardfont.render(name, True, Colors.BLACK), rect)        
 
 
 def main():
