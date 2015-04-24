@@ -1,4 +1,7 @@
-# Drawing the basic board layout
+"""
+Drawing the basic board layout
+Graduation cap icon from http://www.flaticon.com
+"""
 
 import pygame
 from pygame.locals import *
@@ -39,6 +42,8 @@ class GameBoard(object):
             
         self.boardfont = pygame.font.Font(None, 30)
 
+        self.gradIcon = pygame.image.load(os.path.join("img", "graduate34.png")).convert_alpha()
+
         x_pos = 0 + padWidth
         y_pos = 0 + padHeight
         angle = -90.0
@@ -47,7 +52,9 @@ class GameBoard(object):
             seq = buildings[building].getSequence()
             cellName = buildings[building].getName()
             cellImage = buildings[building].getImage()
-            if buildings[building].getPurpose() != 'special':
+            if buildings[building].getPurpose() == 'academic':
+                cellColor = buildings[building].getColor()
+            elif buildings[building].getPurpose() != 'special':
                 cellColor = buildings[building].getInitialColor()
                             
             # Side 1 (Top of screen)
@@ -73,7 +80,6 @@ class GameBoard(object):
                     buildings[building].setPointList(pointList)
                     buildings[building].setInnerPointList(innerPointList)
                     
-
                     if buildings[building].getPurpose() == 'card':
                         '''
                         # This stripe is another option for the card spaces, to match the actual cards.
@@ -222,12 +228,53 @@ class GameBoard(object):
         pygame.draw.polygon(self.board, color, pointList)
         pygame.draw.polygon(self.board, Colors.BLACK, pointList, 1)
 
+
     def restoreOwnerColors(self):
+        """Used after a screen resize to color the inner trapezoids the right color again."""
         for building in self.buildings:
             if ((building.getPurpose() == "sports"
             or building.getPurpose() == "stealable")
             and building.getOwner() != None):
                 self.colorBuilding(building)
+
+
+    def addGradIcons(self, building, number):
+        """Adds the given number of grad icons to the trapezoid of the given building."""
+        # First grad icon
+        xPosition = building.getPointList()[0][0]
+        yPosition = building.getPointList()[0][1]
+        if 9 <= building.getSequence() <= 15:
+            xPosition = building.getPointList()[1][0]
+        elif 17 <= building.getSequence() <= 23:
+            yPosition = building.getPointList()[1][1]
+        self.board.blit(self.gradIcon, (xPosition, yPosition))
+
+        # If there's 2 or 3...
+        for i in range(number - 1):
+            if 1 <= building.getSequence() <= 7 or 17 <= building.getSequence() <= 23:
+                xPosition += self.gradIcon.get_rect().width
+            else:
+                yPosition += self.gradIcon.get_rect().height
+            self.board.blit(self.gradIcon, (xPosition, yPosition))
+            
+
+    def addPlayerGradIcons(self, player):
+        """
+        Adds the appropriate number of grad icons to all buildings owned by the given
+        player.  This is intended to be called right after a player upgrades or when
+        the board is resized.
+        """
+        buildings = player.getBuildings()
+        for building in buildings:
+            if building.getPurpose() == "academic":
+                if building.getDegreeLvl() == "Associate":
+                    break;
+                elif building.getDegreeLvl() == "Bachelor":
+                    self.addGradIcons(building, 1)
+                elif building.getDegreeLvl() == "Master":
+                    self.addGradIcons(building, 2)
+                if building.getDegreeLvl() == "Doctorate":
+                    self.addGradIcons(building, 3)
             
 
 

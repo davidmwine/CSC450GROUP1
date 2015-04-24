@@ -256,6 +256,7 @@ class GameArea(object):
                     self.turn.upgrade()
                     self.playersDisplay.selectPlayer(Turn.count % len(self.players))
                     self.refreshPlayersDisplay()
+                    self.gameBoard.addPlayerGradIcons(self.player)
                     self.turn.upgradeDisplayed = False
                     self.resumeTurn()
                                         
@@ -425,6 +426,7 @@ class GameArea(object):
             player.createToken(self.gameBoard.getGB(), self.scale)
             player.startToken()     # These undo each other, but are needed
             player.removeToken()    # to initialize instance variables.
+            self.gameBoard.addPlayerGradIcons(player)
         self.updatePlayerPosition()
         self.refreshGameBoard()
         
