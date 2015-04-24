@@ -420,6 +420,7 @@ class GameArea(object):
         self.initializeDisplay()
         
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
+        self.gameBoard.restoreOwnerColors()
         for player in self.players:
             player.createToken(self.gameBoard.getGB(), self.scale)
             player.startToken()     # These undo each other, but are needed
