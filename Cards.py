@@ -144,7 +144,7 @@ class Cards():
         the destination space.
         """
         playerPosition = self.player.getPosition()
-        destinationPosition = Buildings().getBuildingNames().index(destination)
+        destinationPosition = Buildings().getBuilding(destination).getSequence()
         if destinationPosition > playerPosition:
             spaces = destinationPosition - playerPosition
         else:

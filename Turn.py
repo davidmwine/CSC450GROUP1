@@ -22,6 +22,7 @@ class Turn(object):
         self.cardDraw = False   # True if player landed on a card space
         self.ableToRoll = False # True only when a player is allowed to roll dice
         self.landed = False     # True if player has landed on a space for the turn
+        self.player.inAccreditationReview = False
         
 
     @staticmethod
