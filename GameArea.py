@@ -256,6 +256,7 @@ class GameArea(object):
                     self.turn.upgrade()
                     self.playersDisplay.selectPlayer(Turn.count % len(self.players))
                     self.refreshPlayersDisplay()
+                    self.gameBoard.addPlayerGradIcons(self.player)
                     self.turn.upgradeDisplayed = False
                     self.resumeTurn()
                                         
@@ -420,10 +421,12 @@ class GameArea(object):
         self.initializeDisplay()
         
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
+        self.gameBoard.restoreOwnerColors()
         for player in self.players:
             player.createToken(self.gameBoard.getGB(), self.scale)
             player.startToken()     # These undo each other, but are needed
             player.removeToken()    # to initialize instance variables.
+            self.gameBoard.addPlayerGradIcons(player)
         self.updatePlayerPosition()
         self.refreshGameBoard()
         
@@ -471,6 +474,9 @@ class GameArea(object):
             self.refreshDisplay()
             self.updatePlayerPosition()
             self.refreshGameBoard()
+            # Update $ if player passes Carrington.
+            self.playersDisplay.selectPlayer(self.playerIndex)
+            self.refreshPlayersDisplay()
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:

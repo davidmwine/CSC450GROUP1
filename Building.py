@@ -15,15 +15,20 @@ class Building(object):
         self.image = pygame.image.load(os.path.join("img","buildings",image))
 
         if purpose == 'academic':
-            self.color = Colors.MEDGRAY
+            self.initialColor = Colors.WHITE
+            self.color = Colors.WHITE
         elif purpose == 'stealable':
+            self.initialColor = Colors.BLUE
             self.color = Colors.BLUE
         elif purpose == 'sports':
+            self.initialColor = Colors.GREEN
             self.color = Colors.GREEN
         elif purpose == 'card':
-            self.color = Colors.WHITE
+            self.initialColor = Colors.OFFBLACK
+            self.color = Colors.OFFBLACK
         elif purpose == 'utility':
-            self.color = Colors.BLACK
+            self.initialColor = Colors.DARKGRAY
+            self.color = Colors.DARKGRAY
 
     def getImage(self):
         return self.image
@@ -43,6 +48,12 @@ class Building(object):
     def setPointList(self, pointList):
         self.pointList = pointList
 
+    def getInnerPointList(self): 
+        return self.innerPointList
+        
+    def setInnerPointList(self, innerPointList):
+        self.innerPointList = innerPointList    
+
     def getRect(self): 
         return self.rect
         
@@ -54,6 +65,9 @@ class Building(object):
     
     def setColor(self, color):
         self.color = color
+
+    def getInitialColor(self):
+        return self.initialColor    
         
 
 class OwnableBuilding(Building):    
@@ -248,6 +262,10 @@ class Buildings(object):
     def getBuildingList(self):
         return self.buildings
 
+    def getBuildingNames(self):
+        """Returns a list of the names of all buildings."""
+        return [building.getName() for building in self.buildings]
+        
     def getNumBuildings(self):
         return len(self.buildings)
 

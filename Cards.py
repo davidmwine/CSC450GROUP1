@@ -9,7 +9,7 @@ class Cards():
         self.area = parent.subsurface((self.parent.get_width()//2 - self.width//2), 
                 (self.parent.get_height()//2 - self.height//2), self.width, self.height)
         self.cardDeck = []
-        self.cardsInDeck = 2  #Number of cards in the deck
+        self.cardsInDeck = 4  #Number of cards in the deck
         self.cardPos = 0  #Card position(index) in the deck
         self.initDeck()
         self.loadImages()
@@ -49,6 +49,10 @@ class Cards():
             text = "Go to Accreditation Review."
         if card == 1:
             text = "Go enjoy a baseball game at Hammons Field."
+        if card == 2:
+            text = "Hold alumni fundraiser and raise $100,000."
+        if card == 3:
+            text = "Rap artist arrested. Cancel concert, refund tickets, lose $50,000."
             
         '''
         if card == 0:
@@ -74,6 +78,10 @@ class Cards():
             self.goToSpace("Accreditation Review")
         if card == 1:
             self.goToSpace("Hammons Field")
+        if card == 2:
+            self.player.addDollars(100000)
+        if card == 3:
+            self.player.subtractDollars(50000)    
 
 
     def displayCard(self, card, scale):
