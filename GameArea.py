@@ -471,6 +471,9 @@ class GameArea(object):
             self.refreshDisplay()
             self.updatePlayerPosition()
             self.refreshGameBoard()
+            # Update $ if player passes Carrington.
+            self.playersDisplay.selectPlayer(self.playerIndex)
+            self.refreshPlayersDisplay()
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
