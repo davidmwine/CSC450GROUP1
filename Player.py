@@ -22,6 +22,7 @@ class Player(object):
         self.position = 0
         self.ownsPSU = False
         self.ownsBookstore = False
+        self.inAccreditationReview = False
         self.playerToken = Token(self.getColor(), self.position, self.board,
                                  self.allBldgs.getBuildingList(), self.scale)
 
