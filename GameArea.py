@@ -389,7 +389,7 @@ class GameArea(object):
         """
         self.refreshGameBoard()
         if not self.diceRolled:
-            self.turn.beginTurn(self.extraOrLost)
+            self.turn.beginTurn(self.extraOrLost, False)
         # If the player just rolled to see if they passed Accreditation Review    
         elif (self.player.inAccreditationReview and not self.turn.landed):
             self.turn.checkAccreditation()

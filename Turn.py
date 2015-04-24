@@ -56,7 +56,7 @@ class Turn(object):
         Turn.upgradeSurface = parent.subsurface(Turn.upgradeRect)
 
 
-    def beginTurn(self, extraOrLost):
+    def beginTurn(self, extraOrLost, begin = True):
         """
         Displays a message indicating which player's turn it is
         and giving instructions to roll the dice.  Also, displays messages
@@ -73,7 +73,8 @@ class Turn(object):
         
         print("------- " + self.player.getName() + "'s turn -------")
         # If a player owns a stealable building, add that turn's profit to their $.
-        self.player.addDollars(50000 * self.player.getNumStealable())
+        if begin: #Only update stealable buildings at beginning of turn, not on resume
+            self.player.addDollars(50000 * self.player.getNumStealable())
 
         # If the player is in Accreditation Review, display appropriate message.
         if self.player.inAccreditationReview:
