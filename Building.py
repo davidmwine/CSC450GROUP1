@@ -166,10 +166,10 @@ class Buildings(object):
         
         self.buildings.append( AcademicBuilding('Greenwood Lab School',
                                         len(self.buildings), "GreenwoodLabSchool.png") )
-        
-        self.buildings.append( Building('Foster Recreation Center',
-                                        len(self.buildings), 'card',
-                                        "FosterRecreationCenter.png") )
+
+        self.buildings.append( Building('Power House',
+                                        len(self.buildings), 'utility',
+                                        "PowerHouse2.png") )
         
         self.buildings.append( Building('Juanita K Hammons',
                                         len(self.buildings), 'card',
@@ -178,10 +178,10 @@ class Buildings(object):
         self.buildings.append( Building('Bear Park North',
                                         len(self.buildings), 'special',
                                         "BearParkNorth.png") )
-        
-        self.buildings.append( Building('Hammons Student Center',
-                                        len(self.buildings), 'card',
-                                        "HammonsStudentCenter.png") )
+
+        self.buildings.append( AcademicBuilding('Forsythe Athletics Center',
+                                        len(self.buildings),
+                                        "ForsytheAthleticsCenter.png") )
         
         self.buildings.append( AcademicBuilding('Brick City',
                                         len(self.buildings), "BrickCity.png") )
@@ -191,10 +191,10 @@ class Buildings(object):
         
         self.buildings.append( OwnableBuilding('JQH Arena', len(self.buildings),
                                         'sports', "JQHArena.png") )
-        
-        self.buildings.append( AcademicBuilding('Forsythe Athletics Center',
-                                        len(self.buildings),
-                                        "ForsytheAthleticsCenter.png") )
+
+        self.buildings.append( Building('Hammons Student Center',
+                                        len(self.buildings), 'card',
+                                        "HammonsStudentCenter.png") )
         
         self.buildings.append( AcademicBuilding('McDonald Arena',
                                         len(self.buildings), "McDonaldArena.png") )
@@ -235,9 +235,9 @@ class Buildings(object):
                                         len(self.buildings), 'special',
                                         "AccreditationReview.png") )
 
-        self.buildings.append( Building('Power House',
-                                        len(self.buildings), 'utility',
-                                        "PowerHouse.png") )
+        self.buildings.append( Building('Foster Recreation Center',
+                                        len(self.buildings), 'card',
+                                        "FosterRecreationCenter2.png") )
         
         self.buildings.append( AcademicBuilding('Karls Hall',
                                         len(self.buildings), "KarlsHall.png") )

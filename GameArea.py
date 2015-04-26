@@ -751,6 +751,8 @@ class GameArea(object):
                             Turn.extraAndLostTurns[self.playerIndex] += 1
                             self.extraOrLost = -1
 
+                        self.player = self.players[self.playerIndex]
+
                         if not self.player.isBankrupt:
                             break
                     
