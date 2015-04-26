@@ -41,25 +41,36 @@ class PlayersDisplay(object):
             self.screen = pygame.display.set_mode((self.width, self.height))
 
         # The main Surface for the PlayersDisplay, which we'll keep adding to
-        self.pd = pygame.Surface((self.width, self.height))
-        self.pd = self.pd.convert()
-        self.pd.fill(Colors.MAROON)
+        self.playersDisplay = pygame.Surface((self.width, self.height))
+        self.playersDisplay = self.playersDisplay.convert()
+        self.playersDisplay.fill(Colors.MAROON)
 
-        # Add gray background for player data & separate with lines.
+        # Add black background so it looks better when players go bankrupt
         totalPlayersHeight = self.playerHeight * len(players)
-        pygame.draw.rect(self.pd, Colors.LIGHTGRAY,
+        pygame.draw.rect(self.playersDisplay, Color('black'),
                          (0, 0, self.width, totalPlayersHeight), 0)
-        for i in range(0, len(players)):
-            pygame.draw.rect(self.pd, Colors.MEDGRAY,
-                         (0, i*self.playerHeight, self.width, 45*c), 0)
-            pygame.draw.lines(self.pd, Colors.MAROON, False,
-                              [(0, i*self.playerHeight),
-                               (self.width, i*self.playerHeight)], 2)
 
-        # Add text.
-        if pygame.font:
-            for i in range(len(players)):
-                self.printText(c, i)
+        # Create separate a separate surface for each player so we can
+        # use set_alpha on it when a player goes bankrupt.
+        self.pd = []
+        for i in range(len(self.players)):
+            self.pd.append(pygame.Surface((self.width, self.playerHeight)))
+            self.pd[i].fill(Colors.LIGHTGRAY)            
+            pygame.draw.rect(self.pd[i], Colors.MEDGRAY,
+                         (0, 0, self.width, 45*c), 0)
+            pygame.draw.lines(self.pd[i], Colors.MAROON, False,
+                              [(0, 0), (self.width, 0)], 2)
+
+            # Add text.
+            self.printText(c, i)
+
+            # Darken the sections of bankrupt players.
+            if self.players[i].isBankrupt:
+                self.pd[i].set_alpha(100)
+                
+            # Blit the player surfaces onto the main surface.
+            rect = (0, i*self.playerHeight, self.width, self.playerHeight)
+            self.playersDisplay.blit(self.pd[i], rect)        
                   
 
     def printText(self, c, i):
@@ -70,7 +81,7 @@ class PlayersDisplay(object):
         # Player name  
         text = font.render(self.players[i].getName(),
                            True, Color('black'))
-        self.pd.blit(text, (4, self.playerHeight*i + 4))
+        self.pd[i].blit(text, (4, 4))
 
         # College name
         college = self.players[i].getCollege()
@@ -81,14 +92,14 @@ class PlayersDisplay(object):
            or college == 'Education' or college == 'Business':
             textOutline = font.render(Colors.COLLEGEABBR[college],
                            True, Color('black'))
-            self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 5))
-            self.pd.blit(textOutline, (220*c - 1, self.playerHeight*i + 3))
-            self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 5))
-            self.pd.blit(textOutline, (220*c + 1, self.playerHeight*i + 3))
+            self.pd[i].blit(textOutline, (220*c - 1, 5))
+            self.pd[i].blit(textOutline, (220*c - 1, 3))
+            self.pd[i].blit(textOutline, (220*c + 1, 5))
+            self.pd[i].blit(textOutline, (220*c + 1, 3))
         
         text = font.render(Colors.COLLEGEABBR[college],
                            True, Colors.COLLEGECOLORS[college])
-        self.pd.blit(text, (220*c, self.playerHeight*i + 4))
+        self.pd[i].blit(text, (220*c, 4))
 
         # Points
         points = self.players[i].getPoints()
@@ -96,7 +107,7 @@ class PlayersDisplay(object):
             text = font.render(str(points) + ' point', True, Color('black'))
         else:
             text = font.render(str(points) + ' points', True, Color('black'))
-        self.pd.blit(text, (20*c, self.playerHeight*i + 50*c))
+        self.pd[i].blit(text, (20*c, 50*c))
         
         # Points per round
         points = self.players[i].getPointsPerRound()
@@ -104,12 +115,12 @@ class PlayersDisplay(object):
             text = font.render(str(points) + ' point / round', True, Color('black'))
         else:
             text = font.render(str(points) + ' points / round', True, Color('black'))
-        self.pd.blit(text, (250*c, self.playerHeight*i + 50*c))
+        self.pd[i].blit(text, (250*c, 50*c))
 
         # Dollars
         text = font.render('${:,.0f}'.format(self.players[i].getDollars()),
                            True, Color('black'))
-        self.pd.blit(text, (20*c, self.playerHeight*i + 90*c))
+        self.pd[i].blit(text, (20*c, 90*c))
 
 
     def selectPlayer(self, playerIndex):
@@ -117,12 +128,14 @@ class PlayersDisplay(object):
         Uses light maroon to highlight a player's section
         (for indicating it's his/her turn).
         """
-        pygame.draw.rect(self.pd, (238, 180, 180),
-            (0, playerIndex * self.playerHeight + 2, self.width,
-             self.playerHeight - 2), 0)
-        pygame.draw.rect(self.pd, (205, 155, 155),
-            (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
+        self.pd[playerIndex].fill((238, 180, 180))
+        pygame.draw.rect(self.pd[playerIndex], (205, 155, 155),
+            (0, 2, self.width, 45*self.scale), 0)
+        pygame.draw.lines(self.pd[playerIndex], Colors.MAROON, False,
+                              [(0, 0), (self.width, 0)], 2)
         self.printText(self.scale, playerIndex)
+        rect = (0, playerIndex*self.playerHeight, self.width, self.playerHeight)
+        self.playersDisplay.blit(self.pd[playerIndex], rect)
 
 
     def updatePlayer(self, playerIndex):
@@ -130,16 +143,18 @@ class PlayersDisplay(object):
         Updates a player's displayed information to reflect current data.
         Also used to return a player's section to gray after it has been selected.
         """
-        pygame.draw.rect(self.pd, Colors.LIGHTGRAY,
-            (0, playerIndex * self.playerHeight + 2, self.width,
-             self.playerHeight - 2), 0)
-        pygame.draw.rect(self.pd, Colors.MEDGRAY,
-            (0, playerIndex * self.playerHeight + 2, self.width, 45*self.scale), 0)
-        self.printText(self.scale, playerIndex)    
+        self.pd[playerIndex].fill(Colors.LIGHTGRAY)
+        pygame.draw.rect(self.pd[playerIndex], Colors.MEDGRAY,
+            (0, 2, self.width, 45*self.scale), 0)
+        pygame.draw.lines(self.pd[playerIndex], Colors.MAROON, False,
+                              [(0, 0), (self.width, 0)], 2)
+        self.printText(self.scale, playerIndex)
+        rect = (0, playerIndex*self.playerHeight, self.width, self.playerHeight)
+        self.playersDisplay.blit(self.pd[playerIndex], rect)
         
               
     def getPD(self):
-        return self.pd
+        return self.playersDisplay
     
     
 
