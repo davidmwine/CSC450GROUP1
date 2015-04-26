@@ -221,7 +221,7 @@ class GameBoard(object):
         color = building.getColor()
         rect = building.getRect()
         name = building.getName()
-        if building.getPurpose() == "academic":
+        if building.getPurpose() == "academic" or building.getOwner() == None:
             pointList = building.getPointList()
         else:    
             pointList = building.getInnerPointList()
@@ -268,7 +268,7 @@ class GameBoard(object):
         for building in buildings:
             if building.getPurpose() == "academic":
                 if building.getDegreeLvl() == "Associate":
-                    break;
+                    continue
                 elif building.getDegreeLvl() == "Bachelor":
                     self.addGradIcons(building, 1)
                 elif building.getDegreeLvl() == "Master":

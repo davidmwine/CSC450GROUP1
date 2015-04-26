@@ -15,6 +15,7 @@ class Cards():
         self.loadImages()
 
         self.movementCard = False
+        self.feeCard = False
 
     def getXPosition(self):
         return self.area.get_offset()[0]
@@ -53,7 +54,7 @@ class Cards():
             text = "Hold alumni fundraiser and raise $100,000."
         if card == 3:
             text = "Rap artist arrested. Cancel concert, refund tickets, lose $50,000."
-            
+         
         '''
         if card == 0:
             text = "Move back 3 spaces and stuff. You are going the wrong way."
@@ -74,6 +75,7 @@ class Cards():
     def performAction(self, card, player):
         """Performs the action printed on the card that was drawn."""
         self.player = player    # the player who drew the card
+    
         if card == 0:
             self.goToSpace("Accreditation Review")
         if card == 1:
@@ -82,6 +84,7 @@ class Cards():
             self.player.addDollars(100000)
         if card == 3:
             self.player.subtractDollars(50000)    
+            self.feeCard = True
 
 
     def displayCard(self, card, scale):

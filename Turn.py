@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from MessageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
 from CheckBox import CheckBox
+from Building import *
 
 
 class Turn(object):
@@ -53,6 +54,7 @@ class Turn(object):
         Turn.msgSurface = parent.subsurface(Turn.msgRect)
         Turn.smallMsgSurface = parent.subsurface(Turn.smallMsgRect)
         Turn.upgradeSurface = parent.subsurface(Turn.upgradeRect)
+        Turn.gameOver = False
 
 
     def beginTurn(self, extraOrLost, begin = True):
@@ -61,6 +63,9 @@ class Turn(object):
         and giving instructions to roll the dice.  Also, displays messages
         regarding lost or extra turns.
         """
+        # If a player has won, allow the appropriate message to be displayed.
+        if Turn.gameOver:
+            return
 
         # If a player has lost a turn, display this fact.
         if extraOrLost == -1:
@@ -78,8 +83,8 @@ class Turn(object):
         # If the player is in Accreditation Review, display appropriate message.
         if self.player.inAccreditationReview:
             (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect, Turn.msgRect,
-                Turn.font, self.player.getName() + " is stuck in Accreditation "
-                    + "Review. Roll dice to see if you pass.")
+                Turn.font, self.player.getName() + ", you're stuck in "
+                    + "Accreditation Review. Roll dice to see if you pass.")
 
         # If this is a player's extra turn, indicate that.
         elif extraOrLost == 1:
@@ -131,7 +136,8 @@ class Turn(object):
                 + "required improvements and try again next turn.")
             Turn.msgSurface.blit(msgBox, (0, 0))
             self.okMsgDisplayed = True
-            self.player.subtractDollars(100000)
+            self.feeMsgDisplayed = True
+            self.feeAmt = 100000            
 
 
     def handleLanding(self):
@@ -139,6 +145,10 @@ class Turn(object):
         This method handles what comes next after a player lands on a space,
         (e.g., buying the building or paying fees to another player).
         """
+        # If a player has won, allow the appropriate message to be displayed.
+        if Turn.gameOver:
+            return
+        
         self.landed = True
         position = self.player.getPosition()
         self.building = Turn.buildings.getBuildingList()[position]
@@ -435,4 +445,4 @@ class Turn(object):
                     self.player.subtractDollars(250000)
                     self.player.addPointsPerRound(1)
                 building.setDegreeLvl("Doctorate")
-                
+     
