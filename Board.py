@@ -203,6 +203,11 @@ class GameBoard(object):
                     # Store pointList in building object
                     buildings[building].setPointList(pointList)
                     buildings[building].setInnerPointList(innerPointList)
+
+                    if buildings[building].getPurpose() == 'card':                        
+                        self.board.blit(self.boardfont.render('?', True, Colors.WHITE),
+                            (x_pos + cellWidth + self.boardfont.size('?')[0]/2,
+                             y_pos + cellHeight/2 - self.boardfont.size('?')[1]/2))
                     
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
