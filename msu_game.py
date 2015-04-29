@@ -49,7 +49,7 @@ class Game(object):
         self.splashShow = False
 
         self.intro = Sound('intro')
-        self.click = Sound('click')
+        #self.click = Sound('click')
         self.bgMusic = Sound('start_menu')
 
         #self.round_number = 1
@@ -62,23 +62,25 @@ class Game(object):
         return fontAndSize
         
     def start(self):
-        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.click, self.bgMusic)
-        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.click, self.bgMusic)
+        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic)
+        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset)
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic)
         playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
         Olobby = OnlineLobby(self.fontOp, self.screen, self.ratio)
         while True:
-            if playGame.getScale() != self.screen.get_height()/1080:
+            if playGame.getScale() != self.screen.get_height()/1080 or\
+               lobby.screen.get_height() != self.screen.get_height() or\
+               Olobby.screen.get_height() != self.screen.get_height():
                 self.ratio = self.screen.get_height()/1080
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
                 Olobby = Lobby(self.fontOp, self.screen, self.ratio)
-            if self.nextScreen == "game":
+            elif self.nextScreen == "game":
                 self.nextScreen = playGame.play()
-            if self.nextScreen == "lobby":
+            elif self.nextScreen == "lobby":
                 self.nextScreen = lobby.run()
-            if self.nextScreen == "Olobby":
+            elif self.nextScreen == "Olobby":
                 self.nextScreen = Olobby.run()
             elif self.nextScreen == "start":
                 if self.splashShow:

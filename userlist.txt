@@ -1,2 +1,3 @@
 fred
-James
+Jannis
+Max
