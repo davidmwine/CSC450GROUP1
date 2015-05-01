@@ -56,6 +56,17 @@ class GameArea(object):
 
         self.rulesPage = 1 #initialize rules page to start at 1
         
+        self.click = pygame.mixer.Sound(os.path.join('sound','click.wav'))        #Generic click
+        self.btsound = pygame.mixer.Sound(os.path.join('sound','button.wav'))     #Screen resolution option button
+        self.diceSound = pygame.mixer.Sound(os.path.join('sound','dice.wav'))     #Dice roll
+        self.flipSound = pygame.mixer.Sound(os.path.join('sound','flip.wav'))     #Card click
+        self.sonarSound = pygame.mixer.Sound(os.path.join('sound','sonar.wav'))   #Sound option button
+        self.bubbleSound = pygame.mixer.Sound(os.path.join('sound','bubble.wav')) #Player moving 
+        self.booSound = pygame.mixer.Sound(os.path.join('sound','boo.wav'))       #Game lost
+        self.winSound = pygame.mixer.Sound(os.path.join('sound','winner.wav'))    #Game won
+        self.typeSound = pygame.mixer.Sound(os.path.join('sound','typing.wav'))   #Chat typing
+        
+        
         if self.parent:
             self.area = pygame.Surface((self.width, self.height))
         else:
@@ -133,6 +144,7 @@ class GameArea(object):
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
             and mouseY > self.height - self.controls.getHeight():
+                self.click.play()
                 self.popupMenu.setPopupActive(True)
                 self.popupMenu.makePopupMenu()
 
@@ -144,6 +156,7 @@ class GameArea(object):
                 self.playersDisplay.selectPlayer(self.playerIndex)
                 self.refreshPlayersDisplay()
                 self.roll = (1,0)
+                self.diceSound.play()
                 self.diceRolled = True
                 self.turn.ableToRoll = False
                 self.rollDice()
@@ -152,12 +165,14 @@ class GameArea(object):
             if mouseX > self.controls.getWidth() / 2 \
             and mouseX < 3 * self.controls.getWidth() / 4 \
             and mouseY > self.height - self.controls.getHeight():
+                self.click.play()
                 pass
 
             # Upgrade Button
             if mouseX > 3 * self.controls.getWidth() / 4 \
             and mouseX < self.controls.getWidth() \
-            and mouseY > self.height - self.controls.getHeight():    
+            and mouseY > self.height - self.controls.getHeight():
+                self.click.play()
                 self.turn.showUpgradeOptions()
 
             # Cards
@@ -166,6 +181,7 @@ class GameArea(object):
             and mouseY > self.cards.getYPosition()
             and mouseY < self.cards.getYPosition() + self.cards.getHeight()):
                 if self.turn.cardDraw:  # player landed on card space
+                    self.flipSound.play()
                     self.turn.cardDraw = False
                     self.cardDisplayed = True
                     self.currentCard = self.cards.drawCard(self.scale, self.player)
@@ -202,6 +218,7 @@ class GameArea(object):
                 self.playersDisplay.selectPlayer(self.playerIndex)
                 self.refreshPlayersDisplay()
                 self.roll = (1,0)
+                self.diceSound.play()
                 self.diceRolled = True
                 self.turn.ableToRoll = False
                 self.rollDice()
@@ -213,6 +230,7 @@ class GameArea(object):
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.okMsgDisplayed = False
+                    self.click.play()
                     
                     # If player just passed Accreditation Review...
                     if (self.player.inAccreditationReview
@@ -241,6 +259,7 @@ class GameArea(object):
                                      Turn.msgRect.y + self.turn.noRect.y,
                                      self.turn.noRect.width, self.turn.noRect.height)
                 if yesRect.collidepoint(pygame.mouse.get_pos()):
+                    self.click.play()
                     if self.turn.building.getPurpose() == "stealable":
                         self.turn.steal()
                     else:    
@@ -249,6 +268,7 @@ class GameArea(object):
                     self.turn.buyMsgDisplayed = False
                     self.checkBankruptcy()
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
+                    self.click.play()
                     self.turn.buyMsgDisplayed = False
                     self.endTurn()
 
@@ -261,6 +281,7 @@ class GameArea(object):
                                  Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
                                  self.turn.okUpgradeRect.width, self.turn.okUpgradeRect.height)
                 if okUpgradeRect.collidepoint(pygame.mouse.get_pos()):
+                    self.click.play()
                     # Once the player clicks OK, complete desired upgrades and update display.
                     self.turn.upgrade()
                     self.playersDisplay.selectPlayer(Turn.count % len(self.players))
@@ -280,6 +301,7 @@ class GameArea(object):
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
                         and mouseY > self.boardArea.get_height() / 2 - 80 \
                         and mouseY < self.boardArea.get_height() / 2 - 50:
+                            self.click.play()
                             self.popupMenu.setPopupActive(False)
                             self.resumeTurn()
                         
@@ -288,6 +310,7 @@ class GameArea(object):
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
                         and mouseY > self.boardArea.get_height() / 2 - 40 \
                         and mouseY < self.boardArea.get_height() / 2 - 10:
+                            self.click.play()
                             self.popupMenu.setRulesActive(True)
                             self.popupMenu.rules(self.rulesPage)
                         # game options
@@ -295,6 +318,7 @@ class GameArea(object):
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
                         and mouseY > self.boardArea.get_height() / 2 \
                         and mouseY < self.boardArea.get_height() / 2 + 30:
+                            self.click.play()
                             self.popupMenu.setOptionsActive(True)
                             self.popupMenu.gameOptions()
                         # exit game
@@ -302,6 +326,7 @@ class GameArea(object):
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
                         and mouseY > self.boardArea.get_height() / 2 + 40 \
                         and mouseY < self.boardArea.get_height() / 2 + 70:
+                            self.click.play()
                             self.popupMenu.setExitCheckActive(True)
                             self.popupMenu.exitCheck()
 
@@ -312,6 +337,7 @@ class GameArea(object):
                         and mouseX < self.boardArea.get_width() / 2 + 50 \
                         and mouseY > self.boardArea.get_height() / 2 + 95 \
                         and mouseY < self.boardArea.get_height() / 2 + 125:
+                            self.click.play()
                             self.popupMenu.setRulesActive(False)
                             self.popupMenu.makePopupMenu()
                         # next rule
@@ -320,6 +346,7 @@ class GameArea(object):
                         and mouseY > self.boardArea.get_height() / 2 + 95 \
                         and mouseY < self.boardArea.get_height() / 2 + 115 \
                         and self.rulesPage < 17:
+                            self.click.play()
                             self.rulesPage += 1
                             self.popupMenu.rules(self.rulesPage)
                         # previous rule
@@ -328,6 +355,7 @@ class GameArea(object):
                         and mouseY > self.boardArea.get_height() / 2 + 95 \
                         and mouseY < self.boardArea.get_height() / 2 + 115 \
                         and self.rulesPage > 1:
+                            self.click.play()
                             self.rulesPage -= 1
                             self.popupMenu.rules(self.rulesPage)
                         
@@ -338,6 +366,7 @@ class GameArea(object):
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
                     and mouseY > self.boardArea.get_height() / 2 - 60 \
                     and mouseY < self.boardArea.get_height() / 2 - 30:
+                        self.click.play()
                         self.popupMenu.setPopupActive(False)
                         self.gameExit = True
                     # no - go back to menu
@@ -345,6 +374,7 @@ class GameArea(object):
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
                     and mouseY > self.boardArea.get_height() / 2 - 20*2 \
                     and mouseY < self.boardArea.get_height() / 2 + 10*2:
+                        self.click.play()
                         self.popupMenu.setExitCheckActive(False)
                         self.popupMenu.makePopupMenu()
 
@@ -353,6 +383,7 @@ class GameArea(object):
                 # change resolution
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
+                    self.btsound.play()
                     self.resizeScreen(change)
 
                 # Change sound
@@ -361,12 +392,14 @@ class GameArea(object):
                 and mouseY > self.boardArea.get_height()/2 + 168*self.scale \
                 and mouseY < self.boardArea.get_height()/2 + 230*self.scale:
                     self.popupMenu.soundChange()
+                    self.sonarSound.play()
                     
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \
                 and mouseY > self.boardArea.get_height() / 2 - 80 \
                 and mouseY < self.boardArea.get_height() / 2 - 50:
+                    self.click.play()
                     self.popupMenu.setOptionsActive(False)
                     self.popupMenu.makePopupMenu()
 
@@ -472,6 +505,7 @@ class GameArea(object):
         while count < self.roll[1] + self.roll[2]:
             self.clock.tick(30)
             self.player.increasePosition(1)
+            self.bubbleSound.play()
             count += 1
             if count == self.roll[1] + self.roll[2]:
                 self.midRoll = False
@@ -490,6 +524,7 @@ class GameArea(object):
                 pygame.time.wait(250)
             else:
                 pygame.time.wait(1000)
+        self.bubbleSound.play()        
         self.players[self.playerIndex].removeToken()
         self.refreshDisplay()
         self.updatePlayerPosition()
@@ -563,6 +598,7 @@ class GameArea(object):
                 Turn.font, self.player.getName() + " has gone bankrupt and "
                                         + "been eliminated from the game.")
             Turn.msgSurface.blit(msgBox, (0, 0))
+            self.booSound.play()
             self.turn.okMsgDisplayed = True    
             
         elif self.turn.upgradeDisplayed:
@@ -583,6 +619,7 @@ class GameArea(object):
                 Turn.font, winner + " is the winner! All other players have"
                                                       + " gone bankrupt.")
             Turn.msgSurface.blit(msgBox, (0, 0))
+            self.winSound.play()
             self.turn.okMsgDisplayed = True
             return True
 
@@ -594,6 +631,7 @@ class GameArea(object):
                         + str(self.player.getPoints())
                         + " Graduate Points and wins the game!")
                     Turn.msgSurface.blit(msgBox, (0, 0))
+                    self.winSound.play()
                     self.turn.okMsgDisplayed = True
                     return True
 
@@ -626,6 +664,7 @@ class GameArea(object):
         elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
             #self.chatBox.typeText(pygame.key.name(event.key))
             #self.chatBox.typeText(chr(event.key))
+            self.typeSound.play()
             checkCaps = pygame.key.get_pressed()
             if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
                 index = CHARS.index(chr(event.key))
@@ -700,9 +739,9 @@ class GameArea(object):
                         self.gameExit = True
                         break
                     ###Cards demo - Remove Later ###
-                    if event.key == K_c:
-                        self.cardDraw = True
-                        self.currentCard = self.cards.drawCard(self.scale)
+                    #if event.key == K_c:
+                        #self.cardDraw = True
+                        #self.currentCard = self.cards.drawCard(self.scale)
                     ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
