@@ -153,8 +153,17 @@ class Turn(object):
         position = self.player.getPosition()
         self.building = Turn.buildings.getBuildingList()[position]
         print("Token landed on", self.building.getName())
+
+        if self.player.passedCarrington:
+            (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                Turn.font, "You passed Carrington Hall and received "
+                + "$200,000 and {} graduate {}!".format(
+                self.player.getPointsPerRound(),
+                "point" if self.player.getPointsPerRound() == 1 else "points"))
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.okMsgDisplayed = True
         
-        if self.building.getPurpose() == "special":
+        elif self.building.getPurpose() == "special":
             if self.building.getName() == "Carrington Hall":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to Carrington Hall!")

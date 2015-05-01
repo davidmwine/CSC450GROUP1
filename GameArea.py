@@ -230,6 +230,7 @@ class GameArea(object):
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.okMsgDisplayed = False
+                    self.refreshGameBoard()
                     self.click.play()
                     
                     # If player just passed Accreditation Review...
@@ -238,6 +239,9 @@ class GameArea(object):
                     and not self.turn.landed):
                         self.player.inAccreditationReview = False
                         self.move()
+                    elif self.player.passedCarrington:
+                        self.player.passedCarrington = False
+                        self.turn.handleLanding()
                     else:    
                         # If applicable, charge fees and update playersDisplay.
                         if self.turn.feeMsgDisplayed:
@@ -496,6 +500,9 @@ class GameArea(object):
 
 
     def move(self):
+        if Turn.gameOver:
+            return
+        
         count = 0
         self.midRoll = True
         self.players[self.playerIndex].startToken()
