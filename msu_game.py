@@ -49,10 +49,8 @@ class Game(object):
         self.splashShow = False
 
         self.intro = Sound('intro')
-        #self.click = Sound('click')
+        self.click = Sound('click')
         self.bgMusic = Sound('start_menu')
-
-        #self.round_number = 1
 
     def fontOp(self, size, fontName):  #Pick font size and type
         if fontName == "helvetica":
@@ -62,9 +60,9 @@ class Game(object):
         return fontAndSize
         
     def start(self):
-        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic)
-        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic)
+        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic, self.click)
+        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
         playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
         Olobby = OnlineLobby(self.fontOp, self.screen, self.ratio)

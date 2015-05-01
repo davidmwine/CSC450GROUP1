@@ -24,6 +24,8 @@ class SignIn():
         self.userListArea = self.area.subsurface((25,75,350,250))
         self.next = 0
         self.selected = ''
+        #sound
+        self.click = pygame.mixer.Sound(os.path.join('sound','click.wav')) 
 
 
 
@@ -68,6 +70,7 @@ class SignIn():
         if self.newUserEntry.isClicked(mousex, mousey):
             self.newUserEntry.giveFocus()
         if self.addButton.wasClicked(mousex,mousey):
+            self.click.play() 
             print("click")
             self.addUser()
         xoffset, yoffset = self.userListArea.get_abs_offset()
@@ -75,6 +78,7 @@ class SignIn():
             self.textClick(xoffset, yoffset)
         clickedButton = self.controls.wasClicked(mousex, mousey)
         if clickedButton:
+            self.click.play() 
             self.buttonActions(clickedButton)
 
     def buttonActions(self, bNumber):

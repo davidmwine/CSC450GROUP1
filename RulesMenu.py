@@ -5,14 +5,14 @@ import os
 import sys
 
 class Rules(object):
-    def __init__(self, screen, fontOp, yOffset):
+    def __init__(self, screen, fontOp, yOffset, click):
         self.screen = screen
         self.fontOp = fontOp
         self.yOffset = yOffset
         self.loadImages()
         self.loadText()
         self.rulesCount = 17  #Number of rules/rule pages
-        #self.click = click
+        self.click = click
 
     def loadImages(self):     
         self.imgArrow = pygame.image.load(os.path.join("img","arrow.png")).convert_alpha()
@@ -47,7 +47,7 @@ class Rules(object):
         and mouseX < self.rulesXPosition + 595\
         and mouseY > self.screen.get_height()/8+self.yOffset-5 \
         and mouseY < self.screen.get_height()/8+self.yOffset+self.textExitRules.get_height()+5:
-            #self.click.play()
+            self.click.play()
             return False
         #Prev page
         if self.rulesPage > 1:
@@ -55,8 +55,7 @@ class Rules(object):
             and mouseX < self.rulesXPosition + 65\
             and mouseY > self.screen.get_height()/8+self.yOffset+390 \
             and mouseY < self.screen.get_height()/8+self.yOffset+self.imgArrowleft.get_height()+400:
-                #self.click.play()
-
+                self.click.play()
                 self.rulesNextPage(-1)
                 return True
         #Next page
@@ -65,7 +64,7 @@ class Rules(object):
             and mouseX < self.rulesXPosition + 620\
             and mouseY > self.screen.get_height()/8+self.yOffset+390 \
             and mouseY < self.screen.get_height()/8+self.yOffset+self.imgArrow.get_height()+400:
-                #self.click.play()
+                self.click.play()
                 self.rulesNextPage(1)
                 return True
 
@@ -79,7 +78,7 @@ class Rules(object):
             and mouseX < indexXPosition + self.textBearPark.get_width()\
             and mouseY > indexYPosition \
             and mouseY < indexYPosition + self.textIntro.get_height():      
-                #self.click.play()
+                self.click.play()
                 self.rulesNextPage(i+1, True)
                 return True
      

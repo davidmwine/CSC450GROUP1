@@ -7,7 +7,7 @@ from RadioButton import RadioGroup
 from StartMenu import Start
 
 class Options(object):
-    def __init__(self, screen, infoScreen, fontOp, yOffset, bgMusic):
+    def __init__(self, screen, infoScreen, fontOp, yOffset, bgMusic, click):
         self.screen = screen
         self.infoScreen = infoScreen
         self.fontOp = fontOp
@@ -19,8 +19,10 @@ class Options(object):
         self.loadText()
         self.loadButtons(self.resolutionOption)
         self.screenModes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]
-        #self.click = click
+        self.click = click
         self.bgMusic = bgMusic
+        self.sonarSound = pygame.mixer.Sound(os.path.join('sound','sonar.wav'))   #Sound option button
+        self.btsound = pygame.mixer.Sound(os.path.join('sound','button.wav'))     #Screen resolution option button
 
     def loadButtons(self, resolutionOption):
         #Radio button group
@@ -81,15 +83,16 @@ class Options(object):
     def buttonClick(self):
         mouseX, mouseY = pygame.mouse.get_pos()
 
+        #Exit button
         if mouseX > self.screen.get_width() / 2 + 105 \
                 and mouseX < self.screen.get_width() / 2 + 180 \
                 and mouseY > self.screen.get_height() / 2 - 125 + self.yOffset \
                 and mouseY < self.screen.get_height() / 2 - 50 + self.yOffset:
-            #self.click.play()
+            self.click.play()
             return False
 
         if self.resolutionButtons.checkButton(mouseX, mouseY):
-            #self.click.play()
+            self.btsound.play()
             self.resolutionOption = self.resolutionButtons.getCurrent()
             if self.infoScreen.current_h == self.screenModes[self.resolutionButtons.getCurrent()][1]\
                and self.infoScreen.current_w == self.screenModes[self.resolutionButtons.getCurrent()][0]:
@@ -107,14 +110,13 @@ class Options(object):
             self.click.setSound('click')
             self.click.play()'''
 
-        #self.musicOff = not pygame.mixer.get_busy()
+
         #Music button
         if mouseX > self.screen.get_width() / 2 + 132 \
                 and mouseX < self.screen.get_width() / 2 + 177 \
                 and mouseY > self.screen.get_height() / 2 + 160 + self.yOffset \
                 and mouseY < self.screen.get_height() / 2 + 181 + self.yOffset:
-            #self.click.play()
-            #self.musicOff = not self.musicOff
+            self.sonarSound.play()
             self.bgMusic.setSound('start_menu')
             self.bgMusic.play()
                 

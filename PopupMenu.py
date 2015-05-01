@@ -20,6 +20,7 @@ class PopupMenu(object):
         self.exitCheckActive = False
         self.rulesActive = False
         self.bgMusic = Sound('start_menu')
+        self.soundOn = pygame.mixer.get_busy() 
 
     def loadButtons(self):
         # RADIO BUTTON GROUP
@@ -85,27 +86,29 @@ class PopupMenu(object):
         self.resolveButton.draw()
 
         #Sound heading
-        self.textSound = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Sound", True, (94, 0, 9))
+        self.textSound = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Music", True, (94, 0, 9))
         self.area.blit(self.textSound, (self.area.get_width() / 2 - (0.5 * self.textSound.get_width()), self.area.get_height() - 65))
 
         #Sound button - On initial popup
-        if pygame.mixer.get_busy():
+        if not self.soundOn:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
    
     def soundChange(self):
         #Sound button
-        if not pygame.mixer.get_busy():
+        if self.soundOn:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
 
         # Stop or start sound
-        if pygame.mixer.get_busy():
+        if not self.soundOn:
             pygame.mixer.stop()
         else:
-            self.bgMusic.play()       
+            self.bgMusic.play()
+
+        self.soundOn = not self.soundOn
 
     def rules(self, pageNum=None):
         self.popupActive = True

@@ -27,7 +27,8 @@ class Lobby():
         self.parent = parent
         self.screen = pygame.Surface((self.width, self.height))
 
-
+        #sound
+        self.click = pygame.mixer.Sound(os.path.join('sound','click.wav')) 
 
         #booleans
         self.enterForm = False
@@ -167,6 +168,7 @@ to determine the inital screen'''
             for i in range(len(self.checkBoxes)):
                 if i <= self.boxNum: #If box is displayed check it
                     if self.checkBoxes[i].setChecked(mouseX - self.offset3[0], mouseY - self.offset3[1]):
+                        self.click.play()
                         self.deanBoxes.lock(i)
                         currInd = self.deanBoxes.getBox(i).getCurrIndex()
                         currLock = self.deanBoxes.getBox(i).getIsLocked()
@@ -203,6 +205,7 @@ to determine the inital screen'''
                 else:
                     self.canStart = True
                 if self.canStart:
+                    self.click.play()
                     self.gameExit = True
                     self.nextScreen = 'game'
                     GameInfo.ONLINEGAME = False
@@ -215,6 +218,7 @@ to determine the inital screen'''
                 else:
                     self.errorMessageDisplayed = True
             if self.backButton.wasClicked(mouseX, mouseY):
+                self.click.play()
                 self.gameExit = True
                 self.nextScreen = 'start'
                 return
