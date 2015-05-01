@@ -89,7 +89,7 @@ class Options(object):
             return False
 
         if self.resolutionButtons.checkButton(mouseX, mouseY):
-            self.click.play()
+            #self.click.play()
             self.resolutionOption = self.resolutionButtons.getCurrent()
             if self.infoScreen.current_h == self.screenModes[self.resolutionButtons.getCurrent()][1]\
                and self.infoScreen.current_w == self.screenModes[self.resolutionButtons.getCurrent()][0]:

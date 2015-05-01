@@ -351,6 +351,7 @@ to determine the inital screen'''
         #result = cmdList.get()
         pygame.key.set_repeat(75, 75)
         while not self.gameExit:
+            pygame.time.Clock().tick(30)
             for event in pygame.event.get():
                 if event.type == MOUSEBUTTONDOWN:
                     self.buttonClick()

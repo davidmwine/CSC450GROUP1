@@ -3,7 +3,7 @@ from pygame.locals import *
 import os
 import sys
 from Player import Player
-from Building import Buildings
+from Building import *
 import Colors
 import GameInfo
 from PlayersDisplay import PlayersDisplay
@@ -14,6 +14,8 @@ from Dice import Dice
 from PopupMenu import PopupMenu
 from Cards import Cards
 from Turn import Turn
+from MessageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
+
 
 class GameArea(object):
 
@@ -45,9 +47,12 @@ class GameArea(object):
         self.typing = False     # True if user is typing in chat box
         self.midTurn = False    # True if it's the middle of a player's turn
         self.gameExit = False
-        self.cardDraw = False
+        self.cardDraw = False   # for demo; game uses self.turn.cardDraw
+        self.cardDisplayed = False  # True if a card is face up
         self.diceRolled = False
         self.midRoll = False
+
+        self.roundsBeforePriceIncrease = 3      # inflation
 
         self.rulesPage = 1 #initialize rules page to start at 1
         
@@ -105,6 +110,7 @@ class GameArea(object):
         """Takes action based on when and where mouse has been clicked"""
 
         mouseX, mouseY = pygame.mouse.get_pos()
+        #print(mouseX, mouseY)
 
         # menu not open
         if not self.popupMenu.getPopupActive():             
@@ -131,11 +137,15 @@ class GameArea(object):
                 self.popupMenu.makePopupMenu()
 
             # Roll Button
-            if mouseX > self.controls.getWidth()/4\
+            if self.turn.ableToRoll and mouseX > self.controls.getWidth()/4\
             and mouseX < self.controls.getWidth()/2\
             and mouseY > self.height-self.controls.getHeight():
+                # Update player's $ before they have to make a decision.
+                self.playersDisplay.selectPlayer(self.playerIndex)
+                self.refreshPlayersDisplay()
                 self.roll = (1,0)
                 self.diceRolled = True
+                self.turn.ableToRoll = False
                 self.rollDice()
 
             # Trade Button
@@ -149,22 +159,78 @@ class GameArea(object):
             and mouseX < self.controls.getWidth() \
             and mouseY > self.height - self.controls.getHeight():    
                 self.turn.showUpgradeOptions()
-    
 
+            # Cards
+            if (mouseX > self.cards.getXPosition()
+            and mouseX < self.cards.getXPosition() + self.cards.getWidth()
+            and mouseY > self.cards.getYPosition()
+            and mouseY < self.cards.getYPosition() + self.cards.getHeight()):
+                if self.turn.cardDraw:  # player landed on card space
+                    self.turn.cardDraw = False
+                    self.cardDisplayed = True
+                    self.currentCard = self.cards.drawCard(self.scale, self.player)
+                    (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect,
+                        Turn.msgRect, Turn.font,
+                        "Click cards again to take this action.")
+                    Turn.smallMsgSurface.blit(msgBox, (0, 0))
+                    self.turn.cardLandingMsgDisplayed = False
+                elif self.cardDisplayed:    # card is face up
+                    self.cardDisplayed = False
+                    self.cards.performAction(self.currentCard, self.player)
+                    if self.cards.feeCard:
+                        self.cards.feeCard = False
+                        self.checkBankruptcy()
+                    elif self.cards.movementCard:
+                        self.player.removeToken()   
+                        self.updatePlayerPosition()
+                        self.refreshGameBoard()
+                        # Update $ displayed in case player passed Carrington.
+                        self.playersDisplay.selectPlayer(self.playerIndex)
+                        self.refreshPlayersDisplay()
+                        self.cards.movementCard = False
+                        self.turn.handleLanding()
+                    else:    
+                        self.endTurn()
+
+            # Dice
+            if (self.turn.ableToRoll and not self.turn.upgradeDisplayed
+            and mouseX > self.dice.getXPosition()
+            and mouseX < self.dice.getXPosition() + self.dice.getWidth()
+            and mouseY > self.dice.getYPosition()
+            and mouseY < self.dice.getYPosition() + self.dice.getHeight()):
+                # Update player's $ before they have to make a decision.
+                self.playersDisplay.selectPlayer(self.playerIndex)
+                self.refreshPlayersDisplay()
+                self.roll = (1,0)
+                self.diceRolled = True
+                self.turn.ableToRoll = False
+                self.rollDice()
+    
             # OK Button in Message Box
             if self.turn.okMsgDisplayed:
                 okRect = pygame.Rect(Turn.msgRect.x + self.turn.okRect.x,
                                  Turn.msgRect.y + self.turn.okRect.y,
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
-                    # If applicable, charge fees and update playersDisplay.
-                    if self.turn.feeMsgDisplayed:
-                        self.turn.chargeFees()
-                        self.playersDisplay.updatePlayer(
-                            self.players.index(self.turn.owner))
-                        self.turn.feeMsgDisplayed = False
-                    self.turn.okMsgDisplayed = False    
-                    self.endTurn()
+                    self.turn.okMsgDisplayed = False
+                    
+                    # If player just passed Accreditation Review...
+                    if (self.player.inAccreditationReview
+                    and self.turn.roll % 2 == 0
+                    and not self.turn.landed):
+                        self.player.inAccreditationReview = False
+                        self.move()
+                    else:    
+                        # If applicable, charge fees and update playersDisplay.
+                        if self.turn.feeMsgDisplayed:
+                            self.turn.chargeFees()
+                            if self.turn.owner != None:
+                                self.playersDisplay.updatePlayer(
+                                    self.players.index(self.turn.owner))
+                            self.turn.feeMsgDisplayed = False
+                            self.checkBankruptcy()
+                        else:
+                            self.endTurn()
 
             # Yes/No Button in Message Box
             if self.turn.buyMsgDisplayed:
@@ -175,10 +241,13 @@ class GameArea(object):
                                      Turn.msgRect.y + self.turn.noRect.y,
                                      self.turn.noRect.width, self.turn.noRect.height)
                 if yesRect.collidepoint(pygame.mouse.get_pos()):
-                    self.turn.buy()
+                    if self.turn.building.getPurpose() == "stealable":
+                        self.turn.steal()
+                    else:    
+                        self.turn.buy()
                     self.gameBoard.colorBuilding(self.turn.building)
                     self.turn.buyMsgDisplayed = False
-                    self.endTurn()
+                    self.checkBankruptcy()
                 elif noRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.buyMsgDisplayed = False
                     self.endTurn()
@@ -196,8 +265,9 @@ class GameArea(object):
                     self.turn.upgrade()
                     self.playersDisplay.selectPlayer(Turn.count % len(self.players))
                     self.refreshPlayersDisplay()
+                    self.gameBoard.addPlayerGradIcons(self.player)
+                    self.checkBankruptcy()
                     self.turn.upgradeDisplayed = False
-                    self.resumeTurn()
                                         
 
         # menu open
@@ -208,30 +278,30 @@ class GameArea(object):
                         # resume game
                         if mouseX > self.boardArea.get_width() / 2 - 100 \
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
-                        and mouseY> self.boardArea.get_height() / 2 - 80 \
-                        and mouseY< self.boardArea.get_height() / 2 - 50:
+                        and mouseY > self.boardArea.get_height() / 2 - 80 \
+                        and mouseY < self.boardArea.get_height() / 2 - 50:
                             self.popupMenu.setPopupActive(False)
                             self.resumeTurn()
                         
                         # game rules
                         if mouseX > self.boardArea.get_width() / 2 - 100 \
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
-                        and mouseY> self.boardArea.get_height() / 2 - 40 \
-                        and mouseY< self.boardArea.get_height() / 2 - 10:
+                        and mouseY > self.boardArea.get_height() / 2 - 40 \
+                        and mouseY < self.boardArea.get_height() / 2 - 10:
                             self.popupMenu.setRulesActive(True)
                             self.popupMenu.rules(self.rulesPage)
                         # game options
                         if mouseX > self.boardArea.get_width() / 2 - 100 \
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
-                        and mouseY> self.boardArea.get_height() / 2 \
-                        and mouseY< self.boardArea.get_height() / 2 + 30:
+                        and mouseY > self.boardArea.get_height() / 2 \
+                        and mouseY < self.boardArea.get_height() / 2 + 30:
                             self.popupMenu.setOptionsActive(True)
                             self.popupMenu.gameOptions()
                         # exit game
                         if mouseX > self.boardArea.get_width() / 2 - 100 \
                         and mouseX < self.boardArea.get_width() / 2 + 100 \
-                        and mouseY> self.boardArea.get_height() / 2 + 40 \
-                        and mouseY< self.boardArea.get_height() / 2 + 70:
+                        and mouseY > self.boardArea.get_height() / 2 + 40 \
+                        and mouseY < self.boardArea.get_height() / 2 + 70:
                             self.popupMenu.setExitCheckActive(True)
                             self.popupMenu.exitCheck()
 
@@ -240,23 +310,23 @@ class GameArea(object):
                         # back
                         if mouseX > self.boardArea.get_width() / 2 - 50 \
                         and mouseX < self.boardArea.get_width() / 2 + 50 \
-                        and mouseY> self.boardArea.get_height() / 2 + 95 \
-                        and mouseY< self.boardArea.get_height() / 2 + 125:
+                        and mouseY > self.boardArea.get_height() / 2 + 95 \
+                        and mouseY < self.boardArea.get_height() / 2 + 125:
                             self.popupMenu.setRulesActive(False)
                             self.popupMenu.makePopupMenu()
                         # next rule
                         if mouseX > self.boardArea.get_width() / 2 + 100 \
                         and mouseX < self.boardArea.get_width() / 2 + 160 \
-                        and mouseY> self.boardArea.get_height() / 2 + 95 \
-                        and mouseY< self.boardArea.get_height() / 2 + 115 \
+                        and mouseY > self.boardArea.get_height() / 2 + 95 \
+                        and mouseY < self.boardArea.get_height() / 2 + 115 \
                         and self.rulesPage < 17:
                             self.rulesPage += 1
                             self.popupMenu.rules(self.rulesPage)
                         # previous rule
                         if mouseX > self.boardArea.get_width() / 2 - 160 \
                         and mouseX < self.boardArea.get_width() / 2 - 100 \
-                        and mouseY> self.boardArea.get_height() / 2 + 95 \
-                        and mouseY< self.boardArea.get_height() / 2 + 115 \
+                        and mouseY > self.boardArea.get_height() / 2 + 95 \
+                        and mouseY < self.boardArea.get_height() / 2 + 115 \
                         and self.rulesPage > 1:
                             self.rulesPage -= 1
                             self.popupMenu.rules(self.rulesPage)
@@ -266,15 +336,15 @@ class GameArea(object):
                     # yes - exit
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 60 \
-                    and mouseY< self.boardArea.get_height() / 2 - 30:
+                    and mouseY > self.boardArea.get_height() / 2 - 60 \
+                    and mouseY < self.boardArea.get_height() / 2 - 30:
                         self.popupMenu.setPopupActive(False)
                         self.gameExit = True
                     # no - go back to menu
                     if mouseX > self.boardArea.get_width() / 2 - 100 \
                     and mouseX < self.boardArea.get_width() / 2 + 100 \
-                    and mouseY> self.boardArea.get_height() / 2 - 20*2 \
-                    and mouseY< self.boardArea.get_height() / 2 + 10*2:
+                    and mouseY > self.boardArea.get_height() / 2 - 20*2 \
+                    and mouseY < self.boardArea.get_height() / 2 + 10*2:
                         self.popupMenu.setExitCheckActive(False)
                         self.popupMenu.makePopupMenu()
 
@@ -284,19 +354,19 @@ class GameArea(object):
                 change = self.popupMenu.changeResolution(mouseX, mouseY)
                 if change != None:
                     self.resizeScreen(change)
-    
+
                 # Change sound
                 if mouseX > self.boardArea.get_width()/2 - 22 \
                 and mouseX < self.boardArea.get_width()/2 + 22 \
                 and mouseY > self.boardArea.get_height()/2 + 168*self.scale \
                 and mouseY < self.boardArea.get_height()/2 + 230*self.scale:
                     self.popupMenu.soundChange()
-                   
+                    
                 # back to menu
                 if mouseX > self.boardArea.get_width() / 2 - 100 \
                 and mouseX < self.boardArea.get_width() / 2 + 100 \
-                and mouseY> self.boardArea.get_height() / 2 - 80 \
-                and mouseY< self.boardArea.get_height() / 2 - 50:
+                and mouseY > self.boardArea.get_height() / 2 - 80 \
+                and mouseY < self.boardArea.get_height() / 2 - 50:
                     self.popupMenu.setOptionsActive(False)
                     self.popupMenu.makePopupMenu()
 
@@ -307,6 +377,7 @@ class GameArea(object):
         self.area.blit(self.gameBoard.getGB(), rect)
         self.cards.displayCard("back", self.scale)
         self.dice.displayDice(self.roll[1], self.roll[2])
+        self.displayBuildingPrice()
 
 
     def refreshPlayersDisplay(self):
@@ -321,13 +392,27 @@ class GameArea(object):
         pygame.display.update()
 
 
-    def resumeTurn(self):    
+    def resumeTurn(self):
+        """
+        Used to resume a player's turn after they opened the menu
+        or upgrade options.
+        """
         self.refreshGameBoard()
         if not self.diceRolled:
-            self.turn.beginTurn()
-        elif self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed:
+            self.turn.beginTurn(self.extraOrLost, False)
+        # If the player just rolled to see if they passed Accreditation Review    
+        elif (self.player.inAccreditationReview and not self.turn.landed):
+            self.turn.checkAccreditation()
+        elif (self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed
+        or self.turn.cardLandingMsgDisplayed):
             self.turn.handleLanding()
-            
+        elif self.cardDisplayed:    # card is face up
+            self.cards.displayCard(self.currentCard, self.scale)
+            (size, msgBox) = displayMsg(Turn.scale, Turn.smallMsgRect,
+                            Turn.msgRect, Turn.font,
+                            "Click cards again to take this action.")
+            Turn.smallMsgSurface.blit(msgBox, (0, 0))
+
 
     def resizeScreen(self, newSize):
         """
@@ -345,8 +430,12 @@ class GameArea(object):
         self.initializeDisplay()
         
         self.gameBoard = GameBoard(self.scale, self.buildings, True)
+        self.gameBoard.restoreOwnerColors()
         for player in self.players:
             player.createToken(self.gameBoard.getGB(), self.scale)
+            player.startToken()     # These undo each other, but are needed
+            player.removeToken()    # to initialize instance variables.
+            self.gameBoard.addPlayerGradIcons(player)
         self.updatePlayerPosition()
         self.refreshGameBoard()
         
@@ -354,7 +443,7 @@ class GameArea(object):
         self.playersDisplay.selectPlayer(self.playerIndex)
         self.refreshPlayersDisplay()
         
-        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players))
         self.popupMenu.makePopupMenu()
         self.popupMenu.gameOptions()
         self.popupMenu.loadButtons()
@@ -368,8 +457,10 @@ class GameArea(object):
                 self.roll = self.dice.roll()
                 self.rollTime = 0
                 self.refreshDisplay()
-        self.turn.setDiceRoll(self.roll[1] + self.roll[2])
-        self.move()
+        self.turn.setDiceRoll(self.roll[1], self.roll[2])
+        if not self.player.inAccreditationReview:
+            self.move()
+
 
     def move(self):
         count = 0
@@ -392,6 +483,9 @@ class GameArea(object):
             self.refreshDisplay()
             self.updatePlayerPosition()
             self.refreshGameBoard()
+            # Update $ displayed if player passes Carrington.
+            self.playersDisplay.selectPlayer(self.playerIndex)
+            self.refreshPlayersDisplay()
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
@@ -400,26 +494,30 @@ class GameArea(object):
         self.refreshDisplay()
         self.updatePlayerPosition()
         self.refreshGameBoard()
+        # Check game ending here so player gets winning message
+        # rather than landing message.
+        Turn.gameOver = self.checkGameEnding()
         self.turn.handleLanding()
 
 
     def updatePlayerPosition(self):
         '''updatePlayerPosition() determines the number of players
         at a given position and displays a circle of each player
-        at that position'''
-        pos = {}
-        loc = {}
-        for p in range(len(self.players)):
-            if not (p == self.playerIndex and self.midRoll):
-                if self.players[p].getPosition() not in pos:
-                    pos[self.players[p].getPosition()] = 1
-                    loc[self.players[p].getPosition()] = 0
+        at that position'''        
+        pos = {}    # Keys: board positions, Values: number of players at each position
+        loc = {}    # Keys: board positions, Values: indices of players at each position
+
+        for player in self.activePlayers:
+            if not (player == self.player and self.midRoll):
+                if player.getPosition() not in pos:
+                    pos[player.getPosition()] = 1
+                    loc[player.getPosition()] = 0
                 else:
-                    pos[self.players[p].getPosition()] += 1
-        for p in range(len(self.players)):
-            if not (p == self.playerIndex and self.midRoll):
-                self.players[p].displayWheel(1/pos[self.players[p].getPosition()], loc[self.players[p].getPosition()])
-                loc[self.players[p].getPosition()] += 1
+                    pos[player.getPosition()] += 1
+        for player in self.activePlayers:
+            if not (player == self.player and self.midRoll):
+                player.displayWheel(1/pos[player.getPosition()], loc[player.getPosition()])
+                loc[player.getPosition()] += 1
         
         
     def endTurn(self):
@@ -428,6 +526,90 @@ class GameArea(object):
         self.diceRolled = False
         self.refreshPlayersDisplay()
         self.refreshGameBoard()
+
+    
+    def checkBankruptcy(self):
+        """
+        During or just after a player's turn, checks whether this player
+        has gone bankrupt.  If so, a message is displayed and the player is
+        eliminated from the game.
+        """
+        if self.player.getDollars() < 0:
+            
+            self.player.isBankrupt = True
+            Turn.extraAndLostTurns[self.playerIndex] = 0
+
+            if self.player in self.activePlayers:
+                self.activePlayers.remove(self.player)
+
+            self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
+            self.refreshPlayersDisplay()
+
+            for building in self.player.getBuildings():
+                if building.getPurpose() == "academic":
+                    building.setDegreeLvl("Associate")
+                building.setOwner(None)
+                building.setColor(building.getInitialColor())
+
+            self.gameBoard = GameBoard(self.scale, self.buildings, True)
+            self.gameBoard.restoreOwnerColors()
+            for player in self.activePlayers:
+                player.createToken(self.gameBoard.getGB(), self.scale)
+                self.gameBoard.addPlayerGradIcons(player)
+            self.updatePlayerPosition()
+            self.refreshGameBoard()    
+
+            (msgBox, self.turn.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                Turn.font, self.player.getName() + " has gone bankrupt and "
+                                        + "been eliminated from the game.")
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.turn.okMsgDisplayed = True    
+            
+        elif self.turn.upgradeDisplayed:
+            self.resumeTurn()    
+        else:
+            self.endTurn()
+    
+
+    def checkGameEnding(self):
+        """
+        Checks whether the game is over, either by all players except one
+        going bankrupt or by a player earning more than 50 Graduate Points.
+        If so, displays an appropriate message.
+        """
+        if len(self.activePlayers) == 1:
+            winner = self.activePlayers[0].getName()
+            (msgBox, self.turn.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                Turn.font, winner + " is the winner! All other players have"
+                                                      + " gone bankrupt.")
+            Turn.msgSurface.blit(msgBox, (0, 0))
+            self.turn.okMsgDisplayed = True
+            return True
+
+        else:
+            for player in self.activePlayers:
+                if player.getPoints() >= 50:
+                    (msgBox, self.turn.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
+                        Turn.font, self.player.getName() + " earned "
+                        + str(self.player.getPoints())
+                        + " Graduate Points and wins the game!")
+                    Turn.msgSurface.blit(msgBox, (0, 0))
+                    self.turn.okMsgDisplayed = True
+                    return True
+
+            return False
+            
+
+    def displayBuildingPrice(self):
+        """Displays on the game board the current price for all ownable buildings."""
+        xPosition = 330 * self.scale
+        yPosition = 680 * self.scale
+        text = self.font.render("Building Price:", True, Colors.LIGHTGRAY)
+        self.area.blit(text, (xPosition, yPosition))
+        price = "${:,.0f}".format(self.buildingsObj.getCurrentPrice())
+        price = self.font.render(price, True, Colors.LIGHTGRAY)
+        yPosition += 1.5 * self.font.get_linesize()
+        self.area.blit(price, (xPosition, yPosition))
         
 
     def chatting(self, event):
@@ -489,8 +671,10 @@ class GameArea(object):
         
 
         #self.players = [p1, p2, p3, p4, p5, p6][0:playercount]
-        print(self.players)
-                                                
+        #print(self.players)
+
+        # Copy self.players; we'll remove players when they go bankrupt.
+        self.activePlayers = [player for player in self.players]
 
         # Players Display
         self.playersDisplay = PlayersDisplay(self.players, self.scale, True)
@@ -499,11 +683,12 @@ class GameArea(object):
         
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
-        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj)
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players))
         Turn.initializeTurnCount()
         
         pygame.key.set_repeat(75, 75)
         self.gameExit = False #Must be reset each time play is
+        self.round = -1     # Will be incremented to start at round 0
         
         while not self.gameExit:
             self.clock.tick(30)
@@ -528,17 +713,60 @@ class GameArea(object):
 
                 
             if not self.midTurn:    # If it's a new player's turn...
-                self.playersDisplay.updatePlayer(Turn.count % len(self.players))
-                Turn.count += 1
-                self.playerIndex = Turn.count % len(self.players)
-                self.player = self.players[self.playerIndex]
-                self.playersDisplay.selectPlayer(self.playerIndex)
-                self.refreshPlayersDisplay()
-                self.updatePlayerPosition()
+
+                # If the game is over and the player has clicked OK,
+                # go back to the Start Menu.
+                if Turn.gameOver:
+                    break
+
+                # If the previous player has an extra turn... 
+                if Turn.extraAndLostTurns[self.playerIndex] > 0:
+                    self.playersDisplay.selectPlayer(self.playerIndex)
+                    self.refreshPlayersDisplay()
+                    Turn.extraAndLostTurns[self.playerIndex] -= 1
+                    self.extraOrLost = 1
+
+                else:
+                    self.extraOrLost = 0
+                    if Turn.count > -1 and not self.player.isBankrupt:
+                        self.playersDisplay.updatePlayer(Turn.count % len(self.players))
+
+                    # Skip all players who are bankrupt.
+                    while True:
+                        Turn.count += 1     # Note: this doesn't count actual turns;
+                                            # it's still incremented for a lost turn.
+
+                        # At the appropriate times, update the round number and
+                        # the price of buildings.
+                        if Turn.count % len(self.players) == 0:
+                            self.round += 1
+                            if (self.round > 0
+                            and self.round % self.roundsBeforePriceIncrease == 0):
+                                self.buildingsObj.increasePrice()
+                                
+                        self.playerIndex = Turn.count % len(self.players)
+
+                        # If this player has lost a turn...
+                        if Turn.extraAndLostTurns[self.playerIndex] < 0:
+                            Turn.extraAndLostTurns[self.playerIndex] += 1
+                            self.extraOrLost = -1
+
+                        self.player = self.players[self.playerIndex]
+
+                        if not self.player.isBankrupt:
+                            break
+                    
+                    self.playersDisplay.selectPlayer(self.playerIndex)
+                    self.refreshPlayersDisplay()
+                    self.updatePlayerPosition()
+                    
                 self.refreshGameBoard()
                 self.midTurn = True
-                self.turn = Turn(self.player)
-                self.turn.beginTurn()        
+                self.turn = Turn(self.player, self.playerIndex)
+
+                Turn.gameOver = self.checkGameEnding()
+                
+                self.turn.beginTurn(self.extraOrLost)        
                 
             self.refreshDisplay()
             

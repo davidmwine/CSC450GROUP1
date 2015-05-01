@@ -22,14 +22,13 @@ class Token(object):
 
     def moveToken(self, spaces):
         redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
         redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
                                          (int(redrawRect.width - 3), int(redrawRect.height - 3)))
         self.board.blit(redrawImage, (redrawRect.left + 2, redrawRect.top + 2))
         self.prevX = self.rect.left
         self.prevY = self.rect.top
-        self.position += 1
+        self.position += spaces     
         numBuildings = Buildings().getNumBuildings()
         self.position %= numBuildings
         
@@ -56,7 +55,6 @@ class Token(object):
 
     def clearToken(self):
         redrawRect = self.buildings[self.position].getRect()
-        pygame.draw.rect(self.board, self.buildings[self.position].getBuildingColor(), redrawRect)
         pygame.draw.rect(self.board, Colors.BLACK, redrawRect, 2)
         redrawImage = pygame.transform.scale(self.buildings[self.position].getImage(),
                                          (int(redrawRect.width - 3), int(redrawRect.height - 3)))
@@ -77,6 +75,9 @@ class Token(object):
                              (self.size, self.size))
         
         pygame.draw.arc(self.board, self.color, wheelRect, startAng*math.pi/180, stopAng*math.pi/180, self.size//2)
+        if self.color == Colors.LIGHTBLUE:
+            pygame.draw.ellipse(self.board, Colors.BLUE, wheelRect, 2)
+            
         '''for d in range(int(startAng), int(stopAng)):
             pygame.draw.line(self.board, self.color, (self.buildings[self.position].getRect().left + 30*self.scale, \
                                                       self.buildings[self.position].getRect().bottom - 30*self.scale),\

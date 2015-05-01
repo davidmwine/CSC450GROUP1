@@ -7,13 +7,18 @@ May be restructured later if we ever know what we're doing...
 MAROON = (94, 0, 9)         # Official MSU Maroon
 LIGHTGRAY = (200, 200, 200)
 MEDGRAY = (180, 180, 180)
+DARKGRAY = (80, 80, 80)
+OFFBLACK = (20, 20, 20)
+
+# Colors of the various colleges
 PURPLE = (128, 0, 128)      
 RED = (255, 0, 0)           
 LIGHTBLUE = (173, 216, 230) 
 ORANGE = (255, 140, 0)      
 PEACOCK = (0, 128, 128)     
 GOLDEN = (255, 215, 0)      
-MEDGREEN = (0, 128, 0)      
+MEDGREEN = (0, 128, 0)
+
 BLACK = (0, 0, 0)                  
 WHITE = (255, 255, 255)            
 BLUE = (0, 0, 255)                  
