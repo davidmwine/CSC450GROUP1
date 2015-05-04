@@ -98,7 +98,7 @@ class GameArea(object):
         self.dice = Dice(self.boardArea)
 
         # Popup options menu
-        self.popupMenu = PopupMenu(self.boardArea)
+        self.popupMenu = PopupMenu(self.boardArea, pygame.mixer.get_busy()-1)
 
         # Cards
         self.cards = Cards(self.boardArea)
@@ -530,8 +530,8 @@ class GameArea(object):
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
-                pygame.time.wait(1000)
-        self.bubbleSound.play()        
+                self.bubbleSound.play()
+                pygame.time.wait(1000)       
         self.players[self.playerIndex].removeToken()
         self.refreshDisplay()
         self.updatePlayerPosition()
@@ -702,6 +702,7 @@ class GameArea(object):
         # This data will eventually be obtained from the lobby / setup menu.
         self.players = []
         if not GameInfo.ONLINEGAME:
+            print("NUMBER OF PLAYERS IS: ", GameInfo.PLAYERNUM)
             for i in range(GameInfo.PLAYERNUM):
                 p = Player(GameInfo.PLAYERS[i], GameInfo.PLAYERDEANS[i], self.gameBoard.getGB(), self.buildingsObj, self.scale)
                 self.players.append(p)
