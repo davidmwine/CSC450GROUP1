@@ -318,6 +318,20 @@ class Turn(object):
             self.tradeBox.blit(playerButton, self.playerButtonRect)
             #rectTop += 30
             rectLeft += 55
+
+        #Display your items for trade
+        font = pygame.font.Font(None, int(30*self.scale))
+        lineYpos += lineHeight + 35
+        text = "Your items for trade: "
+        text = font.render(text, True, Color("black"))
+        self.tradeBox.blit(text, (padding, lineYpos))
+        for i, building in enumerate(self.player.buildings):
+            lineYpos += lineHeight
+            checkbox = CheckBox(self.tradeBox, padding, lineYpos, 20*self.scale)
+            checkbox.draw()
+            text = building.getName()
+            text = font.render(text, True, Color("black"))
+            self.tradeBox.blit(text, (padding + 25*self.scale, lineYpos))
             
         # Create and position OK button.
         okButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
@@ -334,7 +348,6 @@ class Turn(object):
         # Display on game board.
         self.tradeDisplayed = True
         Turn.tradeSurface.blit(self.tradeBox, (0, 0))
-            
 
 
     def showUpgradeOptions(self):
