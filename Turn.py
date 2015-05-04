@@ -20,6 +20,7 @@ class Turn(object):
         self.feeMsgDisplayed = False
         self.cardLandingMsgDisplayed = False    
         self.upgradeDisplayed = False   # True if upgrade screen is displayed
+        self.tradeDisplayed = False     #True if trade screen is displayed
         self.cardDraw = False   # True if player landed on a card space
         self.ableToRoll = False # True only when a player is allowed to roll dice
         self.landed = False     # True if player has landed on a space for the turn
@@ -34,7 +35,7 @@ class Turn(object):
 
 
     @staticmethod
-    def setStaticVariables(scale, parent, buildings, playerCount):
+    def setStaticVariables(scale, parent, buildings, playerCount, players):
         """
         These variables are used by and related to the other methods in this
         class, but are not closely related to individual players' turns
@@ -44,6 +45,7 @@ class Turn(object):
         Turn.parent = parent
         Turn.buildings = buildings
         Turn.extraAndLostTurns = [0] * playerCount
+        Turn.players = players
         Turn.font = pygame.font.Font(None, int(50*scale))
         Turn.msgRect = pygame.Rect(440*scale, 250*scale,
                                    560*scale, 400*scale)
@@ -51,9 +53,12 @@ class Turn(object):
                                    560*scale, 105*scale)
         Turn.upgradeRect = pygame.Rect(440*scale, 250*scale,
                                    560*scale, 540*scale)
+        Turn.tradeRect = pygame.Rect(440*scale, 250*scale,
+                                     560*scale, 540*scale)
         Turn.msgSurface = parent.subsurface(Turn.msgRect)
         Turn.smallMsgSurface = parent.subsurface(Turn.smallMsgRect)
         Turn.upgradeSurface = parent.subsurface(Turn.upgradeRect)
+        Turn.tradeSurface = parent.subsurface(Turn.tradeRect)
         Turn.gameOver = False
 
 
@@ -273,6 +278,63 @@ class Turn(object):
         self.player.addStealable(self.building.getName())
         self.building.setOwner(self.player)
         self.building.setColor(self.player.getColor())
+        
+
+    def showTradeOptions(self):
+        """
+        Displays a message box in which the player can select the player
+        he/she wants to trade with and select what buildings/money
+        he/she wants to trade.
+        """
+        # Create message box as a surface.
+        padding = 5*Turn.scale
+        font = pygame.font.Font(None, int(40*self.scale))
+        self.tradeBox = pygame.Surface((Turn.tradeRect.width, Turn.tradeRect.height - 2*padding))
+        self.tradeBox.fill(Colors.LIGHTGRAY)
+
+        lineHeight = font.get_linesize()
+        lineYpos = padding
+        
+        text = "Players to trade with: "
+        text = font.render(text, True, Color("black"))
+        self.tradeBox.blit(text, (padding, lineYpos))
+        # Create buttons for each other player
+        otherPlayers = Turn.players
+        otherPlayers.remove(self.player)
+        rectTop = padding + lineHeight
+        rectLeft = padding
+        font = pygame.font.Font(None, int(30*self.scale))
+        for player in otherPlayers:
+            playerButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
+            self.playerButtonRect = playerButton.get_rect()
+            playerButton.fill(player.getColor())
+            text = player.getName()
+            text = font.render(text, True, Color("black"))
+            textPos = text.get_rect()
+            textPos.center = self.playerButtonRect.center
+            playerButton.blit(text, textPos)
+            self.playerButtonRect.left = rectLeft
+            self.playerButtonRect.top = rectTop
+            self.tradeBox.blit(playerButton, self.playerButtonRect)
+            #rectTop += 30
+            rectLeft += 55
+            
+        # Create and position OK button.
+        okButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
+        self.okTradeRect = okButton.get_rect()
+        okButton.fill(Colors.MEDGRAY)
+        text = Turn.font.render("OK", True, Color("black"))
+        textPos = text.get_rect()
+        textPos.center = self.okTradeRect.center
+        okButton.blit(text, textPos)
+        self.okTradeRect.bottom = self.tradeBox.get_rect().height - 10
+        self.okTradeRect.centerx = self.tradeBox.get_rect().centerx
+        self.tradeBox.blit(okButton, self.okTradeRect)
+
+        # Display on game board.
+        self.tradeDisplayed = True
+        Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+            
 
 
     def showUpgradeOptions(self):

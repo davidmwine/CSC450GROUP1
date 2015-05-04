@@ -166,6 +166,7 @@ class GameArea(object):
             and mouseX < 3 * self.controls.getWidth() / 4 \
             and mouseY > self.height - self.controls.getHeight():
                 self.click.play()
+                self.turn.showTradeOptions()
                 pass
 
             # Upgrade Button
@@ -209,7 +210,7 @@ class GameArea(object):
                         self.endTurn()
 
             # Dice
-            if (self.turn.ableToRoll and not self.turn.upgradeDisplayed
+            if (self.turn.ableToRoll and not self.turn.upgradeDisplayed and not self.turn.tradeDisplayed
             and mouseX > self.dice.getXPosition()
             and mouseX < self.dice.getXPosition() + self.dice.getWidth()
             and mouseY > self.dice.getYPosition()
@@ -293,8 +294,11 @@ class GameArea(object):
                     self.gameBoard.addPlayerGradIcons(self.player)
                     self.checkBankruptcy()
                     self.turn.upgradeDisplayed = False
-                                        
 
+            # Trade Box
+            if self.turn.tradeDisplayed:
+                pass
+                                        
         # menu open
         else:
             if not self.popupMenu.getOptionsActive():
@@ -480,7 +484,7 @@ class GameArea(object):
         self.playersDisplay.selectPlayer(self.playerIndex)
         self.refreshPlayersDisplay()
         
-        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players))
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players), self.players)
         self.popupMenu.makePopupMenu()
         self.popupMenu.gameOptions()
         self.popupMenu.loadButtons()
@@ -729,7 +733,7 @@ class GameArea(object):
         
         # This needs to come after the game board is created, as creation of
         # the game board sets the rect attribute of the buildings.
-        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players))
+        Turn.setStaticVariables(self.scale, self.area, self.buildingsObj, len(self.players), self.players)
         Turn.initializeTurnCount()
         
         pygame.key.set_repeat(75, 75)
