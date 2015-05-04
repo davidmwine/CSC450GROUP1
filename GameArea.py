@@ -98,7 +98,7 @@ class GameArea(object):
         self.dice = Dice(self.boardArea)
 
         # Popup options menu
-        self.popupMenu = PopupMenu(self.boardArea)
+        self.popupMenu = PopupMenu(self.boardArea, pygame.mixer.get_busy()-1)
 
         # Cards
         self.cards = Cards(self.boardArea)
@@ -230,6 +230,7 @@ class GameArea(object):
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
                     self.turn.okMsgDisplayed = False
+                    self.refreshGameBoard()
                     self.click.play()
                     
                     # If player just passed Accreditation Review...
@@ -238,6 +239,9 @@ class GameArea(object):
                     and not self.turn.landed):
                         self.player.inAccreditationReview = False
                         self.move()
+                    elif self.player.passedCarrington:
+                        self.player.passedCarrington = False
+                        self.turn.handleLanding()
                     else:    
                         # If applicable, charge fees and update playersDisplay.
                         if self.turn.feeMsgDisplayed:
@@ -496,6 +500,9 @@ class GameArea(object):
 
 
     def move(self):
+        if Turn.gameOver:
+            return
+        
         count = 0
         self.midRoll = True
         self.players[self.playerIndex].startToken()
@@ -523,8 +530,8 @@ class GameArea(object):
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
-                pygame.time.wait(1000)
-        self.bubbleSound.play()        
+                self.bubbleSound.play()
+                pygame.time.wait(1000)       
         self.players[self.playerIndex].removeToken()
         self.refreshDisplay()
         self.updatePlayerPosition()
@@ -695,6 +702,7 @@ class GameArea(object):
         # This data will eventually be obtained from the lobby / setup menu.
         self.players = []
         if not GameInfo.ONLINEGAME:
+            print("NUMBER OF PLAYERS IS: ", GameInfo.PLAYERNUM)
             for i in range(GameInfo.PLAYERNUM):
                 p = Player(GameInfo.PLAYERS[i], GameInfo.PLAYERDEANS[i], self.gameBoard.getGB(), self.buildingsObj, self.scale)
                 self.players.append(p)

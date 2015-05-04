@@ -62,7 +62,7 @@ class Game(object):
     def start(self):
         startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic, self.click)
         rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click, pygame.mixer.get_busy())
         playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
         Olobby = OnlineLobby(self.fontOp, self.screen, self.ratio)
@@ -73,10 +73,15 @@ class Game(object):
                 self.ratio = self.screen.get_height()/1080
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
+                rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click, pygame.mixer.get_busy())
                 Olobby = Lobby(self.fontOp, self.screen, self.ratio)
             elif self.nextScreen == "game":
+                playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 self.nextScreen = playGame.play()
             elif self.nextScreen == "lobby":
+                #Lobby was getting errors with variables not being reset
+                lobby = Lobby(self.fontOp, self.screen, self.ratio)
                 self.nextScreen = lobby.run()
             elif self.nextScreen == "Olobby":
                 self.nextScreen = Olobby.run()
@@ -90,6 +95,7 @@ class Game(object):
                 if self.nextScreen == "start":
                     startMenu.backToStart()
             elif self.nextScreen == "options":
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click, pygame.mixer.get_busy()-1)
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()

@@ -210,6 +210,8 @@ to determine the inital screen'''
                     self.nextScreen = 'game'
                     GameInfo.ONLINEGAME = False
                     GameInfo.PLAYERNUM = self.boxNum
+                    GameInfo.PLAYERS = [] #Reset player information if starting a new game after one already done
+                    GameInfo.PLAYERDEANS = []
                     for i in range(self.boxNum):
                         GameInfo.PLAYERS.append(self.localAttributes.getBox(str(i+1)).getText())
                         GameInfo.PLAYERDEANS.append(self.deanBoxes.getBox(i).getCurrDean())

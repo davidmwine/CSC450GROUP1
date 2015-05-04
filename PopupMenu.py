@@ -6,7 +6,7 @@ from RadioButton import RadioGroup
 from Sound import Sound
 
 class PopupMenu(object):
-    def __init__(self, parent):
+    def __init__(self, parent, soundOn):
         self.displayInfo = pygame.display.Info()
         self.clock = pygame.time.Clock()
         self.parent = parent
@@ -20,7 +20,8 @@ class PopupMenu(object):
         self.exitCheckActive = False
         self.rulesActive = False
         self.bgMusic = Sound('start_menu')
-        self.soundOn = pygame.mixer.get_busy() 
+        self.soundOn = soundOn
+        print(self.soundOn)
 
     def loadButtons(self):
         # RADIO BUTTON GROUP
@@ -90,20 +91,20 @@ class PopupMenu(object):
         self.area.blit(self.textSound, (self.area.get_width() / 2 - (0.5 * self.textSound.get_width()), self.area.get_height() - 65))
 
         #Sound button - On initial popup
-        if not self.soundOn:
+        if self.soundOn:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
    
     def soundChange(self):
         #Sound button
-        if self.soundOn:
+        if not self.soundOn:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
 
         # Stop or start sound
-        if not self.soundOn:
+        if self.soundOn:
             pygame.mixer.stop()
         else:
             self.bgMusic.play()
