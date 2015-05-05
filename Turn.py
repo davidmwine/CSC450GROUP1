@@ -23,6 +23,8 @@ class Turn(object):
         self.cardDraw = False   # True if player landed on a card space
         self.ableToRoll = False # True only when a player is allowed to roll dice
         self.landed = False     # True if player has landed on a space for the turn
+        self.firstUpgradeLine = 0   # Index of first line to display in upgrade box
+        self.upgradeLineCount = 0   # Number of lines to display in upgrade box
         
 
     @staticmethod
@@ -54,6 +56,7 @@ class Turn(object):
         Turn.msgSurface = parent.subsurface(Turn.msgRect)
         Turn.smallMsgSurface = parent.subsurface(Turn.smallMsgRect)
         Turn.upgradeSurface = parent.subsurface(Turn.upgradeRect)
+        Turn.upgradeLinesToDisplay = 10     # Number of lines that fit in upgrade window
         Turn.gameOver = False
 
 
@@ -286,95 +289,85 @@ class Turn(object):
         self.upgradeBox = pygame.Surface((Turn.upgradeRect.width, Turn.upgradeRect.height - 2*padding))
         self.upgradeBox.fill(Colors.LIGHTGRAY)
 
-        # Display list of possible upgrades with checkboxes.
-        lines = []
+        # Compile information to display.
         self.bachelors = self.player.getPossibleUpgrades()[0]
         self.masters = self.player.getPossibleUpgrades()[1]
         self.doctorates = self.player.getPossibleUpgrades()[2]
-        
-        lineHeight = font.get_linesize()
-        lineIndex = 0
-        lineYpos = padding
-        
-        if len(self.bachelors) + len(self.masters) + len(self.doctorates) == 0:
-            text = "No upgrades available."
-            text = font.render(text, True, Color("black"))
-            self.upgradeBox.blit(text, (padding, lineYpos))
 
+        lines = []
         if len(self.bachelors) > 0:
+            lines.append("Upgrade to Bachelors:")
             self.bachelorCheckboxes = []
-            text = "Upgrade to Bachelors:"
-            text = font.render(text, True, Color("black"))
-            self.upgradeBox.blit(text, (padding, lineYpos))
-            lineIndex += 1
-            
             for i in range(len(self.bachelors)):
-                lineYpos = 1.5 * lineIndex * lineHeight + padding   # 1.5 is line spacing
-                self.bachelorCheckboxes.append(CheckBox(self.upgradeBox,
-                                    20*self.scale, lineYpos, 20*self.scale))
-                self.bachelorCheckboxes[i].draw()
-                text = self.bachelors[i]
-                text = font.render(text, True, Color("black"))
-                self.upgradeBox.blit(text, (60*self.scale, lineYpos))
-
-                text = "$100,000"
-                text = font.render(text, True, Color("black"))
-                self.upgradeBox.blit(text, (400*self.scale, lineYpos))
-                lineIndex += 1
+                self.bachelorCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
+                line = (self.bachelorCheckboxes[i], self.bachelors[i], "$100,000")
+                lines.append(line)
 
         if len(self.masters) > 0:
+            lines.append("Upgrade to Masters:")
             self.masterCheckboxes = []
-            lineYpos = 1.5 * lineIndex * lineHeight + padding
-            text = "Upgrade to Masters:"
-            text = font.render(text, True, Color("black"))
-            self.upgradeBox.blit(text, (padding, lineYpos))
-            lineIndex += 1
-            
             for i in range(len(self.masters)):
-                lineYpos = 1.5 * lineIndex * lineHeight + padding
-                self.masterCheckboxes.append(CheckBox(self.upgradeBox,
-                                    20*self.scale, lineYpos, 20*self.scale))
-                self.masterCheckboxes[i].draw()
-                text = self.masters[i]
-                text = font.render(text, True, Color("black"))
-                self.upgradeBox.blit(text, (60*self.scale, lineYpos))
-                
+                self.masterCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
                 building = Turn.buildings.getBuilding(self.masters[i])
                 if building.getDegreeLvl() == "Associate":
-                    text = "$250,000"
+                    cost = "$250,000"
                 else:
-                    text = "$150,000"
-                text = font.render(text, True, Color("black"))
-                self.upgradeBox.blit(text, (400*self.scale, lineYpos))
-                lineIndex += 1
-
+                    cost = "$150,000"
+                line = (self.masterCheckboxes[i], self.masters[i], cost)
+                lines.append(line)
+                
         if len(self.doctorates) > 0:
+            lines.append("Upgrade to Doctorates:")
             self.doctorateCheckboxes = []
-            lineYpos = 1.5 * lineIndex * lineHeight + padding
-            text = "Upgrade to Doctorates:"
-            text = font.render(text, True, Color("black"))
-            self.upgradeBox.blit(text, (padding, lineYpos))
-            lineIndex += 1
-            
             for i in range(len(self.doctorates)):
-                lineYpos = 1.5 * lineIndex * lineHeight + padding
-                self.doctorateCheckboxes.append(CheckBox(self.upgradeBox,
-                                    20*self.scale, lineYpos, 20*self.scale))
-                self.doctorateCheckboxes[i].draw()
-                text = self.doctorates[i]
-                text = font.render(text, True, Color("black"))
-                self.upgradeBox.blit(text, (60*self.scale, lineYpos))
-
+                self.doctorateCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
                 building = Turn.buildings.getBuilding(self.doctorates[i])
                 if building.getDegreeLvl() == "Associate":
-                    text = "$500,000"
+                    cost = "$500,000"
                 elif building.getDegreeLvl() == "Bachelor":
-                    text = "$400,000"
+                    cost = "$400,000"
                 else:
-                    text = "$250,000"
-                text = font.render(text, True, Color("black"))
-                self.upgradeBox.blit(text, (400*self.scale, lineYpos))
-                lineIndex += 1    
+                    cost = "$250,000"
+                line = (self.doctorateCheckboxes[i], self.doctorates[i], cost)
+                lines.append(line)
+
+        self.upgradeLineCount = len(lines)
+
+        # Display list of possible upgrades with checkboxes.
+        if len(lines) == 0:
+            text = "No upgrades available."
+            text = font.render(text, True, Color("black"))
+            self.upgradeBox.blit(text, (padding, padding))
+
+        else:            
+            # lastUpgradeLine is actually one greater than the index of the last
+            # line, but this way it works well in the for loop.
+            lastUpgradeLine = min(len(lines),
+                            self.firstUpgradeLine + Turn.upgradeLinesToDisplay)
+
+            # If we've already scrolled all the way to the bottom of the window,
+            # don't try to scroll any more.
+            if (self.firstUpgradeLine > 0
+            and self.firstUpgradeLine + Turn.upgradeLinesToDisplay > len(lines)):
+                return
+            
+            lineHeight = font.get_linesize()
+            lineIndex = 0
+            
+            for i in range(self.firstUpgradeLine, lastUpgradeLine):
+                lineYpos = 1.5 * lineIndex * lineHeight + padding   # 1.5 is line spacing
+                if isinstance(lines[i], str):   # If it's a heading...
+                    text = font.render(lines[i], True, Color("black"))
+                    self.upgradeBox.blit(text, (padding, lineYpos))
+                else:
+                    lines[i][0].changePosition(20*self.scale,
+                                                      lineYpos, 20*self.scale)
+                    lines[i][0].draw()
+                    text = font.render(lines[i][1], True, Color("black"))
+                    self.upgradeBox.blit(text, (60*self.scale, lineYpos))
+                    text = font.render(lines[i][2], True, Color("black"))
+                    self.upgradeBox.blit(text, (400*self.scale, lineYpos))
+                lineIndex += 1
         
         # Create and position OK button.
         okButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
