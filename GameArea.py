@@ -746,11 +746,6 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
-                    ###Cards demo - Remove Later ###
-                    #if event.key == K_c:
-                        #self.cardDraw = True
-                        #self.currentCard = self.cards.drawCard(self.scale)
-                    ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
                 if event.type == pygame.QUIT:
