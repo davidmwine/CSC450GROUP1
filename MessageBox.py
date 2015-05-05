@@ -28,7 +28,6 @@ def displayMsg(scale, smallRect, largeRect, font, msg):
         msgBox = pygame.Surface((largeRect.width, largeRect.height))
         lines = wrapLine(msg, font, largeRect.width - 2*padding)
         size = "large"
-        
     msgBox.fill(Colors.LIGHTGRAY)
     
     i = 0

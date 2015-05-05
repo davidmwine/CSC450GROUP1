@@ -282,9 +282,8 @@ class Rules(object):
             self.rulesXPosition = 3 * self.screen.get_width()/10
         else:
             self.rulesXPosition = self.screen.get_width()/2 - 300
-            
-        rulesExit = False
         
+        rulesExit = False      
         while not rulesExit:
             self.screen.blit(pygame.transform.scale(self.imgMenuBG,(self.screen.get_width(),\
                             int(self.screen.get_height()-(2*self.yOffset)))),(0,self.yOffset))
@@ -304,12 +303,12 @@ class Rules(object):
                                 str(self.rulesCount),True,(220,146,40)),(self.rulesXPosition + 6,self.screen.get_height()/8+self.yOffset))
 
             #Draw red line
-            pygame.draw.line(self.screen, (242,107,122), (self.rulesXPosition + 2, 150+self.yOffset),\
-                             (self.rulesXPosition + 598, 150+self.yOffset), 1)
+            pygame.draw.line(self.screen, (242,107,122), (self.rulesXPosition + 2, 170 + self.yOffset),\
+                             (self.rulesXPosition + 598, 170 + self.yOffset), 1)
             #Draw blue lines
             for line in range(12): 
-                pygame.draw.line(self.screen, (209,229,240), (self.rulesXPosition + 2, 175+self.yOffset+line*25),\
-                                 (self.rulesXPosition + 598, 175+self.yOffset+line*25), 1)
+                pygame.draw.line(self.screen, (209,229,240), (self.rulesXPosition + 2, 195+self.yOffset+line*25),\
+                                 (self.rulesXPosition + 598, 195+self.yOffset+line*25), 1)
             
             #Display rules index
             indexXPosition = 20
@@ -327,7 +326,7 @@ class Rules(object):
             #Display rules on page  
             for text in range(len(self.rulesWords)): 
                 textOut = self.fontOp(18,"helvetica").render(self.rulesWords[text],True,(35,35,35))
-                self.screen.blit(textOut,(self.rulesXPosition + 50, 156+self.yOffset+text*25))
+                self.screen.blit(textOut,(self.rulesXPosition + 50, 176+self.yOffset+text*25))
                 
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
