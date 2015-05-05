@@ -9,7 +9,7 @@ class Cards():
         self.area = parent.subsurface((self.parent.get_width()//2 - self.width//2), 
                 (self.parent.get_height()//2 - self.height//2), self.width, self.height)
         self.cardDeck = []
-        self.cardsInDeck = 4  #Number of cards in the deck
+        self.cardsInDeck = 8  #Number of cards in the deck
         self.cardPos = 0  #Card position(index) in the deck
         self.initDeck()
         self.loadImages()
@@ -63,7 +63,15 @@ class Cards():
         if card == 3:
             self.awwSound.play()
             text = "Rap artist arrested. Cancel concert, refund tickets, lose $50,000."
-         
+        if card == 4:
+            text = "Summer Classes: Get one Graduate Point per building"
+        if card == 5:
+            text = "Faculty Only Lot, go to Bear Park South."
+        if card == 6:
+            text = "Computer Science cross class listing, go to Cheek Hall"
+        if card == 7:
+            text = "Fraternity Scandal lose 5 graduate points"
+            
         '''
         if card == 0:
             text = "Move back 3 spaces and stuff. You are going the wrong way."
@@ -94,6 +102,15 @@ class Cards():
         if card == 3:
             self.player.subtractDollars(50000)    
             self.feeCard = True
+        if card == 4:
+            self.player.addPoints(self.player.getNumBuildings())
+        if card == 5:
+            self.goToSpace("Bear Park South")
+        if card == 6:
+            self.goToSpace("Cheek Hall")
+        if card == 7:
+            self.player.addPoints(-5)
+        
 
 
     def displayCard(self, card, scale):
