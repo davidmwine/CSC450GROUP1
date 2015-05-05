@@ -3,6 +3,7 @@ from pygame.locals import *
 from MessageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
 from CheckBox import CheckBox
 from EntryBox import EntryBox
+from MoneyBox import MoneyBox
 from Building import *
 
 
@@ -340,15 +341,19 @@ class Turn(object):
         text = font.render(text, True, Color("black"))
         self.tradeBox.blit(text, (padding, lineYpos))
         lineYpos += lineHeight
-        boxRect = Rect(padding, lineYpos, 50*self.scale, 30*self.scale)
+        boxRect = Rect(padding, lineYpos, 250*self.scale, 50*self.scale)
         boxRect.left = padding
         boxRect.top = lineYpos
-        moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
-                              self.fontOp, self.scale, None, start_text="$$$")
-        moneyEntry.draw()
+        self.yourMoneybox = MoneyBox (self.tradeBox, boxRect, self.fontOp,
+                             self.scale, self.player)
+        self.yourMoneybox.draw()
+        #moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
+        #                      self.fontOp, self.scale, None, start_text="$$$")
+        #moneyEntry.draw()
         self.theirBuildingCheckBoxes = []
         self.yourBuildingCheckBoxes = []
-        lineYpos += padding
+        lineYpos += padding + 30*self.scale
+        font = pygame.font.Font(None, int(24*self.scale))
         for building in self.player.buildings:
             lineYpos += lineHeight
             checkbox = CheckBox(self.tradeBox, padding, lineYpos, 20*self.scale)
@@ -359,6 +364,7 @@ class Turn(object):
             self.tradeBox.blit(text, (padding + 25*self.scale, lineYpos))
             
         # Create and position OK button.
+        font = pygame.font.Font(None, int(30*self.scale))
         okButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
         self.okTradeRect = okButton.get_rect()
         okButton.fill(Colors.MEDGRAY)
@@ -405,13 +411,17 @@ class Turn(object):
                 text = font.render(text, True, Color("black"))
                 self.tradeBox.blit(text, (padding, lineYpos))
                 lineYpos += lineHeight
-                boxRect = Rect(padding, lineYpos, 50*self.scale, 30*self.scale)
+                boxRect = Rect(padding, lineYpos, 250*self.scale, 50*self.scale)
                 boxRect.left = padding
                 boxRect.top = lineYpos
-                moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
-                                      self.fontOp, self.scale, None, start_text="$$$")
-                moneyEntry.draw()
-                lineYpos += 5*self.scale
+                self.theirMoneybox = MoneyBox (self.tradeBox, boxRect, self.fontOp,
+                                     self.scale, player)
+                self.theirMoneybox.draw()
+                #moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
+                #                      self.fontOp, self.scale, None, start_text="$$$")
+                #moneyEntry.draw()
+                lineYpos += 35*self.scale
+                font = pygame.font.Font(None, int(24*self.scale))
                 for building in player.buildings:
                     lineYpos += lineHeight
                     checkbox = CheckBox(self.tradeBox, padding, lineYpos, 20*self.scale)
@@ -438,6 +448,10 @@ class Turn(object):
                                    y - Turn.tradeRect.y):
                 checkbox.draw()
                 Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+
+    def setMoneybox(self, x, y):
+        self.yourMoneybox.isClicked(x - Turn.tradeRect.x,
+                                    y - Turn.tradeRect.y)
 
     def finishTrade(self, x, y):
         pass

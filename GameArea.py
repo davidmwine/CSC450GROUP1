@@ -298,6 +298,7 @@ class GameArea(object):
             if self.turn.tradeDisplayed:
                 self.turn.selectPlayerTrade(mouseX, mouseY)
                 self.turn.checkTradeBuildings(mouseX, mouseY)
+                self.turn.setMoneybox(mouseX, mouseY)
                 if self.turn.cancelTrade(mouseX, mouseY):
                     self.resumeTurn()
                     self.turn.tradeDisplayed = False
