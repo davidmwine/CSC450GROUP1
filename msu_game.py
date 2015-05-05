@@ -23,7 +23,7 @@ class Game(object):
 
         #self.screen = pygame.display.set_mode((self.infoScreen.current_w, self.infoScreen.current_h),pygame.FULLSCREEN)
         self.heightRatio16x9 = .5625 #Number to multiply width by to get 16x9 ratio for height
-        self.yOffset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.heightRatio16x9))/2)
+        self.yOffset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.heightRatio16x9))/2) #For fullscreen mode; fullscreen was not implemented.
 
         #Temporary code to test multiple screen sizes 
         #Comment self.screen above

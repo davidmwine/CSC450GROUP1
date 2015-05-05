@@ -12,6 +12,7 @@ class PopupMenu(object):
         self.parent = parent
         self.width = self.parent.get_width() / 2
         self.height = self.parent.get_height() / 2
+        self.areaBorder = parent.subsurface((self.parent.get_width() / 4)-3, (self.parent.get_height() / 4)-3, self.width+6, self.height+6)
         self.area = parent.subsurface((self.parent.get_width() / 4), (self.parent.get_height() / 4), self.width, self.height)
         self.screenModes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]## various screen sizes available
         self.resOpt = self.screenModes.index((self.displayInfo.current_w, self.displayInfo.current_h)) # current resolution option
@@ -50,6 +51,7 @@ class PopupMenu(object):
         self.optionActive = False
         self.rulesActive = False
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         self.textOptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Options", True, (94, 0, 9))
         self.area.blit(self.textOptions, (self.area.get_width()/2 - (0.5 * self.textOptions.get_width()), 5))
@@ -62,6 +64,7 @@ class PopupMenu(object):
         self.popupActive = True
         self.optionActive = True
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         # header
         self.textOptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Game Options", True, (94, 0, 9))
@@ -116,6 +119,7 @@ class PopupMenu(object):
         self.rulesActive = True
         self.optionActive = False
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
 
         self.imgArrow = pygame.image.load(os.path.join("img","arrow.png")).convert_alpha()
@@ -326,6 +330,7 @@ class PopupMenu(object):
         self.rulesActive = False
         self.optionActive = False
         self.exitCheckActive = True
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         self.text = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Are you sure you want to exit?", True, (94, 0, 9))
         self.area.blit(self.text, (self.area.get_width()/2 - (0.5 * self.text.get_width()), 5))
