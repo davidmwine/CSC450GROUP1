@@ -9,3 +9,5 @@ PLAYERNUM = None
 
 PLAYERS = []
 PLAYERDEANS = []
+
+SOUNDON = True

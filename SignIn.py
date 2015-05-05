@@ -7,9 +7,6 @@ from Controls import Button
 from Controls import SignInControls
 import Colors
 
-
-
-
 class SignIn():
     def __init__(self,parent, font_op):
         temprect = Rect(parent.get_width()/2-200,
@@ -24,6 +21,9 @@ class SignIn():
         self.userListArea = self.area.subsurface((25,75,350,250))
         self.next = 0
         self.selected = ''
+        self.clock = pygame.time.Clock()
+        #sound
+        self.click = pygame.mixer.Sound(os.path.join('sound','click.wav')) 
 
 
 
@@ -35,10 +35,9 @@ class SignIn():
                              for i in self.userList]
         self.selected = ''
         
-
         self.text1 = self.font_op(20,'berlin').render(
-            "Please Sign in or select local Game",1,(0,0,0))
-        self.text2 = self.font_op(20,'berlin').render("New User:",1,(0,0,0))
+            "Please Sign in or select local Game",1,(255,255,255))
+        self.text2 = self.font_op(20,'berlin').render("New User:",1,(220,146,40))
         temprect = Rect(self.text2.get_width()+10, self.text1.get_height()+13,
                         self.area.get_width()/2, self.text2.get_height() +4 )
         self.newUserEntry = EntryBox(self.area, 15, temprect ,self.font_op
@@ -48,9 +47,10 @@ class SignIn():
         self.addButton = Button(self.area, temprect, "Add")
         temprect = Rect(0,350,400,50)
         self.controls = SignInControls(self.area, temprect)
-        self.bg = pygame.image.load(os.path.join("img","menu_bg4.png"))
-
-
+        self.bg = pygame.image.load(os.path.join("img","signInBG.png")).convert()
+        self.bgLeft = pygame.image.load(os.path.join("img","signInBGLeft.png")).convert()
+        self.bgRight = pygame.image.load(os.path.join("img","signInBGRight.png")).convert()
+        self.growlSound = pygame.mixer.Sound(os.path.join('sound','growl.wav')) 
 
     def addUser(self):
         user = self.newUserEntry.getText()
@@ -59,15 +59,13 @@ class SignIn():
         with open('userlist.txt', 'a') as file:
             file.write(user+'\n')
         self.newUserEntry.setText()
-        
-
-
 
     def mouseClick(self):
         mousex, mousey = pygame.mouse.get_pos()
         if self.newUserEntry.isClicked(mousex, mousey):
             self.newUserEntry.giveFocus()
         if self.addButton.wasClicked(mousex,mousey):
+            self.click.play() 
             print("click")
             self.addUser()
         xoffset, yoffset = self.userListArea.get_abs_offset()
@@ -75,6 +73,7 @@ class SignIn():
             self.textClick(xoffset, yoffset)
         clickedButton = self.controls.wasClicked(mousex, mousey)
         if clickedButton:
+            self.click.play() 
             self.buttonActions(clickedButton)
 
     def buttonActions(self, bNumber):
@@ -102,8 +101,7 @@ class SignIn():
             self.selected = ''
             with open("userlist.txt" , 'w') as file:
                 for i in self.userList:
-                    file.write(i +'\n')
-        
+                    file.write(i +'\n')   
 
     def textClick(self, xoffset, yoffset):
         mousex, mousey = pygame.mouse.get_pos()
@@ -115,34 +113,32 @@ class SignIn():
                 return
             else:
                 self.userTextList[i] = self.font_op(20,'berlin').render(self.userList[i],1,Colors.BLACK ,Colors.WHITE)
-                self.selected = ''
-        
-               
-            
-    
+                self.selected = ''                   
 
     def draw(self):
         self.area.blit(self.bg, (0,0))
-        self.area.blit(self.text1, (0,5))
-        self.area.blit(self.text2, (0,self.text1.get_height()+15))
+        self.area.blit(self.text1, (50,5))
+        self.area.blit(self.text2, (5,self.text1.get_height()+15))
         self.newUserEntry.draw()
         self.addButton.redraw()
         self.controls.redraw()
         self.userListArea.fill((255,255,255))
         #print('bg',self.bg,'\nt1',self.text1,'\nt2',self.text2,'\nEntry',self.newUserEntry)
         try:
-            textHT = self.userTextList[0].get_height()
-            
+            textHT = self.userTextList[0].get_height()        
         except IndexError:
             pass
         for i in range(len(self.userTextList)):
-            self.userListArea.blit(self.userTextList[i], (0,i*textHT))
+            self.userListArea.blit(self.userTextList[i], (3,i*textHT))
         
-
     def run(self):
         self.load()
         self.draw()
-        while not self.next:
+        soundTime = pygame.time.get_ticks()/1000.0
+        self.clock.tick(30)
+        widthX = 0
+        soundRunning = 0
+        while not self.next:   
             for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN:
                         self.mouseClick()
@@ -156,7 +152,20 @@ class SignIn():
                         sys.exit()
                         return 0
             self.draw()
-            pygame.display.update()
+
+            time = pygame.time.get_ticks()/1000. - soundTime
+            if time < 1:
+                self.area.blit(self.bgLeft, (0,0))
+                self.area.blit(self.bgRight, (200,0))
+            if time > 1 and soundRunning == 0:
+                self.growlSound.play()
+                soundRunning = 1
+            if widthX < 200 and time > 1:
+                self.area.blit(self.bgLeft, (0 - widthX,0))
+                self.area.blit(self.bgRight, (200 + widthX,0))
+                widthX += 1
+                
+            pygame.display.update()    
         return self.next
             
         
