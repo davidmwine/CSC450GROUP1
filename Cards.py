@@ -17,6 +17,11 @@ class Cards():
         self.movementCard = False
         self.feeCard = False
 
+        self.batSound = pygame.mixer.Sound(os.path.join('sound','baseball.wav'))
+        self.awwSound = pygame.mixer.Sound(os.path.join('sound','aww.wav'))
+        self.screamSound = pygame.mixer.Sound(os.path.join('sound','scream.wav'))
+        self.cashSound = pygame.mixer.Sound(os.path.join('sound','cash.wav'))
+
     def getXPosition(self):
         return self.area.get_offset()[0]
 
@@ -48,11 +53,15 @@ class Cards():
     def cardDescription(self, card):
         if card == 0:
             text = "Go to Accreditation Review."
+            self.screamSound.play()
         if card == 1:
             text = "Go enjoy a baseball game at Hammons Field."
+            self.batSound.play()
         if card == 2:
+            self.cashSound.play()
             text = "Hold alumni fundraiser and raise $100,000."
         if card == 3:
+            self.awwSound.play()
             text = "Rap artist arrested. Cancel concert, refund tickets, lose $50,000."
          
         '''
@@ -101,7 +110,7 @@ class Cards():
             #Print text on cards   
             lineText=""
             word = ""
-            textEdge = 15 #Text boundary on card -> right side 
+            textEdge = 14 #Text boundary on card -> right side 
             characterCounter = 0 
             fontSize = int(27*scale)
             padding = 0
