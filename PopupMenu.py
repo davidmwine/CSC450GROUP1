@@ -4,9 +4,10 @@ import os
 from Controls import Button
 from RadioButton import RadioGroup
 from Sound import Sound
+import GameInfo
 
 class PopupMenu(object):
-    def __init__(self, parent, soundOn):
+    def __init__(self, parent):
         self.displayInfo = pygame.display.Info()
         self.clock = pygame.time.Clock()
         self.parent = parent
@@ -21,8 +22,6 @@ class PopupMenu(object):
         self.exitCheckActive = False
         self.rulesActive = False
         self.bgMusic = Sound('start_menu')
-        self.soundOn = soundOn
-        print(self.soundOn)
 
     def loadButtons(self):
         # RADIO BUTTON GROUP
@@ -94,25 +93,25 @@ class PopupMenu(object):
         self.area.blit(self.textSound, (self.area.get_width() / 2 - (0.5 * self.textSound.get_width()), self.area.get_height() - 65))
 
         #Sound button - On initial popup
-        if self.soundOn:
+        if GameInfo.SOUNDON:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
    
     def soundChange(self):
         #Sound button
-        if not self.soundOn:
+        if not GameInfo.SOUNDON:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
 
         # Stop or start sound
-        if self.soundOn:
+        if GameInfo.SOUNDON:
             pygame.mixer.stop()
         else:
             self.bgMusic.play()
 
-        self.soundOn = not self.soundOn
+        GameInfo.SOUNDON = not GameInfo.SOUNDON
 
     def rules(self, pageNum=None):
         self.popupActive = True

@@ -62,7 +62,7 @@ class Game(object):
     def start(self):
         startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic, self.click)
         rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click, pygame.mixer.get_busy())
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
         playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
         Olobby = OnlineLobby(self.fontOp, self.screen, self.ratio)
@@ -74,7 +74,7 @@ class Game(object):
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
                 rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
-                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click, pygame.mixer.get_busy())
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
                 Olobby = Lobby(self.fontOp, self.screen, self.ratio)
             elif self.nextScreen == "game":
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
@@ -95,7 +95,7 @@ class Game(object):
                 if self.nextScreen == "start":
                     startMenu.backToStart()
             elif self.nextScreen == "options":
-                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click, pygame.mixer.get_busy()-1)
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()

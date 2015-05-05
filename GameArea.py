@@ -51,6 +51,7 @@ class GameArea(object):
         self.cardDisplayed = False  # True if a card is face up
         self.diceRolled = False
         self.midRoll = False
+        self.winSoundPlayed = False
 
         self.roundsBeforePriceIncrease = 3      # inflation
 
@@ -98,7 +99,7 @@ class GameArea(object):
         self.dice = Dice(self.boardArea)
 
         # Popup options menu
-        self.popupMenu = PopupMenu(self.boardArea, pygame.mixer.get_busy()-1)
+        self.popupMenu = PopupMenu(self.boardArea)
 
         # Cards
         self.cards = Cards(self.boardArea)
@@ -232,6 +233,10 @@ class GameArea(object):
                     self.turn.okMsgDisplayed = False
                     self.refreshGameBoard()
                     self.click.play()
+
+                    #If Game was won go back to start
+                    if Turn.gameOver:
+                        self.gameExit = True
                     
                     # If player just passed Accreditation Review...
                     if (self.player.inAccreditationReview
@@ -576,7 +581,7 @@ class GameArea(object):
         has gone bankrupt.  If so, a message is displayed and the player is
         eliminated from the game.
         """
-        if self.player.getDollars() < 0:
+        if self.player.getDollars() <= 0:
             
             self.player.isBankrupt = True
             Turn.extraAndLostTurns[self.playerIndex] = 0
@@ -626,7 +631,9 @@ class GameArea(object):
                 Turn.font, winner + " is the winner! All other players have"
                                                       + " gone bankrupt.")
             Turn.msgSurface.blit(msgBox, (0, 0))
-            self.winSound.play()
+            if not self.winSoundPlayed:
+                self.winSoundPlayed = True
+                self.winSound.play()
             self.turn.okMsgDisplayed = True
             return True
 
@@ -634,11 +641,13 @@ class GameArea(object):
             for player in self.activePlayers:
                 if player.getPoints() >= 50:
                     (msgBox, self.turn.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                        Turn.font, self.player.getName() + " earned "
-                        + str(self.player.getPoints())
+                        Turn.font, player.getName() + " earned "
+                        + str(player.getPoints())
                         + " Graduate Points and wins the game!")
                     Turn.msgSurface.blit(msgBox, (0, 0))
-                    self.winSound.play()
+                    if not self.winSoundPlayed:
+                        self.winSoundPlayed = True
+                        self.winSound.play()
                     self.turn.okMsgDisplayed = True
                     return True
 
@@ -806,10 +815,11 @@ class GameArea(object):
                 self.midTurn = True
                 self.turn = Turn(self.player, self.playerIndex)
 
-                Turn.gameOver = self.checkGameEnding()
+                #Turn.gameOver = self.checkGameEnding()
                 
-                self.turn.beginTurn(self.extraOrLost)        
+                self.turn.beginTurn(self.extraOrLost)       
                 
+            Turn.gameOver = self.checkGameEnding()
             self.refreshDisplay()
             
         return "start"
