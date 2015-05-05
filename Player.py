@@ -69,6 +69,8 @@ class Player(object):
 
     def addPoints(self, pointsToAdd):
         self.points += pointsToAdd
+        if self.points< 0:
+            self.points = 0
 
     def subtractPoints(self, pointsToSubtract):
         self.points -= pointsToSubtract   

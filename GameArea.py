@@ -51,6 +51,7 @@ class GameArea(object):
         self.cardDisplayed = False  # True if a card is face up
         self.diceRolled = False
         self.midRoll = False
+        self.winSoundPlayed = False
 
         self.roundsBeforePriceIncrease = 3      # inflation
 
@@ -173,6 +174,7 @@ class GameArea(object):
             and mouseX < self.controls.getWidth() \
             and mouseY > self.height - self.controls.getHeight():
                 self.click.play()
+                self.turn.firstUpgradeLine = 0
                 self.turn.showUpgradeOptions()
 
             # Cards
@@ -232,6 +234,10 @@ class GameArea(object):
                     self.turn.okMsgDisplayed = False
                     self.refreshGameBoard()
                     self.click.play()
+
+                    #If Game was won go back to start
+                    if Turn.gameOver:
+                        self.gameExit = True
                     
                     # If player just passed Accreditation Review...
                     if (self.player.inAccreditationReview
@@ -280,6 +286,17 @@ class GameArea(object):
             if self.turn.upgradeDisplayed:
                 # Make checkboxes look checked when clicked.
                 self.turn.checkUpgrades(mouseX, mouseY)
+
+                # Scrolling
+                if event.button == 4:
+                    if self.turn.firstUpgradeLine > 0:
+                        self.turn.firstUpgradeLine -= 1
+                    self.turn.showUpgradeOptions()
+                elif event.button == 5:
+                    if (self.turn.firstUpgradeLine + Turn.upgradeLinesToDisplay
+                        < self.turn.upgradeLineCount):
+                        self.turn.firstUpgradeLine += 1
+                    self.turn.showUpgradeOptions()
                 
                 okUpgradeRect = pygame.Rect(Turn.upgradeRect.x + self.turn.okUpgradeRect.x,
                                  Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
@@ -539,8 +556,8 @@ class GameArea(object):
             if count < self.roll[1] + self.roll[2]:
                 pygame.time.wait(250)
             else:
-                pygame.time.wait(1000)
-        self.bubbleSound.play()        
+                self.bubbleSound.play()
+                pygame.time.wait(1000)       
         self.players[self.playerIndex].removeToken()
         self.refreshDisplay()
         self.updatePlayerPosition()
@@ -585,7 +602,7 @@ class GameArea(object):
         has gone bankrupt.  If so, a message is displayed and the player is
         eliminated from the game.
         """
-        if self.player.getDollars() < 0:
+        if self.player.getDollars() <= 0:
             
             self.player.isBankrupt = True
             Turn.extraAndLostTurns[self.playerIndex] = 0
@@ -635,7 +652,9 @@ class GameArea(object):
                 Turn.font, winner + " is the winner! All other players have"
                                                       + " gone bankrupt.")
             Turn.msgSurface.blit(msgBox, (0, 0))
-            self.winSound.play()
+            if not self.winSoundPlayed:
+                self.winSoundPlayed = True
+                self.winSound.play()
             self.turn.okMsgDisplayed = True
             return True
 
@@ -643,11 +662,13 @@ class GameArea(object):
             for player in self.activePlayers:
                 if player.getPoints() >= 50:
                     (msgBox, self.turn.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
-                        Turn.font, self.player.getName() + " earned "
-                        + str(self.player.getPoints())
+                        Turn.font, player.getName() + " earned "
+                        + str(player.getPoints())
                         + " Graduate Points and wins the game!")
                     Turn.msgSurface.blit(msgBox, (0, 0))
-                    self.winSound.play()
+                    if not self.winSoundPlayed:
+                        self.winSoundPlayed = True
+                        self.winSound.play()
                     self.turn.okMsgDisplayed = True
                     return True
 
@@ -711,6 +732,7 @@ class GameArea(object):
         # This data will eventually be obtained from the lobby / setup menu.
         self.players = []
         if not GameInfo.ONLINEGAME:
+            print("NUMBER OF PLAYERS IS: ", GameInfo.PLAYERNUM)
             for i in range(GameInfo.PLAYERNUM):
                 p = Player(GameInfo.PLAYERS[i], GameInfo.PLAYERDEANS[i], self.gameBoard.getGB(), self.buildingsObj, self.scale)
                 self.players.append(p)
@@ -754,11 +776,6 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
-                    ###Cards demo - Remove Later ###
-                    #if event.key == K_c:
-                        #self.cardDraw = True
-                        #self.currentCard = self.cards.drawCard(self.scale)
-                    ################################    
                 if event.type == KEYDOWN and self.typing:
                     self.chatting(event)
                 if event.type == pygame.QUIT:
@@ -819,10 +836,11 @@ class GameArea(object):
                 self.midTurn = True
                 self.turn = Turn(self.player, self.playerIndex)
 
-                Turn.gameOver = self.checkGameEnding()
+                #Turn.gameOver = self.checkGameEnding()
                 
-                self.turn.beginTurn(self.extraOrLost)        
+                self.turn.beginTurn(self.extraOrLost)       
                 
+            Turn.gameOver = self.checkGameEnding()
             self.refreshDisplay()
             
         return "start"

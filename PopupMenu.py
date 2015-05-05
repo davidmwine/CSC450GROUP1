@@ -4,6 +4,7 @@ import os
 from Controls import Button
 from RadioButton import RadioGroup
 from Sound import Sound
+import GameInfo
 
 class PopupMenu(object):
     def __init__(self, parent):
@@ -12,6 +13,7 @@ class PopupMenu(object):
         self.parent = parent
         self.width = self.parent.get_width() / 2
         self.height = self.parent.get_height() / 2
+        self.areaBorder = parent.subsurface((self.parent.get_width() / 4)-3, (self.parent.get_height() / 4)-3, self.width+6, self.height+6)
         self.area = parent.subsurface((self.parent.get_width() / 4), (self.parent.get_height() / 4), self.width, self.height)
         self.screenModes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]## various screen sizes available
         self.resOpt = self.screenModes.index((self.displayInfo.current_w, self.displayInfo.current_h)) # current resolution option
@@ -20,7 +22,6 @@ class PopupMenu(object):
         self.exitCheckActive = False
         self.rulesActive = False
         self.bgMusic = Sound('start_menu')
-        self.soundOn = pygame.mixer.get_busy() 
 
     def loadButtons(self):
         # RADIO BUTTON GROUP
@@ -49,6 +50,7 @@ class PopupMenu(object):
         self.optionActive = False
         self.rulesActive = False
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         self.textOptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Options", True, (94, 0, 9))
         self.area.blit(self.textOptions, (self.area.get_width()/2 - (0.5 * self.textOptions.get_width()), 5))
@@ -61,6 +63,7 @@ class PopupMenu(object):
         self.popupActive = True
         self.optionActive = True
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         # header
         self.textOptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Game Options", True, (94, 0, 9))
@@ -90,31 +93,32 @@ class PopupMenu(object):
         self.area.blit(self.textSound, (self.area.get_width() / 2 - (0.5 * self.textSound.get_width()), self.area.get_height() - 65))
 
         #Sound button - On initial popup
-        if not self.soundOn:
+        if GameInfo.SOUNDON:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
    
     def soundChange(self):
         #Sound button
-        if self.soundOn:
+        if not GameInfo.SOUNDON:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
 
         # Stop or start sound
-        if not self.soundOn:
+        if GameInfo.SOUNDON:
             pygame.mixer.stop()
         else:
             self.bgMusic.play()
 
-        self.soundOn = not self.soundOn
+        GameInfo.SOUNDON = not GameInfo.SOUNDON
 
     def rules(self, pageNum=None):
         self.popupActive = True
         self.rulesActive = True
         self.optionActive = False
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
 
         self.imgArrow = pygame.image.load(os.path.join("img","arrow.png")).convert_alpha()
@@ -325,6 +329,7 @@ class PopupMenu(object):
         self.rulesActive = False
         self.optionActive = False
         self.exitCheckActive = True
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         self.text = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Are you sure you want to exit?", True, (94, 0, 9))
         self.area.blit(self.text, (self.area.get_width()/2 - (0.5 * self.text.get_width()), 5))

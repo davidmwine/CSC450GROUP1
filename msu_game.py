@@ -24,7 +24,7 @@ class Game(object):
 
         #self.screen = pygame.display.set_mode((self.infoScreen.current_w, self.infoScreen.current_h),pygame.FULLSCREEN)
         self.heightRatio16x9 = .5625 #Number to multiply width by to get 16x9 ratio for height
-        self.yOffset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.heightRatio16x9))/2)
+        self.yOffset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.heightRatio16x9))/2) #For fullscreen mode; fullscreen was not implemented.
 
         #Temporary code to test multiple screen sizes 
         #Comment self.screen above
@@ -74,10 +74,15 @@ class Game(object):
                 self.ratio = self.screen.get_height()/1080
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
+                rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
                 Olobby = Lobby(self.fontOp, self.screen, self.ratio)
             elif self.nextScreen == "game":
+                playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 self.nextScreen = playGame.play()
             elif self.nextScreen == "lobby":
+                #Lobby was getting errors with variables not being reset
+                lobby = Lobby(self.fontOp, self.screen, self.ratio)
                 self.nextScreen = lobby.run()
             elif self.nextScreen == "Olobby":
                 self.nextScreen = Olobby.run()
@@ -91,6 +96,7 @@ class Game(object):
                 if self.nextScreen == "start":
                     startMenu.backToStart()
             elif self.nextScreen == "options":
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()

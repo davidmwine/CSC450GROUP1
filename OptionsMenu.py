@@ -5,6 +5,7 @@ import os
 import sys
 from RadioButton import RadioGroup
 from StartMenu import Start
+import GameInfo
 
 class Options(object):
     def __init__(self, screen, infoScreen, fontOp, yOffset, bgMusic, click):
@@ -12,7 +13,8 @@ class Options(object):
         self.infoScreen = infoScreen
         self.fontOp = fontOp
         self.yOffset = yOffset
-        self.resolutionOption = 0
+        resIndex = {960: 0, 1280: 1, 1600: 2, 1920: 3}
+        self.resolutionOption = resIndex[self.screen.get_width()]
         self.soundEffectsOff = False
         self.musicOff = pygame.mixer.get_busy()
         self.loadImages()
@@ -116,9 +118,14 @@ class Options(object):
                 and mouseX < self.screen.get_width() / 2 + 177 \
                 and mouseY > self.screen.get_height() / 2 + 160 + self.yOffset \
                 and mouseY < self.screen.get_height() / 2 + 181 + self.yOffset:
+            #self.bgMusic.setSound('start_menu')
+            if GameInfo.SOUNDON:
+                pygame.mixer.stop()
+                GameInfo.SOUNDON = False
+            else:
+                self.bgMusic.play()
+                GameInfo.SOUNDON = True
             self.sonarSound.play()
-            self.bgMusic.setSound('start_menu')
-            self.bgMusic.play()
                 
         return True
 
@@ -157,7 +164,7 @@ class Options(object):
                                                   #self.screen.get_height()/2 + 184 + self.yOffset))
 
             #Audio on/off buttons      
-            if pygame.mixer.get_busy():
+            if GameInfo.SOUNDON:
                 self.screen.blit(self.img_on,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 163 + self.yOffset))
             else:
                 self.screen.blit(self.img_off,(self.screen.get_width()/2+ 133,self.screen.get_height()/2 + 163 + self.yOffset))
