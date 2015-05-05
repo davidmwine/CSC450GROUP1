@@ -214,28 +214,44 @@ class Turn(object):
                 self.okMsgDisplayed = True
                 
             elif self.owner == None:
-                if self.building.getPurpose() == "stealable":
-                    (msgBox, self.yesRect, self.noRect) = displayMsgYN(
-                    Turn.scale, Turn.msgRect, Turn.font,
-                    "Do you want to buy " + self.building.getName()
-                    + "? It will generate $50,000 profit for you on each turn.")
-                else:    
-                    (msgBox, self.yesRect, self.noRect) = displayMsgYN(
-                    Turn.scale, Turn.msgRect, Turn.font,
-                    "Do you want to buy " + self.building.getName() + "?")
-                Turn.msgSurface.blit(msgBox, (0, 0))
-                self.buyMsgDisplayed = True
+                if self.player.getDollars() <= Turn.buildings.getCurrentPrice():
+                    (msgBox, self.okRect) = displayMsgOK(Turn.scale,
+                        Turn.msgRect, Turn.font,
+                        "You don't have enough money to buy "
+                        + self.building.getName() + ".")
+                    Turn.msgSurface.blit(msgBox, (0, 0))
+                    self.okMsgDisplayed = True
+                else:
+                    if self.building.getPurpose() == "stealable":
+                        (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                        Turn.scale, Turn.msgRect, Turn.font,
+                        "Do you want to buy " + self.building.getName()
+                        + "? It will generate $50,000 profit for you on each turn.")
+                    else:    
+                        (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                        Turn.scale, Turn.msgRect, Turn.font,
+                        "Do you want to buy " + self.building.getName() + "?")
+                    Turn.msgSurface.blit(msgBox, (0, 0))
+                    self.buyMsgDisplayed = True
                 
             elif self.owner != self.player:
                 if self.building.getPurpose() == "stealable":
-                    (msgBox, self.yesRect, self.noRect) = displayMsgYN(
-                        Turn.scale, Turn.msgRect, Turn.font,
-                        "Do you want to buy " + self.building.getName()
-                        + " and steal it from " + self.owner.getName()
-                        + "? It will generate $50,000 profit for you on each turn.")
-                    Turn.msgSurface.blit(msgBox, (0, 0))
-                    self.buyMsgDisplayed = True
-                    return
+                    if self.player.getDollars() <= Turn.buildings.getCurrentPrice():
+                        (msgBox, self.okRect) = displayMsgOK(Turn.scale,
+                            Turn.msgRect, Turn.font,
+                            "You don't have enough money to buy "
+                            + self.building.getName() + ".")
+                        Turn.msgSurface.blit(msgBox, (0, 0))
+                        self.okMsgDisplayed = True
+                    else:
+                        (msgBox, self.yesRect, self.noRect) = displayMsgYN(
+                            Turn.scale, Turn.msgRect, Turn.font,
+                            "Do you want to buy " + self.building.getName()
+                            + " and steal it from " + self.owner.getName()
+                            + "? It will generate $50,000 profit for you on each turn.")
+                        Turn.msgSurface.blit(msgBox, (0, 0))
+                        self.buyMsgDisplayed = True
+                        return
             
                 if self.building.getPurpose() == "academic":
                     self.feeAmt = self.building.getFeeAmount(Turn.buildings.getCurrentPrice())
