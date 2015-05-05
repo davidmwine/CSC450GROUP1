@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from MessageBox import * # contains displayMsg(), displayMsgOK(), displayMsgYN()
 from CheckBox import CheckBox
+from EntryBox import EntryBox
 from Building import *
 
 
@@ -278,6 +279,14 @@ class Turn(object):
         self.player.addStealable(self.building.getName())
         self.building.setOwner(self.player)
         self.building.setColor(self.player.getColor())
+
+    # copy font op from msu_game for Entry box
+    def fontOp(self, size, fontName):  #Pick font size and type
+        if fontName == "helvetica":
+            fontAndSize = pygame.font.Font(os.path.join("font","helvetica.otf"),int(size)) # "font" is directory for the font file
+        elif fontName == "berlin":
+            fontAndSize = pygame.font.Font(os.path.join("font","berlin.ttf"),int(size))
+        return fontAndSize
         
 
     def showTradeOptions(self):
@@ -299,12 +308,16 @@ class Turn(object):
         text = font.render(text, True, Color("black"))
         self.tradeBox.blit(text, (padding, lineYpos))
         # Create buttons for each other player
-        otherPlayers = Turn.players
-        otherPlayers.remove(self.player)
+        self.otherPlayers = Turn.players
+        try:
+            self.otherPlayers.remove(self.player)
+        except:
+            pass
         rectTop = padding + lineHeight
         rectLeft = padding
         font = pygame.font.Font(None, int(30*self.scale))
-        for player in otherPlayers:
+        self.playerRects = []
+        for player in self.otherPlayers:
             playerButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
             self.playerButtonRect = playerButton.get_rect()
             playerButton.fill(player.getColor())
@@ -315,19 +328,31 @@ class Turn(object):
             playerButton.blit(text, textPos)
             self.playerButtonRect.left = rectLeft
             self.playerButtonRect.top = rectTop
+            self.playerRects.append(self.playerButtonRect)
             self.tradeBox.blit(playerButton, self.playerButtonRect)
             #rectTop += 30
             rectLeft += 55
 
         #Display your items for trade
         font = pygame.font.Font(None, int(30*self.scale))
-        lineYpos += lineHeight + 35
+        lineYpos += lineHeight + 60*self.scale
         text = "Your items for trade: "
         text = font.render(text, True, Color("black"))
         self.tradeBox.blit(text, (padding, lineYpos))
-        for i, building in enumerate(self.player.buildings):
+        lineYpos += lineHeight
+        boxRect = Rect(padding, lineYpos, 50*self.scale, 30*self.scale)
+        boxRect.left = padding
+        boxRect.top = lineYpos
+        moneyEntry = EntryBox(self.tradeBox, 20, boxRect,
+                              self.fontOp, self.scale, None, start_text="$$$")
+        moneyEntry.draw()
+        self.theirBuildingCheckBoxes = []
+        self.yourBuildingCheckBoxes = []
+        lineYpos += padding
+        for building in self.player.buildings:
             lineYpos += lineHeight
             checkbox = CheckBox(self.tradeBox, padding, lineYpos, 20*self.scale)
+            self.yourBuildingCheckBoxes.append(checkbox)
             checkbox.draw()
             text = building.getName()
             text = font.render(text, True, Color("black"))
@@ -349,7 +374,59 @@ class Turn(object):
         self.tradeDisplayed = True
         Turn.tradeSurface.blit(self.tradeBox, (0, 0))
 
+    def selectPlayerTrade(self, x, y):
+        """
+        Within the trade display window, handles the selecting of players to
+        trade with.  Displays other players properties.
+        """
+        for i, playerRect in enumerate(self.playerRects):
+            if playerRect.collidepoint(x - Turn.tradeRect.x,
+                                       y - Turn.tradeRect.y):
+                self.showTradeOptions()
+                player = self.otherPlayers[i]
+                font = pygame.font.Font(None, int(40*self.scale))
+                lineHeight = font.get_linesize()
+                font = pygame.font.Font(None, int(30*self.scale))
+                lineYpos = 95*self.scale
+                padding = 285*self.scale
+                text = player.getName() + "'s items for trade: "
+                text = font.render(text, True, Color("black"))
+                self.tradeBox.blit(text, (padding, lineYpos))
+                lineYpos += lineHeight
+                boxRect = Rect(padding, lineYpos, 50*self.scale, 30*self.scale)
+                boxRect.left = padding
+                boxRect.top = lineYpos
+                moneyEntry = EntryBox(self.tradeBox, 20, boxRect,
+                                      self.fontOp, self.scale, None, start_text="$$$")
+                moneyEntry.draw()
+                lineYpos += 5*self.scale
+                for building in player.buildings:
+                    lineYpos += lineHeight
+                    checkbox = CheckBox(self.tradeBox, padding, lineYpos, 20*self.scale)
+                    self.theirBuildingCheckBoxes.append(checkbox)
+                    checkbox.draw()
+                    text = building.getName()
+                    text = font.render(text, True, Color("black"))
+                    self.tradeBox.blit(text, (padding + 25*self.scale, lineYpos))
 
+                Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+
+    def checkTradeBuildings(self, x, y):
+        """
+        Within the trade display window, handles the display of checkboxes
+        (toggling between checked and unchecked) as the player clicks them.
+        """
+        for checkbox in (self.yourBuildingCheckBoxes):
+            if checkbox.setChecked(x - Turn.tradeRect.x,
+                                   y - Turn.tradeRect.y):
+                checkbox.draw()
+                Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+        for checkbox in (self.theirBuildingCheckBoxes):
+            if checkbox.setChecked(x - Turn.tradeRect.x,
+                                   y - Turn.tradeRect.y):
+                checkbox.draw()
+                Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+                
     def showUpgradeOptions(self):
         """
         Displays a message box in which the player can select the buildings

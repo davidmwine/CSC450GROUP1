@@ -167,7 +167,6 @@ class GameArea(object):
             and mouseY > self.height - self.controls.getHeight():
                 self.click.play()
                 self.turn.showTradeOptions()
-                pass
 
             # Upgrade Button
             if mouseX > 3 * self.controls.getWidth() / 4 \
@@ -297,7 +296,9 @@ class GameArea(object):
 
             # Trade Box
             if self.turn.tradeDisplayed:
-                pass
+                self.turn.selectPlayerTrade(mouseX, mouseY)
+                self.turn.checkTradeBuildings(mouseX, mouseY)
+                
                                         
         # menu open
         else:
