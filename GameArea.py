@@ -174,6 +174,7 @@ class GameArea(object):
             and mouseX < self.controls.getWidth() \
             and mouseY > self.height - self.controls.getHeight():
                 self.click.play()
+                self.turn.firstUpgradeLine = 0
                 self.turn.showUpgradeOptions()
 
             # Cards
@@ -285,6 +286,17 @@ class GameArea(object):
             if self.turn.upgradeDisplayed:
                 # Make checkboxes look checked when clicked.
                 self.turn.checkUpgrades(mouseX, mouseY)
+
+                # Scrolling
+                if event.button == 4:
+                    if self.turn.firstUpgradeLine > 0:
+                        self.turn.firstUpgradeLine -= 1
+                    self.turn.showUpgradeOptions()
+                elif event.button == 5:
+                    if (self.turn.firstUpgradeLine + Turn.upgradeLinesToDisplay
+                        < self.turn.upgradeLineCount):
+                        self.turn.firstUpgradeLine += 1
+                    self.turn.showUpgradeOptions()
                 
                 okUpgradeRect = pygame.Rect(Turn.upgradeRect.x + self.turn.okUpgradeRect.x,
                                  Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
