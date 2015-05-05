@@ -308,7 +308,7 @@ class Turn(object):
         text = font.render(text, True, Color("black"))
         self.tradeBox.blit(text, (padding, lineYpos))
         # Create buttons for each other player
-        self.otherPlayers = Turn.players
+        self.otherPlayers = list(Turn.players)
         try:
             self.otherPlayers.remove(self.player)
         except:
@@ -343,7 +343,7 @@ class Turn(object):
         boxRect = Rect(padding, lineYpos, 50*self.scale, 30*self.scale)
         boxRect.left = padding
         boxRect.top = lineYpos
-        moneyEntry = EntryBox(self.tradeBox, 20, boxRect,
+        moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
                               self.fontOp, self.scale, None, start_text="$$$")
         moneyEntry.draw()
         self.theirBuildingCheckBoxes = []
@@ -362,13 +362,25 @@ class Turn(object):
         okButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
         self.okTradeRect = okButton.get_rect()
         okButton.fill(Colors.MEDGRAY)
-        text = Turn.font.render("OK", True, Color("black"))
+        text = font.render("OK", True, Color("black"))
         textPos = text.get_rect()
         textPos.center = self.okTradeRect.center
         okButton.blit(text, textPos)
         self.okTradeRect.bottom = self.tradeBox.get_rect().height - 10
-        self.okTradeRect.centerx = self.tradeBox.get_rect().centerx
+        self.okTradeRect.centerx = self.tradeBox.get_rect().centerx - 60*Turn.scale
         self.tradeBox.blit(okButton, self.okTradeRect)
+
+        # Create and position Cancel button.
+        cancelButton = pygame.Surface((100*Turn.scale, 50*Turn.scale))
+        self.cancelTradeRect = cancelButton.get_rect()
+        cancelButton.fill(Colors.MEDGRAY)
+        text = font.render("CANCEL", True, Color("black"))
+        textPos = text.get_rect()
+        textPos.center = self.cancelTradeRect.center
+        cancelButton.blit(text, textPos)
+        self.cancelTradeRect.bottom = self.tradeBox.get_rect().height - 10
+        self.cancelTradeRect.centerx = self.tradeBox.get_rect().centerx + 60*Turn.scale
+        self.tradeBox.blit(cancelButton, self.cancelTradeRect)
 
         # Display on game board.
         self.tradeDisplayed = True
@@ -396,7 +408,7 @@ class Turn(object):
                 boxRect = Rect(padding, lineYpos, 50*self.scale, 30*self.scale)
                 boxRect.left = padding
                 boxRect.top = lineYpos
-                moneyEntry = EntryBox(self.tradeBox, 20, boxRect,
+                moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
                                       self.fontOp, self.scale, None, start_text="$$$")
                 moneyEntry.draw()
                 lineYpos += 5*self.scale
@@ -426,6 +438,15 @@ class Turn(object):
                                    y - Turn.tradeRect.y):
                 checkbox.draw()
                 Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+
+    def finishTrade(self, x, y):
+        pass
+
+    def cancelTrade(self, x, y):
+        if self.cancelTradeRect.collidepoint(x - Turn.tradeRect.x,
+                                             y - Turn.tradeRect.y):
+            return True
+        return False
                 
     def showUpgradeOptions(self):
         """
