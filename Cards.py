@@ -21,6 +21,10 @@ class Cards():
         self.awwSound = pygame.mixer.Sound(os.path.join('sound','aww.wav'))
         self.screamSound = pygame.mixer.Sound(os.path.join('sound','scream.wav'))
         self.cashSound = pygame.mixer.Sound(os.path.join('sound','cash.wav'))
+        self.buildingSound = pygame.mixer.Sound(os.path.join('sound','building.wav'))
+        self.carSound = pygame.mixer.Sound(os.path.join('sound','car.wav'))
+        self.computerSound = pygame.mixer.Sound(os.path.join('sound','computer.wav'))
+        self.scoobySound = pygame.mixer.Sound(os.path.join('sound','scooby.wav'))
 
     def getXPosition(self):
         return self.area.get_offset()[0]
@@ -64,28 +68,17 @@ class Cards():
             self.awwSound.play()
             text = "Rap artist arrested. Cancel concert, refund tickets, lose $50,000."
         if card == 4:
+            self.buildingSound.play()
             text = "Summer Classes: Get one Graduate Point per building"
         if card == 5:
+            self.carSound.play()
             text = "Faculty Only Lot, go to Bear Park South."
         if card == 6:
+            self.computerSound.play()
             text = "Computer Science cross class listing, go to Cheek Hall"
         if card == 7:
-            text = "Fraternity Scandal lose 5 graduate points"
-            
-        '''
-        if card == 0:
-            text = "Move back 3 spaces and stuff. You are going the wrong way."
-        if card == 1:
-            text = "Here's a nice puppy to play with."
-        if card == 2:
-            text = "Another place holder. Really is."
-        if card == 3:
-            text = "More card stuff with fancy people words."
-        if card == 4:    
-            text = "Proceed to the dump."
-        if card == 5:
-            text = "Get abducted by aliens... again."
-        '''    
+            self.scoobySound.play()
+            text = "Fraternity Scandal lose 5 graduate points"  
         return text
 
 

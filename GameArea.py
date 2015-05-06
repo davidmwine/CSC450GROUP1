@@ -622,7 +622,8 @@ class GameArea(object):
                 Turn.font, self.player.getName() + " has gone bankrupt and "
                                         + "been eliminated from the game.")
             Turn.msgSurface.blit(msgBox, (0, 0))
-            self.booSound.play()
+            if len(self.activePlayers) > 1:
+                self.booSound.play()
             self.turn.okMsgDisplayed = True    
             
         elif self.turn.upgradeDisplayed:
