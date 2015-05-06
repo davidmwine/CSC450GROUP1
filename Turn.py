@@ -455,6 +455,7 @@ class Turn(object):
     def setTradeMoney(self, x, y):
         self.yourMoneybox.isClicked(x - Turn.tradeRect.x,
                                        y - Turn.tradeRect.y)
+        Turn.tradeSurface.blit(self.tradeBox, (0, 0))
         #self.theirMoneybox.isClicked(x - Turn.tradeRect.x, y - Turn.tradeRect.y)
 
     def finishTrade(self, x, y):
@@ -475,27 +476,28 @@ class Turn(object):
                 if checkbox.getChecked():
                     theirTradeBuildings.append(self.otherPlayer.buildings[i])
 
-            # take buildings from "yourTradeBuildings" to other players building list
-            for building in yourTradeBuildings:
-                self.player.buildings.remove(building)
-                self.otherPlayer.buildings.append(building)
+            if yourTradeBuildings or theirTradeBuildings:
+                # take buildings from "yourTradeBuildings" to other players building list
+                for building in yourTradeBuildings:
+                    self.player.buildings.remove(building)
+                    self.otherPlayer.buildings.append(building)
 
-            # take buildings from "theirTradeBuildings" to initial players building list
-            for building in theirTradeBuildings:
-                self.otherPlayer.buildings.remove(building)
-                self.player.buildings.append(building)
+                # take buildings from "theirTradeBuildings" to initial players building list
+                for building in theirTradeBuildings:
+                    self.otherPlayer.buildings.remove(building)
+                    self.player.buildings.append(building)
 
-            # set owners/colors of buildings to their new owners/colors
-            for building in self.player.buildings:
-                building.setOwner(self.player)
-                building.setColor(self.player.getColor())
+                # set owners/colors of buildings to their new owners/colors
+                for building in self.player.buildings:
+                    building.setOwner(self.player)
+                    building.setColor(self.player.getColor())
 
-            for building in self.otherPlayer.buildings:
-                building.setOwner(self.otherPlayer)
-                building.setColor(self.otherPlayer.getColor())
+                for building in self.otherPlayer.buildings:
+                    building.setOwner(self.otherPlayer)
+                    building.setColor(self.otherPlayer.getColor())
                 
-            return True
-        return False
+                return self.player.buildings + self.otherPlayer.buildings
+        return None
                 
 
     def cancelTrade(self, x, y):

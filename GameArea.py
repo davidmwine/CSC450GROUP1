@@ -319,7 +319,10 @@ class GameArea(object):
                 if self.turn.cancelTrade(mouseX, mouseY):
                     self.resumeTurn()
                     self.turn.tradeDisplayed = False
-                if self.turn.finishTrade(mouseX, mouseY):
+                finished = self.turn.finishTrade(mouseX, mouseY)
+                if finished != None:
+                    for building in finished:
+                        self.gameBoard.colorBuilding(building)
                     self.resumeTurn()
                     self.refreshGameBoard()
                     self.turn.tradeDisplayed = False
