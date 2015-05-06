@@ -53,6 +53,12 @@ class GameArea(object):
         self.midRoll = False
         self.winSoundPlayed = False
 
+        #Variables to allow clicking and holding to update money in trade
+        self.moneyChange = False
+        self.tradingX = 0
+        self.tradingY = 0
+        self.timer = pygame.time.get_ticks()
+
         self.roundsBeforePriceIncrease = 3      # inflation
 
         self.rulesPage = 1 #initialize rules page to start at 1
@@ -316,7 +322,11 @@ class GameArea(object):
                 self.turn.selectPlayerTrade(mouseX, mouseY)
                 if self.turn.traderSelected:
                     self.turn.checkTradeBuildings(mouseX, mouseY)
-                    self.turn.setTradeMoney(mouseX, mouseY)
+                    self.moneyChange = self.turn.setTradeMoney(mouseX, mouseY)
+                    if self.moneyChange:
+                        self.timer = pygame.time.get_ticks()
+                        self.tradingX = mouseX
+                        self.tradingY = mouseY
                 if self.turn.cancelTrade(mouseX, mouseY):
                     self.resumeTurn()
                     self.turn.tradeDisplayed = False
@@ -847,7 +857,13 @@ class GameArea(object):
 
                 #Turn.gameOver = self.checkGameEnding()
                 
-                self.turn.beginTurn(self.extraOrLost)       
+                self.turn.beginTurn(self.extraOrLost)
+
+            #Updating money in trade box by holding
+            if not pygame.mouse.get_pressed()[0]:
+                self.moneyChange = False
+            if self.turn.tradeDisplayed and self.moneyChange and pygame.time.get_ticks() - self.timer > 500:
+                self.turn.setTradeMoney(self.tradingX, self.tradingY)
                 
             Turn.gameOver = self.checkGameEnding()
             self.refreshDisplay()

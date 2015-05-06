@@ -453,11 +453,12 @@ class Turn(object):
                 Turn.tradeSurface.blit(self.tradeBox, (0, 0))
 
     def setTradeMoney(self, x, y):
-        self.yourMoneybox.isClicked(x - Turn.tradeRect.x,
+        result = self.yourMoneybox.isClicked(x - Turn.tradeRect.x,
                                        y - Turn.tradeRect.y)
-        self.theirMoneybox.isClicked(x - Turn.tradeRect.x,
-                                     y - Turn.tradeRect.y)
+        result = self.theirMoneybox.isClicked(x - Turn.tradeRect.x,
+                                     y - Turn.tradeRect.y) or result
         Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+        return result
 
     def finishTrade(self, x, y):
         if self.okTradeRect.collidepoint(x - Turn.tradeRect.x,
