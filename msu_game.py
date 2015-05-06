@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-import pygame._view
+#import pygame._view
 import os
 import sys
 from RulesMenu import Rules
