@@ -324,9 +324,9 @@ class GameArea(object):
                 if finished != None:
                     for building in finished:
                         self.gameBoard.colorBuilding(building)
+                    for i, player in enumerate(self.players):
+                        self.playersDisplay.updatePlayer(i)
                     self.resumeTurn()
-                    self.refreshPlayersDisplay()
-                    self.refreshGameBoard()
                     self.turn.tradeDisplayed = False
                 
                                         

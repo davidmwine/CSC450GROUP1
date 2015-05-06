@@ -421,9 +421,6 @@ class Turn(object):
                 self.theirMoneybox = MoneyBox (self.tradeBox, boxRect, self.fontOp,
                                      self.scale, self.otherPlayer)
                 self.theirMoneybox.draw()
-                #moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
-                #                      self.fontOp, self.scale, None, start_text="$$$")
-                #moneyEntry.draw()
                 lineYpos += 35*self.scale
                 font = pygame.font.Font(None, int(24*self.scale))
                 for building in self.otherPlayer.buildings:
@@ -504,6 +501,7 @@ class Turn(object):
                     building.setOwner(self.otherPlayer)
                     building.setColor(self.otherPlayer.getColor())
 
+                # trade money
                 self.player.subtractDollars(yourTradeMoney)
                 self.player.addDollars(theirTradeMoney)
 
