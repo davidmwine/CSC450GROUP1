@@ -530,7 +530,8 @@ class GameArea(object):
         while count < self.roll[1] + self.roll[2]:
             self.clock.tick(30)
             self.player.increasePosition(1)
-            self.bubbleSound.play()
+            if count != 0: #Getting an extra sound without this
+                self.bubbleSound.play()
             count += 1
             if count == self.roll[1] + self.roll[2]:
                 self.midRoll = False

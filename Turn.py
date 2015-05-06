@@ -176,11 +176,11 @@ class Turn(object):
             elif self.building.getName() == "Bear Park North":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to Bear Park North!  Lose a turn!")
-                Turn.extraAndLostTurns[self.playerIndex] -= 1
+                Turn.extraAndLostTurns[self.playerIndex] = -1
             elif self.building.getName() == "Bear Park South":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to Bear Park South! Take an extra turn!")
-                Turn.extraAndLostTurns[self.playerIndex] += 1
+                Turn.extraAndLostTurns[self.playerIndex] = 1
             elif self.building.getName() == "Accreditation Review":
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to Accreditation Review! On your next "
