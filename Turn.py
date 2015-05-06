@@ -28,7 +28,7 @@ class Turn(object):
         self.landed = False     # True if player has landed on a space for the turn
         self.firstUpgradeLine = 0   # Index of first line to display in upgrade box
         self.upgradeLineCount = 0   # Number of lines to display in upgrade box
-        
+        self.traderSelected = False
 
     @staticmethod
     def initializeTurnCount():
@@ -317,6 +317,7 @@ class Turn(object):
             self.otherPlayers.remove(self.player)
         except:
             pass
+        self.otherPlayer = self.otherPlayers[0]
         rectTop = padding + lineHeight
         rectLeft = padding
         font = pygame.font.Font(None, int(30*self.scale))
@@ -344,15 +345,15 @@ class Turn(object):
         text = font.render(text, True, Color("black"))
         self.tradeBox.blit(text, (padding, lineYpos))
         lineYpos += lineHeight
+        # create your money box
         boxRect = Rect(padding, lineYpos, 250*self.scale, 50*self.scale)
         boxRect.left = padding
         boxRect.top = lineYpos
         self.yourMoneybox = MoneyBox (self.tradeBox, boxRect, self.fontOp,
                              self.scale, self.player)
         self.yourMoneybox.draw()
-        #moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
-        #                      self.fontOp, self.scale, None, start_text="$$$")
-        #moneyEntry.draw()
+        # initialize their money box
+        self.theirMoneybox = None
         self.theirBuildingCheckBoxes = []
         self.yourBuildingCheckBoxes = []
         lineYpos += padding + 30*self.scale
@@ -435,6 +436,8 @@ class Turn(object):
                     self.tradeBox.blit(text, (padding + 25*self.scale, lineYpos))
 
                 Turn.tradeSurface.blit(self.tradeBox, (0, 0))
+                self.traderSelected = True
+                
 
     def checkTradeBuildings(self, x, y):
         """
@@ -455,8 +458,9 @@ class Turn(object):
     def setTradeMoney(self, x, y):
         self.yourMoneybox.isClicked(x - Turn.tradeRect.x,
                                        y - Turn.tradeRect.y)
+        self.theirMoneybox.isClicked(x - Turn.tradeRect.x,
+                                     y - Turn.tradeRect.y)
         Turn.tradeSurface.blit(self.tradeBox, (0, 0))
-        #self.theirMoneybox.isClicked(x - Turn.tradeRect.x, y - Turn.tradeRect.y)
 
     def finishTrade(self, x, y):
         if self.okTradeRect.collidepoint(x - Turn.tradeRect.x,
@@ -476,7 +480,11 @@ class Turn(object):
                 if checkbox.getChecked():
                     theirTradeBuildings.append(self.otherPlayer.buildings[i])
 
-            if yourTradeBuildings or theirTradeBuildings:
+            yourTradeMoney = self.yourMoneybox.getCurrMoney()
+            theirTradeMoney = self.theirMoneybox.getCurrMoney()
+
+            if yourTradeBuildings or theirTradeBuildings or yourTradeMoney != 0 \
+               or theirTradeMoney != 0:
                 # take buildings from "yourTradeBuildings" to other players building list
                 for building in yourTradeBuildings:
                     self.player.buildings.remove(building)
@@ -495,7 +503,14 @@ class Turn(object):
                 for building in self.otherPlayer.buildings:
                     building.setOwner(self.otherPlayer)
                     building.setColor(self.otherPlayer.getColor())
-                
+
+                self.player.subtractDollars(yourTradeMoney)
+                self.player.addDollars(theirTradeMoney)
+
+                self.otherPlayer.subtractDollars(theirTradeMoney)
+                self.otherPlayer.addDollars(yourTradeMoney)
+                    
+                self.traderSelected = False
                 return self.player.buildings + self.otherPlayer.buildings
         return None
                 
@@ -503,6 +518,7 @@ class Turn(object):
     def cancelTrade(self, x, y):
         if self.cancelTradeRect.collidepoint(x - Turn.tradeRect.x,
                                              y - Turn.tradeRect.y):
+            self.traderSelected = False
             return True
         return False
                 
