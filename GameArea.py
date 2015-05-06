@@ -285,7 +285,8 @@ class GameArea(object):
             # Upgrade Message Box (checkboxes and OK button)
             if self.turn.upgradeDisplayed:
                 # Make checkboxes look checked when clicked.
-                self.turn.checkUpgrades(mouseX, mouseY)
+                if event.button != 4 and event.button != 5:
+                    self.turn.checkUpgrades(mouseX, mouseY)
 
                 # Scrolling
                 if event.button == 4:

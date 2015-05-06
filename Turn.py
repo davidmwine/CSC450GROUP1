@@ -25,6 +25,9 @@ class Turn(object):
         self.landed = False     # True if player has landed on a space for the turn
         self.firstUpgradeLine = 0   # Index of first line to display in upgrade box
         self.upgradeLineCount = 0   # Number of lines to display in upgrade box
+        self.bachelorCheckboxes = None
+        self.masterCheckboxes = None
+        self.doctorateCheckboxes = None
         
 
     @staticmethod
@@ -313,39 +316,66 @@ class Turn(object):
         lines = []
         if len(self.bachelors) > 0:
             lines.append("Upgrade to Bachelors:")
-            self.bachelorCheckboxes = []
-            for i in range(len(self.bachelors)):
-                self.bachelorCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
-                line = (self.bachelorCheckboxes[i], self.bachelors[i], "$100,000")
-                lines.append(line)
+            if self.bachelorCheckboxes == None:
+                self.bachelorCheckboxes = []
+                for i in range(len(self.bachelors)):
+                    self.bachelorCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
+                    line = (self.bachelorCheckboxes[i], self.bachelors[i], "$100,000")
+                    lines.append(line)
+            else:
+                for i in range(len(self.bachelors)):
+                    line = (self.bachelorCheckboxes[i], self.bachelors[i], "$100,000")
+                    lines.append(line)
 
         if len(self.masters) > 0:
             lines.append("Upgrade to Masters:")
-            self.masterCheckboxes = []
-            for i in range(len(self.masters)):
-                self.masterCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
-                building = Turn.buildings.getBuilding(self.masters[i])
-                if building.getDegreeLvl() == "Associate":
-                    cost = "$250,000"
-                else:
-                    cost = "$150,000"
-                line = (self.masterCheckboxes[i], self.masters[i], cost)
-                lines.append(line)
+            if self.masterCheckboxes == None:
+                self.masterCheckboxes = []
+                for i in range(len(self.masters)):
+                    self.masterCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
+                    building = Turn.buildings.getBuilding(self.masters[i])
+                    if building.getDegreeLvl() == "Associate":
+                        cost = "$250,000"
+                    else:
+                        cost = "$150,000"
+                    line = (self.masterCheckboxes[i], self.masters[i], cost)
+                    lines.append(line)
+            else:
+                for i in range(len(self.masters)):
+                    building = Turn.buildings.getBuilding(self.masters[i])
+                    if building.getDegreeLvl() == "Associate":
+                        cost = "$250,000"
+                    else:
+                        cost = "$150,000"
+                    line = (self.masterCheckboxes[i], self.masters[i], cost)
+                    lines.append(line)
                 
         if len(self.doctorates) > 0:
             lines.append("Upgrade to Doctorates:")
-            self.doctorateCheckboxes = []
-            for i in range(len(self.doctorates)):
-                self.doctorateCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
-                building = Turn.buildings.getBuilding(self.doctorates[i])
-                if building.getDegreeLvl() == "Associate":
-                    cost = "$500,000"
-                elif building.getDegreeLvl() == "Bachelor":
-                    cost = "$400,000"
-                else:
-                    cost = "$250,000"
-                line = (self.doctorateCheckboxes[i], self.doctorates[i], cost)
-                lines.append(line)
+            if self.doctorateCheckboxes == None:
+                self.doctorateCheckboxes = []
+                for i in range(len(self.doctorates)):
+                    self.doctorateCheckboxes.append(CheckBox(self.upgradeBox, 0, 0, 0))
+                    building = Turn.buildings.getBuilding(self.doctorates[i])
+                    if building.getDegreeLvl() == "Associate":
+                        cost = "$500,000"
+                    elif building.getDegreeLvl() == "Bachelor":
+                        cost = "$400,000"
+                    else:
+                        cost = "$250,000"
+                    line = (self.doctorateCheckboxes[i], self.doctorates[i], cost)
+                    lines.append(line)
+            else:
+                for i in range(len(self.doctorates)):
+                    building = Turn.buildings.getBuilding(self.doctorates[i])
+                    if building.getDegreeLvl() == "Associate":
+                        cost = "$500,000"
+                    elif building.getDegreeLvl() == "Bachelor":
+                        cost = "$400,000"
+                    else:
+                        cost = "$250,000"
+                    line = (self.doctorateCheckboxes[i], self.doctorates[i], cost)
+                    lines.append(line)
 
         self.upgradeLineCount = len(lines)
 
@@ -377,7 +407,7 @@ class Turn(object):
                     self.upgradeBox.blit(text, (padding, lineYpos))
                 else:
                     lines[i][0].changePosition(20*self.scale,
-                                                      lineYpos, 20*self.scale)
+                                                      lineYpos, 20*self.scale, self.upgradeBox)
                     lines[i][0].draw()
                     text = font.render(lines[i][1], True, Color("black"))
                     self.upgradeBox.blit(text, (60*self.scale, lineYpos))
@@ -407,23 +437,43 @@ class Turn(object):
         Within the upgrades display window, handles the display of checkboxes
         (toggling between checked and unchecked) as the player clicks them.
         """
-        for i in range(len(self.bachelors)):
-            if self.bachelorCheckboxes[i].setChecked(x - Turn.upgradeRect.x,
-                                                     y - Turn.upgradeRect.y):
-                self.bachelorCheckboxes[i].draw()
-                Turn.upgradeSurface.blit(self.upgradeBox, (0, 0))
-                
-        for i in range(len(self.masters)):
-            if self.masterCheckboxes[i].setChecked(x - Turn.upgradeRect.x,
-                                                     y - Turn.upgradeRect.y):
-                self.masterCheckboxes[i].draw()
-                Turn.upgradeSurface.blit(self.upgradeBox, (0, 0))
-                
-        for i in range(len(self.doctorates)):
-            if self.doctorateCheckboxes[i].setChecked(x - Turn.upgradeRect.x,
-                                                     y - Turn.upgradeRect.y):
-                self.doctorateCheckboxes[i].draw()
-                Turn.upgradeSurface.blit(self.upgradeBox, (0, 0))                
+        numOfLines = self.upgradeLineCount
+        print("CHECKSCROLL")
+        #lastUpgradeLine = min(len(lines),
+        #                   self.firstUpgradeLine + Turn.upgradeLinesToDisplay)
+        if self.upgradeLineCount == 0:
+            pass
+        else:
+            for i in range(len(self.bachelors)):
+                if  i+1 > self.firstUpgradeLine and i+1 < Turn.upgradeLinesToDisplay + self.firstUpgradeLine:
+                    self.bachelorCheckboxes[i].setChecked(x - Turn.upgradeRect.x,
+                                                             y - Turn.upgradeRect.y)
+                    self.bachelorCheckboxes[i].draw()
+                    Turn.upgradeSurface.blit(self.upgradeBox, (0, 0))
+                    
+            for i in range(len(self.masters)):
+                startingLoc = len(self.bachelors)
+                if len(self.bachelors) > 0:
+                    startingLoc += 1
+                if startingLoc + i + 1 > self.firstUpgradeLine and startingLoc + i + 1 <\
+                   Turn.upgradeLinesToDisplay + self.firstUpgradeLine:
+                    self.masterCheckboxes[i].setChecked(x - Turn.upgradeRect.x,
+                                                             y - Turn.upgradeRect.y)
+                    self.masterCheckboxes[i].draw()
+                    Turn.upgradeSurface.blit(self.upgradeBox, (0, 0))
+                    
+            for i in range(len(self.doctorates)):
+                startingLoc = len(self.masters) + len(self.bachelors)
+                if len(self.bachelors) > 0:
+                    startingLoc += 1
+                if len(self.masters) > 0:
+                    startingLoc += 1
+                if startingLoc + i + 1 > self.firstUpgradeLine and startingLoc + i + 1 <\
+                   Turn.upgradeLinesToDisplay + self.firstUpgradeLine:
+                    self.doctorateCheckboxes[i].setChecked(x - Turn.upgradeRect.x,
+                                                             y - Turn.upgradeRect.y)
+                    self.doctorateCheckboxes[i].draw()
+                    Turn.upgradeSurface.blit(self.upgradeBox, (0, 0))                
 
 
     def upgrade(self):
@@ -463,4 +513,7 @@ class Turn(object):
                     self.player.subtractDollars(250000)
                     self.player.addPointsPerRound(1)
                 building.setDegreeLvl("Doctorate")
+        self.bachelorCheckboxes = None
+        self.masterCheckboxes = None
+        self.doctorateCheckboxes = None
      
