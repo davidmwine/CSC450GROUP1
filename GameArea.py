@@ -85,10 +85,16 @@ class GameArea(object):
         self.boardArea = self.area.subsurface(rect)
         self.boardArea.fill(Colors.MAROON) 
         
-        # Chat Box
+        # Chat Box(Logo Now)
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
                            (480*self.scale, 270*self.scale))
-        self.chatBox = ChatBox(self.scale,self.area, rect)
+        self.chatArea = self.area.subsurface(rect)
+        self.chatArea.fill(Colors.MAROON)
+        self.imgLogo = pygame.transform.scale(pygame.image.load(os.path.join("img","MSUWordMark.png")).convert_alpha(),(int(466*self.scale), int(218*self.scale)))
+        #self.chatArea.blit(self.imgLogo, (int(self.chatArea.get_width()/2-233/self.scale) ,int(self.chatArea.get_height()/2-109*self.scale)))
+        self.chatArea.blit(self.imgLogo, (0 ,(self.chatArea.get_height()-218*self.scale)/2))
+        #self.chatBox = ChatBox(self.scale,self.area, rect)
+        
         
         # Controls
         rect = pygame.Rect((0, 1020*self.scale),
@@ -127,20 +133,20 @@ class GameArea(object):
         # menu not open
         if not self.popupMenu.getPopupActive():             
             #chatBox
-            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
-            and mouseY > self.chatBox.getTopType()\
-            and mouseY < self.chatBox.getBottomType():
-                self.typing = True
-            else:
-                self.typing = False
+            #if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            #and mouseY > self.chatBox.getTopType()\
+            #and mouseY < self.chatBox.getBottomType():
+            #    self.typing = True
+            #else:
+            #    self.typing = False
 
             #Scrolling in chatBox
-            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
-            and mouseY < self.chatBox.getTopType() and mouseY > self.chatBox.getTop():
-                if event.button == 4:
-                    self.chatBox.displayText(-1)
-                elif event.button == 5:
-                    self.chatBox.displayText(1)
+            #if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            #and mouseY < self.chatBox.getTopType() and mouseY > self.chatBox.getTop():
+            #    if event.button == 4:
+            #        self.chatBox.displayText(-1)
+            #    elif event.button == 5:
+            #        self.chatBox.displayText(1)
 
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
@@ -231,22 +237,28 @@ class GameArea(object):
                                  Turn.msgRect.y + self.turn.okRect.y,
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
-                    self.turn.okMsgDisplayed = False
                     self.refreshGameBoard()
                     self.click.play()
 
                     #If Game was won go back to start
                     if Turn.gameOver:
                         self.gameExit = True
+
+                    # If player just tried to upgrade and didn't have enough $...
+                    elif self.turn.failedToUpgrade:
+                        self.turn.failedToUpgrade = False
+                        self.resumeTurn()
                     
                     # If player just passed Accreditation Review...
-                    if (self.player.inAccreditationReview
+                    elif (self.player.inAccreditationReview
                     and self.turn.roll % 2 == 0
                     and not self.turn.landed):
                         self.player.inAccreditationReview = False
+                        self.turn.okMsgDisplayed = False
                         self.move()
                     elif self.player.passedCarrington:
                         self.player.passedCarrington = False
+                        self.turn.okMsgDisplayed = False
                         self.turn.handleLanding()
                     else:    
                         # If applicable, charge fees and update playersDisplay.
@@ -256,8 +268,10 @@ class GameArea(object):
                                 self.playersDisplay.updatePlayer(
                                     self.players.index(self.turn.owner))
                             self.turn.feeMsgDisplayed = False
+                            self.turn.okMsgDisplayed = False
                             self.checkBankruptcy()
                         else:
+                            self.turn.okMsgDisplayed = False
                             self.endTurn()
 
             # Yes/No Button in Message Box
@@ -285,18 +299,19 @@ class GameArea(object):
             # Upgrade Message Box (checkboxes and OK button)
             if self.turn.upgradeDisplayed:
                 # Make checkboxes look checked when clicked.
-                self.turn.checkUpgrades(mouseX, mouseY)
+                if event.button != 4 and event.button != 5:
+                    self.turn.checkUpgrades(mouseX, mouseY)
 
                 # Scrolling
                 if event.button == 4:
                     if self.turn.firstUpgradeLine > 0:
                         self.turn.firstUpgradeLine -= 1
-                    self.turn.showUpgradeOptions()
+                        self.turn.showUpgradeOptions()
                 elif event.button == 5:
                     if (self.turn.firstUpgradeLine + Turn.upgradeLinesToDisplay
                         < self.turn.upgradeLineCount):
                         self.turn.firstUpgradeLine += 1
-                    self.turn.showUpgradeOptions()
+                        self.turn.showUpgradeOptions()
                 
                 okUpgradeRect = pygame.Rect(Turn.upgradeRect.x + self.turn.okUpgradeRect.x,
                                  Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
@@ -304,11 +319,13 @@ class GameArea(object):
                 if okUpgradeRect.collidepoint(pygame.mouse.get_pos()):
                     self.click.play()
                     # Once the player clicks OK, complete desired upgrades and update display.
+                    self.refreshGameBoard()
                     self.turn.upgrade()
-                    self.playersDisplay.selectPlayer(Turn.count % len(self.players))
-                    self.refreshPlayersDisplay()
-                    self.gameBoard.addPlayerGradIcons(self.player)
-                    self.checkBankruptcy()
+                    if not self.turn.failedToUpgrade:
+                        self.playersDisplay.selectPlayer(Turn.count % len(self.players))
+                        self.refreshPlayersDisplay()
+                        self.gameBoard.addPlayerGradIcons(self.player)
+                        self.resumeTurn()
                     self.turn.upgradeDisplayed = False
                                         
 
@@ -459,6 +476,9 @@ class GameArea(object):
             self.turn.checkAccreditation()
         elif (self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed
         or self.turn.cardLandingMsgDisplayed):
+            self.turn.buyMsgDisplayed = False
+            self.turn.okMsgDisplayed = False
+            self.turn.cardLandingMsgDisplayed = False
             self.turn.handleLanding()
         elif self.cardDisplayed:    # card is face up
             self.cards.displayCard(self.currentCard, self.scale)
@@ -529,7 +549,8 @@ class GameArea(object):
         while count < self.roll[1] + self.roll[2]:
             self.clock.tick(30)
             self.player.increasePosition(1)
-            self.bubbleSound.play()
+            if count != 0: #Getting an extra sound without this
+                self.bubbleSound.play()
             count += 1
             if count == self.roll[1] + self.roll[2]:
                 self.midRoll = False
@@ -593,7 +614,7 @@ class GameArea(object):
         has gone bankrupt.  If so, a message is displayed and the player is
         eliminated from the game.
         """
-        if self.player.getDollars() <= 0:
+        if self.player.getDollars() < 0:
             
             self.player.isBankrupt = True
             Turn.extraAndLostTurns[self.playerIndex] = 0
@@ -679,36 +700,36 @@ class GameArea(object):
         self.area.blit(price, (xPosition, yPosition))
         
 
-    def chatting(self, event):
-        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
-        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
-        
-        if event.key == K_ESCAPE:
-            self.typing = False
-            self.gameExit = True
-        elif event.key == K_RETURN:
-            self.chatBox.submitText()
-        elif event.key == K_BACKSPACE:
-            self.chatBox.deleteText()
-        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
-            #self.chatBox.typeText(pygame.key.name(event.key))
-            #self.chatBox.typeText(chr(event.key))
-            self.typeSound.play()
-            checkCaps = pygame.key.get_pressed()
-            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
-                index = CHARS.index(chr(event.key))
-                if CHARSCAPS[index] not in ['{', '}']:
-                    self.chatBox.typeText(CHARSCAPS[index])
-                else:
-                    self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
-            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
-                index = CHARS.index(chr(event.key))
-                if index < 26: #Only caps lock regular alphabet
-                    self.chatBox.typeText(CHARSCAPS[index])
-                else:
-                    self.chatBox.typeText(chr(event.key))
-            else:
-                self.chatBox.typeText(chr(event.key))
+##    def chatting(self, event):
+##        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+##        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
+##        
+##        if event.key == K_ESCAPE:
+##            self.typing = False
+##            self.gameExit = True
+##        elif event.key == K_RETURN:
+##            self.chatBox.submitText()
+##        elif event.key == K_BACKSPACE:
+##            self.chatBox.deleteText()
+##        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
+##            #self.chatBox.typeText(pygame.key.name(event.key))
+##            #self.chatBox.typeText(chr(event.key))
+##            self.typeSound.play()
+##            checkCaps = pygame.key.get_pressed()
+##            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
+##                index = CHARS.index(chr(event.key))
+##                if CHARSCAPS[index] not in ['{', '}']:
+##                    self.chatBox.typeText(CHARSCAPS[index])
+##                else:
+##                    self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
+##            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
+##                index = CHARS.index(chr(event.key))
+##                if index < 26: #Only caps lock regular alphabet
+##                    self.chatBox.typeText(CHARSCAPS[index])
+##                else:
+##                    self.chatBox.typeText(chr(event.key))
+##            else:
+##                self.chatBox.typeText(chr(event.key))
 
 
     def play(self):
@@ -768,8 +789,8 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
-                if event.type == KEYDOWN and self.typing:
-                    self.chatting(event)
+                #if event.type == KEYDOWN and self.typing:
+                #    self.chatting(event)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
