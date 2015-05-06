@@ -215,7 +215,6 @@ to determine the inital screen'''
                     for i in range(self.boxNum):
                         GameInfo.PLAYERS.append(self.localAttributes.getBox(str(i+1)).getText())
                         GameInfo.PLAYERDEANS.append(self.deanBoxes.getBox(i).getCurrDean())
-                    self.setFlags()
                     return
                 else:
                     self.errorMessageDisplayed = True
@@ -342,10 +341,7 @@ to determine the inital screen'''
         self.okPos = [errorScreen.get_width()/2 - self.okButton.get_width()/2 + self.width/4,\
                       4*errorScreen.get_height()/5 + self.height/4, self.okButton.get_width(), self.okButton.get_height()]
 
-    def setFlags(self):
-        File = open('FlagFile.txt', 'w')
-        File.write("Players:"+self.localAttributes.getBox('0').getText())
-        File.close()
+
     
     def run(self):
         '''Draw lobby and handle lobby events'''
