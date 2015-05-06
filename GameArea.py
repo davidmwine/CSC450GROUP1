@@ -231,22 +231,28 @@ class GameArea(object):
                                  Turn.msgRect.y + self.turn.okRect.y,
                                  self.turn.okRect.width, self.turn.okRect.height)
                 if okRect.collidepoint(pygame.mouse.get_pos()):
-                    self.turn.okMsgDisplayed = False
                     self.refreshGameBoard()
                     self.click.play()
 
                     #If Game was won go back to start
                     if Turn.gameOver:
                         self.gameExit = True
+
+                    # If player just tried to upgrade and didn't have enough $...
+                    elif self.turn.failedToUpgrade:
+                        self.turn.failedToUpgrade = False
+                        self.resumeTurn()
                     
                     # If player just passed Accreditation Review...
-                    if (self.player.inAccreditationReview
+                    elif (self.player.inAccreditationReview
                     and self.turn.roll % 2 == 0
                     and not self.turn.landed):
                         self.player.inAccreditationReview = False
+                        self.turn.okMsgDisplayed = False
                         self.move()
                     elif self.player.passedCarrington:
                         self.player.passedCarrington = False
+                        self.turn.okMsgDisplayed = False
                         self.turn.handleLanding()
                     else:    
                         # If applicable, charge fees and update playersDisplay.
@@ -256,8 +262,10 @@ class GameArea(object):
                                 self.playersDisplay.updatePlayer(
                                     self.players.index(self.turn.owner))
                             self.turn.feeMsgDisplayed = False
+                            self.turn.okMsgDisplayed = False
                             self.checkBankruptcy()
                         else:
+                            self.turn.okMsgDisplayed = False
                             self.endTurn()
 
             # Yes/No Button in Message Box
@@ -292,12 +300,12 @@ class GameArea(object):
                 if event.button == 4:
                     if self.turn.firstUpgradeLine > 0:
                         self.turn.firstUpgradeLine -= 1
-                    self.turn.showUpgradeOptions()
+                        self.turn.showUpgradeOptions()
                 elif event.button == 5:
                     if (self.turn.firstUpgradeLine + Turn.upgradeLinesToDisplay
                         < self.turn.upgradeLineCount):
                         self.turn.firstUpgradeLine += 1
-                    self.turn.showUpgradeOptions()
+                        self.turn.showUpgradeOptions()
                 
                 okUpgradeRect = pygame.Rect(Turn.upgradeRect.x + self.turn.okUpgradeRect.x,
                                  Turn.upgradeRect.y + self.turn.okUpgradeRect.y,
@@ -305,11 +313,13 @@ class GameArea(object):
                 if okUpgradeRect.collidepoint(pygame.mouse.get_pos()):
                     self.click.play()
                     # Once the player clicks OK, complete desired upgrades and update display.
+                    self.refreshGameBoard()
                     self.turn.upgrade()
-                    self.playersDisplay.selectPlayer(Turn.count % len(self.players))
-                    self.refreshPlayersDisplay()
-                    self.gameBoard.addPlayerGradIcons(self.player)
-                    self.checkBankruptcy()
+                    if not self.turn.failedToUpgrade:
+                        self.playersDisplay.selectPlayer(Turn.count % len(self.players))
+                        self.refreshPlayersDisplay()
+                        self.gameBoard.addPlayerGradIcons(self.player)
+                        self.resumeTurn()
                     self.turn.upgradeDisplayed = False
                                         
 
@@ -460,6 +470,9 @@ class GameArea(object):
             self.turn.checkAccreditation()
         elif (self.turn.buyMsgDisplayed or self.turn.okMsgDisplayed
         or self.turn.cardLandingMsgDisplayed):
+            self.turn.buyMsgDisplayed = False
+            self.turn.okMsgDisplayed = False
+            self.turn.cardLandingMsgDisplayed = False
             self.turn.handleLanding()
         elif self.cardDisplayed:    # card is face up
             self.cards.displayCard(self.currentCard, self.scale)
@@ -595,7 +608,7 @@ class GameArea(object):
         has gone bankrupt.  If so, a message is displayed and the player is
         eliminated from the game.
         """
-        if self.player.getDollars() <= 0:
+        if self.player.getDollars() < 0:
             
             self.player.isBankrupt = True
             Turn.extraAndLostTurns[self.playerIndex] = 0
