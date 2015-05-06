@@ -502,11 +502,15 @@ class Turn(object):
                 # take buildings from "yourTradeBuildings" to other players building list
                 for building in yourTradeBuildings:
                     self.player.buildings.remove(building)
+                    if building.purpose == 'academic':
+                        building.degreeLvl = 'Associate'
                     self.otherPlayer.buildings.append(building)
 
                 # take buildings from "theirTradeBuildings" to initial players building list
                 for building in theirTradeBuildings:
                     self.otherPlayer.buildings.remove(building)
+                    if building.purpose == 'academic':
+                        building.degreeLvl = 'Associate'
                     self.player.buildings.append(building)
 
                 # set owners/colors of buildings to their new owners/colors

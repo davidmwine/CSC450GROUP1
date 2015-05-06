@@ -333,6 +333,8 @@ class GameArea(object):
                             self.gameBoard.colorBuilding(building)
                         for i, player in enumerate(self.players):
                             self.playersDisplay.updatePlayer(i)
+                        self.refreshGameBoard()
+                        self.refreshDisplay()
                         self.resumeTurn()
                         self.turn.tradeDisplayed = False
                 if self.turn.cancelTrade(mouseX, mouseY):
