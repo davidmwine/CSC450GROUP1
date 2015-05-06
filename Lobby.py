@@ -40,13 +40,13 @@ class Lobby():
         #return on exit
         self.nextScreen = ''
 
+        self.clock = pygame.time.Clock()
+
 
     def load(self, gameOpt):
         '''Loads the images and text needed for the base screen to draw on takes game option code
-to determine the inital screen'''
+        to determine the inital screen'''
         self.bg = pygame.image.load(os.path.join("img","menu_bg4.png"))
-
-  
 
 
         #Start Game button
@@ -177,10 +177,10 @@ to determine the inital screen'''
         self.gameNameText = self.font_op(20*self.scale, 'berlin').render("Name of Game",1,(0,0,0))
         self.hostNameText = self.font_op(20*self.scale, 'berlin').render("Name of Host",1,(0,0,0))
 
-        
-
-
-        
+        #Animation
+        self.imgLeft = pygame.image.load(os.path.join("img","bgLeft.png")).convert_alpha()
+        self.imgRight = pygame.image.load(os.path.join("img","bgRight.png")).convert_alpha()
+        self.bearSound = pygame.mixer.Sound(os.path.join('sound','growl.wav'))
 
 
     def buttonClick(self):
@@ -363,10 +363,9 @@ to determine the inital screen'''
         self.okButton.blit(okText, textRect)
         errorScreen.blit(self.okButton, (errorScreen.get_width()/2 - self.okButton.get_width()/2, 4*errorScreen.get_height()/5))
         self.okPos = [errorScreen.get_width()/2 - self.okButton.get_width()/2 + self.width/4,\
-                      4*errorScreen.get_height()/5 + self.height/4, self.okButton.get_width(), self.okButton.get_height()]
-        
-    
-    def run(self):
+                      4*errorScreen.get_height()/5 + self.height/4, self.okButton.get_width(), self.okButton.get_height()]      
+
+    def run(self): 
         '''Draw lobby and handle lobby events'''
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
         CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
@@ -375,6 +374,12 @@ to determine the inital screen'''
         #server = gameClient()
         #result = cmdList.get()
         pygame.key.set_repeat(75, 75)
+
+        soundTime = pygame.time.get_ticks()/1000.0
+        widthX = 0
+        stopAnimation = False
+        soundPlayed = False
+        
         while not self.gameExit:
             pygame.time.Clock().tick(30)
             for event in pygame.event.get():
@@ -394,6 +399,40 @@ to determine the inital screen'''
             if self.errorMessageDisplayed:
                 self.displayError()
             self.parent.blit(self.screen, (0,0))
+
+            #Start animation--------------------------------------------------------------------------------------------
+            if not stopAnimation:
+                self.clock.tick(60)
+                time = pygame.time.get_ticks()/1000. - soundTime
+            
+                if time < 1:
+                    self.parent.blit(pygame.transform.scale(self.imgLeft,(self.width//2, self.height)),(0,0))
+                    self.parent.blit(pygame.transform.scale(self.imgRight,(self.width//2, self.height)),(self.width//2,0))
+
+                if time >= 1 and widthX < self.width//2:
+                    self.screen.blit(self.bg, (0,0))
+                    self.startButton.redraw()
+                    self.backButton.redraw()
+                    self.optButton.redraw()             
+                    self.parent.blit(pygame.transform.scale(self.imgLeft,(self.width//2, self.height)),(0 - widthX,0))
+                    self.parent.blit(pygame.transform.scale(self.imgRight,(self.width//2, self.height)),(self.width//2 + widthX,0))
+                    if not soundPlayed:
+                        self.bearSound.play()
+                        soundPlayed = True
+
+                    if self.scale == .5:
+                        widthX += 25
+                    if self.scale > .5 and self.scale < .7:
+                        widthX += 34
+                    if self.scale > .7 and self.scale < .9:
+                        widthX += 42
+                    if self.scale == 1:
+                        widthX += 50
+
+                if widthX > self.width//2:
+                    stopAnimation = True
+            #-----------------------------------------------------------------------------------------------------------
+                    
             pygame.display.update()
         #remove these when integrating
         return self.nextScreen  
