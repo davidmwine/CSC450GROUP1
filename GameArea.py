@@ -90,7 +90,9 @@ class GameArea(object):
                            (480*self.scale, 270*self.scale))
         self.chatArea = self.area.subsurface(rect)
         self.chatArea.fill(Colors.MAROON)
-        self.chatArea.blit(self.imgLogo, (0,0))
+        self.imgLogo = pygame.transform.scale(pygame.image.load(os.path.join("img","MSUWordMark.png")).convert_alpha(),(int(466*self.scale), int(218*self.scale)))
+        #self.chatArea.blit(self.imgLogo, (int(self.chatArea.get_width()/2-233/self.scale) ,int(self.chatArea.get_height()/2-109*self.scale)))
+        self.chatArea.blit(self.imgLogo, (0 ,(self.chatArea.get_height()-218*self.scale)/2))
         #self.chatBox = ChatBox(self.scale,self.area, rect)
         
         
