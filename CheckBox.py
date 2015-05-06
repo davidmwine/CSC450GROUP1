@@ -39,3 +39,9 @@ class CheckBox(object):
 
     def undoChecked(self):
         self.checked = False
+
+    def changePosition(self, x, y, w):
+        self.x = x
+        self.y = y
+        self.w = w
+        
