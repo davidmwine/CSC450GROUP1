@@ -335,7 +335,7 @@ class Turn(object):
             self.playerRects.append(self.playerButtonRect)
             self.tradeBox.blit(playerButton, self.playerButtonRect)
             #rectTop += 30
-            rectLeft += 55
+            rectLeft += 110*self.scale
 
         #Display your items for trade
         font = pygame.font.Font(None, int(30*self.scale))
@@ -404,13 +404,13 @@ class Turn(object):
             if playerRect.collidepoint(x - Turn.tradeRect.x,
                                        y - Turn.tradeRect.y):
                 self.showTradeOptions()
-                player = self.otherPlayers[i]
+                self.otherPlayer = self.otherPlayers[i]
                 font = pygame.font.Font(None, int(40*self.scale))
                 lineHeight = font.get_linesize()
                 font = pygame.font.Font(None, int(30*self.scale))
                 lineYpos = 95*self.scale
                 padding = 285*self.scale
-                text = player.getName() + "'s items for trade: "
+                text = self.otherPlayer.getName() + "'s items for trade: "
                 text = font.render(text, True, Color("black"))
                 self.tradeBox.blit(text, (padding, lineYpos))
                 lineYpos += lineHeight
@@ -418,14 +418,14 @@ class Turn(object):
                 boxRect.left = padding
                 boxRect.top = lineYpos
                 self.theirMoneybox = MoneyBox (self.tradeBox, boxRect, self.fontOp,
-                                     self.scale, player)
+                                     self.scale, self.otherPlayer)
                 self.theirMoneybox.draw()
                 #moneyEntry = EntryBox(self.tradeBox, 10, boxRect,
                 #                      self.fontOp, self.scale, None, start_text="$$$")
                 #moneyEntry.draw()
                 lineYpos += 35*self.scale
                 font = pygame.font.Font(None, int(24*self.scale))
-                for building in player.buildings:
+                for building in self.otherPlayer.buildings:
                     lineYpos += lineHeight
                     checkbox = CheckBox(self.tradeBox, padding, lineYpos, 20*self.scale)
                     self.theirBuildingCheckBoxes.append(checkbox)
@@ -452,12 +452,51 @@ class Turn(object):
                 checkbox.draw()
                 Turn.tradeSurface.blit(self.tradeBox, (0, 0))
 
-    def setMoneybox(self, x, y):
+    def setTradeMoney(self, x, y):
         self.yourMoneybox.isClicked(x - Turn.tradeRect.x,
-                                    y - Turn.tradeRect.y)
+                                       y - Turn.tradeRect.y)
+        #self.theirMoneybox.isClicked(x - Turn.tradeRect.x, y - Turn.tradeRect.y)
 
     def finishTrade(self, x, y):
-        pass
+        if self.okTradeRect.collidepoint(x - Turn.tradeRect.x,
+                                         y - Turn.tradeRect.y):
+            yourTradeBuildings = []
+            yourTradeMoney = 0
+            theirTradeBuildings = []
+            theirTradeMoney = 0
+
+            # fill "yourTradeBuildings" with buildings checked in trade window
+            for i, checkbox in enumerate(self.yourBuildingCheckBoxes):
+                if checkbox.getChecked():
+                    yourTradeBuildings.append(self.player.buildings[i])
+
+            # fill "theirTradeBuildings" with buildings checked in trade window
+            for i, checkbox in enumerate(self.theirBuildingCheckBoxes):
+                if checkbox.getChecked():
+                    theirTradeBuildings.append(self.otherPlayer.buildings[i])
+
+            # take buildings from "yourTradeBuildings" to other players building list
+            for building in yourTradeBuildings:
+                self.player.buildings.remove(building)
+                self.otherPlayer.buildings.append(building)
+
+            # take buildings from "theirTradeBuildings" to initial players building list
+            for building in theirTradeBuildings:
+                self.otherPlayer.buildings.remove(building)
+                self.player.buildings.append(building)
+
+            # set owners/colors of buildings to their new owners/colors
+            for building in self.player.buildings:
+                building.setOwner(self.player)
+                building.setColor(self.player.getColor())
+
+            for building in self.otherPlayer.buildings:
+                building.setOwner(self.otherPlayer)
+                building.setColor(self.otherPlayer.getColor())
+                
+            return True
+        return False
+                
 
     def cancelTrade(self, x, y):
         if self.cancelTradeRect.collidepoint(x - Turn.tradeRect.x,

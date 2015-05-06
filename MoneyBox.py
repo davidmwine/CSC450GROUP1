@@ -57,16 +57,17 @@ class MoneyBox(object):
         left = self.rect.left
         bottom = self.rect.bottom
         right = self.rect.right
-        if left < mousex < left + (right - left)/2 and\
+        if left < mousex < left + (right - left)/2 and \
            top < mousey < bottom and self.currMoney > 0:
             self.currMoney -= 1000
             self.currText = self.font_op(20*self.scale, 'berlin').render("$"+str(self.currMoney),1,(0,0,0))
-            #self.draw()
+            self.draw()
             return True
-        elif left + (right - left)/2 < mousex < right and\
-             top < mousey < bottom and self.currMoney < self.player.dollars - 1000:
+        elif left + (right - left)/2 < mousex < right and \
+             top < mousey < bottom and \
+             self.currMoney < self.player.dollars - 1000:
             self.currMoney += 1000
             self.currText = self.font_op(20*self.scale, 'berlin').render("$"+str(self.currMoney),1,(0,0,0))
-            #self.draw()
+            self.draw()
             return True
         return False
