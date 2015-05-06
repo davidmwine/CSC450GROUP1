@@ -327,15 +327,15 @@ class GameArea(object):
                         self.timer = pygame.time.get_ticks()
                         self.tradingX = mouseX
                         self.tradingY = mouseY
+                    finished = self.turn.finishTrade(mouseX, mouseY)
+                    if finished != None:
+                        for building in finished:
+                            self.gameBoard.colorBuilding(building)
+                        for i, player in enumerate(self.players):
+                            self.playersDisplay.updatePlayer(i)
+                        self.resumeTurn()
+                        self.turn.tradeDisplayed = False
                 if self.turn.cancelTrade(mouseX, mouseY):
-                    self.resumeTurn()
-                    self.turn.tradeDisplayed = False
-                finished = self.turn.finishTrade(mouseX, mouseY)
-                if finished != None:
-                    for building in finished:
-                        self.gameBoard.colorBuilding(building)
-                    for i, player in enumerate(self.players):
-                        self.playersDisplay.updatePlayer(i)
                     self.resumeTurn()
                     self.turn.tradeDisplayed = False
                 
