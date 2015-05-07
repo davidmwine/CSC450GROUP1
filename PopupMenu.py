@@ -136,10 +136,10 @@ class PopupMenu(object):
 
         if pageNum == 1:
             self.rulesHeader = 'Introduction'
-            self.rulesWords = ['Mastering MSU is a turn-based game for online play.',
-                                'The game supports up to six players competing',
-                                'against each other to rule the campus. The game is',
-                                'free to download and free to play.']
+            self.rulesWords = ['Mastering MSU is a turn-based game which supports',
+                               'up to six players competing against each other to rule',
+                               'the campus. The game is free to download and free',
+                               'to play.']
             
         if pageNum == 2:
             self.rulesHeader = 'Objective'
@@ -171,16 +171,17 @@ class PopupMenu(object):
                                'for more details about the different types of buildings.',
                                '\u2022 Academic Buildings',
                                '\u2022 Sports Venues',
-                               '\u2022 Bear Chest Spaces',
+                               '\u2022 Stealable Buildings',
                                '\u2022 Utilities',
-                               '\u2022 Stealable Buildings']
+                               '\u2022 Bear Chest Spaces']
             
         if pageNum == 5:
             self.rulesHeader = 'Academic Buildings'
             self.rulesWords = ['Half of the buildings on the board are academic',
-                               'buildings.  Their spaces on the board have a trapezoid',
-                               'with no border.  If a player lands on an academic',
+                               'buildings.  Their spaces on the board initially have',
+                               'white trapezoids.  If a player lands on an academic',
                                'building that is currently unowned, he or she can buy it.',
+                               "The trapezoid will then be changed to the player's color.",
                                'If it is owned by another player, the player who landed',
                                'on it pays the owner fees (for the privilege of holding',
                                'classes in that building).  Academic buildings are the',
@@ -193,40 +194,43 @@ class PopupMenu(object):
                                '\u2022 JQH Arena',
                                '\u2022 Allison South Stadium',
                                '\u2022 Plaster Sports Complex',
-                               'Sports venue spaces on the board have a green',
-                               'border around their trapezoid. If a player lands on a',
-                               'sports venue that is currently unowned, he or she can',
-                               'buy it. If it is owned by another player, the player who',
-                               'lands on it pays the owner a fee of $50000 plus',
-                               '$10000 times the number of Graduate Points earned so',
-                               'far by player who landed on the sports venue.']
+                               'Sports venue spaces on the board initially have bright',
+                               'green trapezoids. If a player lands on a sports venue',
+                               'that is currently unowned, he or she can buy it. If it is',
+                               'owned by another player, the player who lands on it',
+                               'pays the owner a fee of $50,000 plus $10,000 times',
+                               'the number of Graduate Points earned so far by the',
+                               'player who landed on the sports venue.']
 
         if pageNum == 7:
             self.rulesHeader = 'Stealable Buildings'
-            self.rulesWords = ['\u2022 Plaster Student Union',
-                               '\u2022 University Bookstore',
-                               'Each of these buildings generates $50,000 for the',
-                               'owner on each turn that he/she owns it.  They can be',
-                               'bought (from the bank) when a player lands on them,',
-                               'regardless of whether they are already owned by',
-                               'another player.']
+            self.rulesWords = ['\u2022 University Bookstore',
+                               '\u2022 Plaster Student Union',
+                               'These spaces on the board initially have bright blue',
+                               'trapezoids. Each of these buildings generates $50,000',
+                               'for the owner on each turn that he/she owns it.  They',
+                               'can be bought (from the bank) when a player lands on',
+                               'them, regardless of whether they are already owned',
+                               'by another player.']
 
         if pageNum == 8:
             self.rulesHeader = 'Utilities'
-            self.rulesWords = ['These buildings cannot be owned.  When a player',
+            self.rulesWords = ['These spaces on the board have gray trapezoids.',
+                               'These buildings cannot be owned.  When a player',
                                'lands on one of them, he/she must pay a fee:',
                                '\u2022 Power House: $200,000 fee',
                                '\u2022 Central Maintenance: $50,000 per building owned']
             
         if pageNum == 9:
             self.rulesHeader = 'Bear Chest Spaces'
-            self.rulesWords = ['\u2022 Foster Recreation Center',
-                               '\u2022 Juanita K Hammons',
+            self.rulesWords = ['\u2022 Greenwood Lab School',
                                '\u2022 Hammons Student Center',
                                '\u2022 Meyer Library',
-                               'Bear chest spaces have no trapezoid.  When a player',
-                               'lands on one of them, a card from the center of the',
-                               'board is turned over and its instructions are followed.']
+                               '\u2022 Foster Recreation Center',
+                               'Bear chest spaces have black trapezoids with white',
+                               'question marks.  When a player lands on one of them,',
+                               'the player draws a card from the center of the board',
+                               'and its instructions are followed.']
 
         if pageNum == 10:
             self.rulesHeader = 'Bear Park North/South'
@@ -274,8 +278,8 @@ class PopupMenu(object):
                                'academic buildings (meaning that there are no other',
                                'academic buildings between them, though there could',
                                'be other buildings), he/she can choose to upgrade to',
-                               'the Master level by paying a $250,000 fee (or $150,000',
-                               "if they're already at the Bachelor level)."]
+                               'the Master level by paying a $250,000 fee per building',
+                               "(or $150,000 if they're already at the Bachelor level)."]
 
         if pageNum == 15:
             self.rulesHeader = 'Upgrades 2'
@@ -294,8 +298,8 @@ class PopupMenu(object):
         if pageNum == 16:
             self.rulesHeader = 'Graduate Points'
             self.rulesWords = ['When a player passes Carrington Hall, he/she',
-                               'receives Graduate Points based on the number',
-                               'of buildings owned and their degree levels.',
+                               'receives Graduate Points based on the number of',
+                               'academic buildings owned and their degree levels.',
                                '\u2022 Associate level: 1 Graduate Point per building',
                                '\u2022 Bachelor level: 2 Graduate Points per building',
                                '\u2022 Master level: 3 Graduate Points per building',
@@ -307,7 +311,8 @@ class PopupMenu(object):
         if pageNum == 17:
             self.rulesHeader = 'Trading'
             self.rulesWords = ['Players may choose to sell or trade any buildings',
-                               'with each other.']
+                               'with each other. Any upgrades made to the buildings',
+                               'will not be transferred.']
             
         textOut = self.fontOp(20,"helvetica").render(self.rulesHeader,True,(35,35,35))
         self.area.blit(textOut, (self.area.get_width() / 2 - textOut.get_width() / 2, self.area.get_height() / 2 - 100))
