@@ -223,7 +223,7 @@ class Player(object):
         numBuildings = self.allBldgs.getNumBuildings()
         if self.position >= numBuildings:    # if we've passed Carrington
             self.points += self.pointsPerRound
-            self.dollars += 200000
+            self.dollars += 300000
             self.passedCarrington = True
         self.position %= numBuildings
         self.playerToken.moveToken(spaces)

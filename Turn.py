@@ -171,7 +171,7 @@ class Turn(object):
         if self.player.passedCarrington:
             (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                 Turn.font, "You passed Carrington Hall and received "
-                + "$200,000 and {} graduate {}!".format(
+                + "$300,000 and {} graduate {}!".format(
                 self.player.getPointsPerRound(),
                 "point" if self.player.getPointsPerRound() == 1 else "points"))
             Turn.msgSurface.blit(msgBox, (0, 0))
@@ -268,7 +268,7 @@ class Turn(object):
                 if self.building.getPurpose() == "academic":
                     self.feeAmt = self.building.getFeeAmount(Turn.buildings.getCurrentPrice())
                 elif self.building.getPurpose() == "sports":
-                    self.feeAmt = 1000 * self.player.getPoints()
+                    self.feeAmt = 50000 + 10000 * self.player.getPoints()
                 (msgBox, self.okRect) = displayMsgOK(Turn.scale, Turn.msgRect,
                     Turn.font, "Welcome to {}! You pay ${:,.0f} to {}.".format(
                         self.building.getName(), self.feeAmt, self.owner.getName()))

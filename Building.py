@@ -106,10 +106,10 @@ class AcademicBuilding(OwnableBuilding):
         but are otherwise the same for all buildings.  This method sets those
         percentages.
         """
-        AcademicBuilding.associateFeePercent = 0.1
-        AcademicBuilding.bachelorFeePercent = 0.2
-        AcademicBuilding.masterFeePercent = 0.3
-        AcademicBuilding.doctorateFeePercent = 0.4
+        AcademicBuilding.associateFeePercent = 0.2
+        AcademicBuilding.bachelorFeePercent = 0.4
+        AcademicBuilding.masterFeePercent = 0.6
+        AcademicBuilding.doctorateFeePercent = 0.8
 
     def getDegreeLvl(self):
         return self.degreeLvl
