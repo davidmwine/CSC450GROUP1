@@ -506,7 +506,8 @@ class Turn(object):
                or theirTradeMoney != 0:
                 # take buildings from "yourTradeBuildings" to other players building list
                 for building in yourTradeBuildings:
-                    self.player.buildings.remove(building)
+                    self.player.removeBuilding(building)
+                    self.otherPlayer.addBuilding(building)
                     if building.purpose == 'academic':
                         if building.degreeLvl == 'Associate':
                             self.player.subtractPointsPerRound(1)
@@ -514,15 +515,18 @@ class Turn(object):
                             self.player.subtractPointsPerRound(2)
                         elif building.degreeLvl == 'Master':
                             self.player.subtractPointsPerRound(3)
-                        elif building.degreeLvl == 'Doctorate':
+                        elif building.degreeLvl == 'Doctoral':
                             self.player.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
-                        self.otherPlayer.addPointsPerRound(1)
-                    self.otherPlayer.buildings.append(building)
+                        self.otherPlayer.addPointsPerRound(1) #Only update graduate points if academic
+                    elif building.purpose == 'stealable':
+                        self.player.removeStealable(building.getName()) #Update the stealables players own
+                        self.otherPlayer.addStealable(building.getName())
 
                 # take buildings from "theirTradeBuildings" to initial players building list
                 for building in theirTradeBuildings:
-                    self.otherPlayer.buildings.remove(building)
+                    self.otherPlayer.removeBuilding(building)
+                    self.player.addBuilding(building)
                     if building.purpose == 'academic':
                         if building.degreeLvl == 'Associate':
                             self.otherPlayer.subtractPointsPerRound(1)
@@ -530,11 +534,13 @@ class Turn(object):
                             self.otherPlayer.subtractPointsPerRound(2)
                         elif building.degreeLvl == 'Master':
                             self.otherPlayer.subtractPointsPerRound(3)
-                        elif building.degreeLvl == 'Doctorate':
+                        elif building.degreeLvl == 'Doctoral':
                             self.otherPlayer.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
-                        self.player.addPointsPerRound(1)
-                    self.player.buildings.append(building)
+                        self.player.addPointsPerRound(1) #Only update graduate points if academic
+                    elif building.purpose == 'stealable':
+                        self.otherPlayer.removeStealable(building.getName()) #Update the stealables players own
+                        self.player.addStealable(building.getName())
 
                 # set owners/colors of buildings to their new owners/colors
                 for building in self.player.buildings:
