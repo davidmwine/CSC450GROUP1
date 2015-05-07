@@ -91,11 +91,13 @@ def gameServer():
                         
                     else:
                         ##detect if a user is still connected
+                        ##also need to check if in a game and remove
                         if sock in globalClients:
                             globalClients.remove(sock)
                             broadcast(server, "Client (%s, %s) is offline\n" % sock)
                 except:
                     ##detect if a user had chosen to leave
+                    ##detect if in game and remove
                     if sock in globalClients:
                         globalClients.remove(sock)
                     broadcast(server, "Client (%s, %s) went offline" % addr)
