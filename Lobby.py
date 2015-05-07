@@ -317,6 +317,8 @@ class Lobby():
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
         CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         focusedBox = self.localAttributes.getFocused()
+        if focusedBox.firstEntry():
+            focusedBox.setText("")
         if event.key == K_ESCAPE:
             self.enterForm = False
         elif event.key == K_BACKSPACE:
