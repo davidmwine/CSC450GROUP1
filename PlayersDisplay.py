@@ -86,16 +86,13 @@ class PlayersDisplay(object):
         # College name
         college = self.players[i].getCollege()
         
-        # For the colleges with light colors, create a black outline.
-        if college == 'Natural and Applied Sciences' \
-           or college == 'Health and Human Services' \
-           or college == 'Education' or college == 'Business':
-            textOutline = font.render(Colors.COLLEGEABBR[college],
-                           True, Color('black'))
-            self.pd[i].blit(textOutline, (220*c - 1, 5))
-            self.pd[i].blit(textOutline, (220*c - 1, 3))
-            self.pd[i].blit(textOutline, (220*c + 1, 5))
-            self.pd[i].blit(textOutline, (220*c + 1, 3))
+        # create a black outline.
+        textOutline = font.render(Colors.COLLEGEABBR[college],
+                       True, Color('black'))
+        self.pd[i].blit(textOutline, (220*c - 1, 5))
+        self.pd[i].blit(textOutline, (220*c - 1, 3))
+        self.pd[i].blit(textOutline, (220*c + 1, 5))
+        self.pd[i].blit(textOutline, (220*c + 1, 3))
         
         text = font.render(Colors.COLLEGEABBR[college],
                            True, Colors.COLLEGECOLORS[college])
