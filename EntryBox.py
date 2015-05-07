@@ -17,17 +17,24 @@ class EntryBox():
         self.y_start = position[1]
         self.area = parent.subsurface(position)
         self.focus = False
+        self.firstClick = True
         self.scale = scale
         self.offset = offset #For isClick to know proper location
         self.maxChar = maxChar
 
     def draw(self):
         self.area.fill((255,255,255))
-        boxText = self.font_op(20*self.scale, 'berlin').render(" " +self.text,1,(0,0,0))
+        boxText = self.font_op(30*self.scale, 'berlin').render(" " +self.text,1,(0,0,0))
    
         pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
                                               self.area.get_height()), 2)
         self.area.blit(boxText, (0,0))
+
+    def firstEntry(self):
+        result = self.firstClick
+        if self.firstClick:
+            self.firstClick = not self.firstClick
+        return result
 
     def setMaxChar(self, num):
         self.maxChar = num
@@ -126,7 +133,7 @@ class DropDown(object):
         self.area.fill((255, 255, 255))
         pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),\
                                              self.area.get_height()), 2)
-        text = self.font_op(20*self.scale, 'berlin').render(self.currVal,1,(0,0,0))
+        text = self.font_op(30*self.scale, 'berlin').render(self.currVal,1,(0,0,0))
         self.area.blit(text, (10*self.scale,0))
         pygame.draw.polygon(self.area,(0,0,0),((6*self.area.get_width()/10,\
                                             3*self.area.get_height()/8),\
@@ -143,7 +150,7 @@ class DropDown(object):
             for i in range(len(self.menu)):
                 pygame.draw.rect(self.parent, (0,0,0), (self.rect.left, self.rect.top+(i+1)*self.area.get_height(),\
                                                       self.area.get_width(), self.area.get_height()), 2)
-                text = self.font_op(20*self.scale, 'berlin').render(self.menu[i],1,(0,0,0))
+                text = self.font_op(30*self.scale, 'berlin').render(self.menu[i],1,(0,0,0))
                 self.parent.blit(text, (10*self.scale + self.rect.left, self.rect.top+(i+1)*self.area.get_height()))
 
     def getText(self):

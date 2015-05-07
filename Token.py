@@ -75,6 +75,10 @@ class Token(object):
                              (self.size, self.size))
         
         pygame.draw.arc(self.board, self.color, wheelRect, startAng*math.pi/180, stopAng*math.pi/180, self.size//2)
+        pygame.draw.arc(self.board, (0,0,0), wheelRect, startAng*math.pi/180, stopAng*math.pi/180, int(self.scale*4))
+        '''if self.color == Colors.LIGHTBLUE:
+            pygame.draw.ellipse(self.board, Colors.BLUE, wheelRect, 2)'''
+            
         '''for d in range(int(startAng), int(stopAng)):
             pygame.draw.line(self.board, self.color, (self.buildings[self.position].getRect().left + 30*self.scale, \
                                                       self.buildings[self.position].getRect().bottom - 30*self.scale),\

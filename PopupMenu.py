@@ -4,6 +4,7 @@ import os
 from Controls import Button
 from RadioButton import RadioGroup
 from Sound import Sound
+import GameInfo
 
 class PopupMenu(object):
     def __init__(self, parent):
@@ -12,6 +13,7 @@ class PopupMenu(object):
         self.parent = parent
         self.width = self.parent.get_width() / 2
         self.height = self.parent.get_height() / 2
+        self.areaBorder = parent.subsurface((self.parent.get_width() / 4)-3, (self.parent.get_height() / 4)-3, self.width+6, self.height+6)
         self.area = parent.subsurface((self.parent.get_width() / 4), (self.parent.get_height() / 4), self.width, self.height)
         self.screenModes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]## various screen sizes available
         self.resOpt = self.screenModes.index((self.displayInfo.current_w, self.displayInfo.current_h)) # current resolution option
@@ -48,6 +50,7 @@ class PopupMenu(object):
         self.optionActive = False
         self.rulesActive = False
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         self.textOptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Options", True, (94, 0, 9))
         self.area.blit(self.textOptions, (self.area.get_width()/2 - (0.5 * self.textOptions.get_width()), 5))
@@ -60,6 +63,7 @@ class PopupMenu(object):
         self.popupActive = True
         self.optionActive = True
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         # header
         self.textOptions = pygame.font.Font(os.path.join("font","berlin.ttf"), 30).render("Game Options", True, (94, 0, 9))
@@ -85,33 +89,36 @@ class PopupMenu(object):
         self.resolveButton.draw()
 
         #Sound heading
-        self.textSound = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Sound", True, (94, 0, 9))
+        self.textSound = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Music", True, (94, 0, 9))
         self.area.blit(self.textSound, (self.area.get_width() / 2 - (0.5 * self.textSound.get_width()), self.area.get_height() - 65))
 
         #Sound button - On initial popup
-        if pygame.mixer.get_busy():
+        if GameInfo.SOUNDON:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
    
     def soundChange(self):
         #Sound button
-        if not pygame.mixer.get_busy():
+        if not GameInfo.SOUNDON:
             self.area.blit(self.img_on,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
         else:
             self.area.blit(self.img_off,(self.area.get_width()/2 - 21,self.area.get_height() - 40))
 
         # Stop or start sound
-        if pygame.mixer.get_busy():
+        if GameInfo.SOUNDON:
             pygame.mixer.stop()
         else:
-            self.bgMusic.play()       
+            self.bgMusic.play()
+
+        GameInfo.SOUNDON = not GameInfo.SOUNDON
 
     def rules(self, pageNum=None):
         self.popupActive = True
         self.rulesActive = True
         self.optionActive = False
         self.exitCheckActive = False
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
 
         self.imgArrow = pygame.image.load(os.path.join("img","arrow.png")).convert_alpha()
@@ -129,10 +136,10 @@ class PopupMenu(object):
 
         if pageNum == 1:
             self.rulesHeader = 'Introduction'
-            self.rulesWords = ['Mastering MSU is a turn-based game for online play.',
-                                'The game supports up to six players competing',
-                                'against each other to rule the campus. The game is',
-                                'free to download and free to play.']
+            self.rulesWords = ['Mastering MSU is a turn-based game which supports',
+                               'up to six players competing against each other to rule',
+                               'the campus. The game is free to download and free',
+                               'to play.']
             
         if pageNum == 2:
             self.rulesHeader = 'Objective'
@@ -164,16 +171,17 @@ class PopupMenu(object):
                                'for more details about the different types of buildings.',
                                '\u2022 Academic Buildings',
                                '\u2022 Sports Venues',
-                               '\u2022 Bear Chest Spaces',
+                               '\u2022 Stealable Buildings',
                                '\u2022 Utilities',
-                               '\u2022 Stealable Buildings']
+                               '\u2022 Bear Chest Spaces']
             
         if pageNum == 5:
             self.rulesHeader = 'Academic Buildings'
             self.rulesWords = ['Half of the buildings on the board are academic',
-                               'buildings.  Their spaces on the board have a trapezoid',
-                               'with no border.  If a player lands on an academic',
+                               'buildings.  Their spaces on the board initially have',
+                               'white trapezoids.  If a player lands on an academic',
                                'building that is currently unowned, he or she can buy it.',
+                               "The trapezoid will then be changed to the player's color.",
                                'If it is owned by another player, the player who landed',
                                'on it pays the owner fees (for the privilege of holding',
                                'classes in that building).  Academic buildings are the',
@@ -186,40 +194,43 @@ class PopupMenu(object):
                                '\u2022 JQH Arena',
                                '\u2022 Allison South Stadium',
                                '\u2022 Plaster Sports Complex',
-                               'Sports venue spaces on the board have a green',
-                               'border around their trapezoid. If a player lands on a',
-                               'sports venue that is currently unowned, he or she can',
-                               'buy it. If it is owned by another player, the player who',
-                               'lands on it pays the owner a fee of $1000 times the',
-                               'number of Graduate Points earned so far by player',
-                               'who landed on the sports venue.']
+                               'Sports venue spaces on the board initially have bright',
+                               'green trapezoids. If a player lands on a sports venue',
+                               'that is currently unowned, he or she can buy it. If it is',
+                               'owned by another player, the player who lands on it',
+                               'pays the owner a fee of $50,000 plus $10,000 times',
+                               'the number of Graduate Points earned so far by the',
+                               'player who landed on the sports venue.']
 
         if pageNum == 7:
             self.rulesHeader = 'Stealable Buildings'
-            self.rulesWords = ['\u2022 Plaster Student Union',
-                               '\u2022 University Bookstore',
-                               'Each of these buildings generates $50,000 for the',
-                               'owner on each turn that he/she owns it.  They can be',
-                               'bought (from the bank) when a player lands on them,',
-                               'regardless of whether they are already owned by',
-                               'another player.']
+            self.rulesWords = ['\u2022 University Bookstore',
+                               '\u2022 Plaster Student Union',
+                               'These spaces on the board initially have bright blue',
+                               'trapezoids. Each of these buildings generates $50,000',
+                               'for the owner on each turn that he/she owns it.  They',
+                               'can be bought (from the bank) when a player lands on',
+                               'them, regardless of whether they are already owned',
+                               'by another player.']
 
         if pageNum == 8:
             self.rulesHeader = 'Utilities'
-            self.rulesWords = ['These buildings cannot be owned.  When a player',
+            self.rulesWords = ['These spaces on the board have gray trapezoids.',
+                               'These buildings cannot be owned.  When a player',
                                'lands on one of them, he/she must pay a fee:',
                                '\u2022 Power House: $200,000 fee',
                                '\u2022 Central Maintenance: $50,000 per building owned']
             
         if pageNum == 9:
             self.rulesHeader = 'Bear Chest Spaces'
-            self.rulesWords = ['\u2022 Foster Recreation Center',
-                               '\u2022 Juanita K Hammons',
+            self.rulesWords = ['\u2022 Greenwood Lab School',
                                '\u2022 Hammons Student Center',
                                '\u2022 Meyer Library',
-                               'Bear chest spaces have no trapezoid.  When a player',
-                               'lands on one of them, a card from the center of the',
-                               'board is turned over and its instructions are followed.']
+                               '\u2022 Foster Recreation Center',
+                               'Bear chest spaces have black trapezoids with white',
+                               'question marks.  When a player lands on one of them,',
+                               'the player draws a card from the center of the board',
+                               'and its instructions are followed.']
 
         if pageNum == 10:
             self.rulesHeader = 'Bear Park North/South'
@@ -231,8 +242,10 @@ class PopupMenu(object):
 
         if pageNum == 11:
             self.rulesHeader = 'Carrington Hall'
-            self.rulesWords = ['Each player receives $200,000 and the appropriate',
-                               'number of Graduate Points when passing',
+            self.rulesWords = ['Each time around the board represents a semester,',
+                               'and passing Carrington Hall represents graduation.',
+                               'So each player receives the appropriate number of',
+                               'Graduate Points, as well as $300,000, when passing',
                                'Carrington Hall.']
 
         if pageNum == 12:
@@ -267,8 +280,8 @@ class PopupMenu(object):
                                'academic buildings (meaning that there are no other',
                                'academic buildings between them, though there could',
                                'be other buildings), he/she can choose to upgrade to',
-                               'the Master level by paying a $250,000 fee (or $150,000',
-                               "if they're already at the Bachelor level)."]
+                               'the Master level by paying a $250,000 fee per building',
+                               "(or $150,000 if they're already at the Bachelor level)."]
 
         if pageNum == 15:
             self.rulesHeader = 'Upgrades 2'
@@ -279,16 +292,16 @@ class PopupMenu(object):
                                'are an increased number of Graduate Points and',
                                'receiving increased fees when other players land on',
                                'the building:',
-                               '\u2022 Associate level: 10% of current building cost',
-                               '\u2022 Bachelor level: 20% of current building cost',
-                               '\u2022 Master level: 30% of current building cost',
-                               '\u2022 Doctoral level: 40% of current building cost']
+                               '\u2022 Associate level: 20% of current building cost',
+                               '\u2022 Bachelor level: 40% of current building cost',
+                               '\u2022 Master level: 60% of current building cost',
+                               '\u2022 Doctoral level: 80% of current building cost']
 
         if pageNum == 16:
             self.rulesHeader = 'Graduate Points'
             self.rulesWords = ['When a player passes Carrington Hall, he/she',
-                               'receives Graduate Points based on the number',
-                               'of buildings owned and their degree levels.',
+                               'receives Graduate Points based on the number of',
+                               'academic buildings owned and their degree levels.',
                                '\u2022 Associate level: 1 Graduate Point per building',
                                '\u2022 Bachelor level: 2 Graduate Points per building',
                                '\u2022 Master level: 3 Graduate Points per building',
@@ -300,7 +313,8 @@ class PopupMenu(object):
         if pageNum == 17:
             self.rulesHeader = 'Trading'
             self.rulesWords = ['Players may choose to sell or trade any buildings',
-                               'with each other.']
+                               'with each other. Any upgrades made to the buildings',
+                               'will not be transferred.']
             
         textOut = self.fontOp(20,"helvetica").render(self.rulesHeader,True,(35,35,35))
         self.area.blit(textOut, (self.area.get_width() / 2 - textOut.get_width() / 2, self.area.get_height() / 2 - 100))
@@ -322,6 +336,7 @@ class PopupMenu(object):
         self.rulesActive = False
         self.optionActive = False
         self.exitCheckActive = True
+        self.areaBorder.fill((0, 0, 0))
         self.area.fill((190, 192, 194))
         self.text = pygame.font.Font(os.path.join("font","berlin.ttf"), 20).render("Are you sure you want to exit?", True, (94, 0, 9))
         self.area.blit(self.text, (self.area.get_width()/2 - (0.5 * self.text.get_width()), 5))

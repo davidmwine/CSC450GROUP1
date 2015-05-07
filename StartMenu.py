@@ -7,7 +7,7 @@ import random
 from SignIn import SignIn
 
 class Start(object):
-    def __init__(self, screen, fontOp, yOffset, intro, bgMusic):
+    def __init__(self, screen, fontOp, yOffset, intro, bgMusic, click):
         self.screen = screen
         self.fontOp = fontOp
         self.yOffset = yOffset
@@ -22,7 +22,7 @@ class Start(object):
         self.clock = pygame.time.Clock()
         self.extraPad = self.screen.get_height()/16
         self.intro = intro
-        #self.click = click
+        self.click = click
         self.bgMusic = bgMusic
 
     def backToStart(self):
@@ -149,7 +149,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textRules.get_width()\
            and mouseY > (70+self.screen.get_height()/4+self.yOffset+75*self.gameActive)+self.extraPad\
            and mouseY < (80+self.screen.get_height()/4+self.yOffset+self.textRules.get_height()+75*self.gameActive)+self.extraPad:
-            #self.click.play()
+            self.click.play()
             self.menuOn = False
             self.gameOn = False
             self.optionsOn = False
@@ -159,7 +159,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textOptions.get_width()\
            and mouseY > (145+self.screen.get_height()/4+self.yOffset+75*self.gameActive)+self.extraPad\
            and mouseY < (155+self.screen.get_height()/4+self.yOffset+self.textOptions.get_height()+75*self.gameActive)+self.extraPad:
-            #self.click.play()
+            self.click.play()
             self.menuOn = False
             self.rulesOn = False
             self.gameOn = False
@@ -169,7 +169,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textStart.get_width()\
            and mouseY > (self.screen.get_height()/4+self.yOffset-5)+self.extraPad \
            and mouseY < (self.screen.get_height()/4+self.yOffset+self.textStart.get_height()+5)+self.extraPad:
-            #self.click.play() 
+            self.click.play() 
             self.menuOn = False
             self.rulesOn = False
             self.optionsOn = False
@@ -179,7 +179,7 @@ class Start(object):
            and mouseX < self.screen.get_width()/2-52+self.textExit.get_width()\
            and mouseY > (220+self.screen.get_height()/4+self.yOffset+75*self.gameActive)+self.extraPad\
            and mouseY < (230+self.screen.get_height()/4+self.yOffset+self.textExit.get_height()+75*self.gameActive)+self.extraPad:
-            #self.click.play()  
+            self.click.play()  
             self.leaveGame()
         
 
@@ -233,7 +233,7 @@ class Start(object):
 
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    #self.click.play()
+                    self.click.play()
                     self.leaveGame()
                 #if event.type == KEYDOWN:
                     #if event.key == K_ESCAPE:
@@ -260,6 +260,9 @@ class Start(object):
         if self.optionsOn:
             return "options"
         if self.gameOn:
-            self.screen.fill((0,0,0))
-            signIn = SignIn(self.screen, self.fontOp)
-            return signIn.run()
+            return "lobby"
+            #self.screen.fill((0,0,0))
+            #self.screen.blit(pygame.transform.scale(self.imgMenuBG,(self.screen.get_width(),\
+            #            int(self.screen.get_height()-(2*self.yOffset)))),(0,self.yOffset))
+            #signIn = SignIn(self.screen, self.fontOp)
+            #return signIn.run()

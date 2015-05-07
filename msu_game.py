@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+#import pygame._view
 import os
 import sys
 from RulesMenu import Rules
@@ -23,7 +24,7 @@ class Game(object):
 
         #self.screen = pygame.display.set_mode((self.infoScreen.current_w, self.infoScreen.current_h),pygame.FULLSCREEN)
         self.heightRatio16x9 = .5625 #Number to multiply width by to get 16x9 ratio for height
-        self.yOffset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.heightRatio16x9))/2)
+        self.yOffset = int((self.infoScreen.current_h-int(self.infoScreen.current_w*self.heightRatio16x9))/2) #For fullscreen mode; fullscreen was not implemented.
 
         #Temporary code to test multiple screen sizes 
         #Comment self.screen above
@@ -46,13 +47,11 @@ class Game(object):
         self.imgIconSmall = pygame.image.load(os.path.join("img","icon_small.png")).convert_alpha()
         pygame.display.set_icon(self.imgIconSmall)
         self.nextScreen = "start"
-        self.splashShow = False
+        self.splashShow = True
 
         self.intro = Sound('intro')
-        #self.click = Sound('click')
+        self.click = Sound('click')
         self.bgMusic = Sound('start_menu')
-
-        #self.round_number = 1
 
     def fontOp(self, size, fontName):  #Pick font size and type
         if fontName == "helvetica":
@@ -62,9 +61,9 @@ class Game(object):
         return fontAndSize
         
     def start(self):
-        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic)
-        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset)
-        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic)
+        startMenu = Start(self.screen, self.fontOp, self.yOffset,  self.intro, self.bgMusic, self.click)
+        rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+        optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
         playGame = GameArea(self.infoScreen, self.screen, self.ratio)
         lobby = Lobby(self.fontOp, self.screen, self.ratio)
         Olobby = OnlineLobby(self.fontOp, self.screen, self.ratio)
@@ -75,10 +74,15 @@ class Game(object):
                 self.ratio = self.screen.get_height()/1080
                 playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 lobby = Lobby(self.fontOp, self.screen, self.ratio)
+                rulesMenu = Rules(self.screen, self.fontOp, self.yOffset, self.click)
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
                 Olobby = Lobby(self.fontOp, self.screen, self.ratio)
             elif self.nextScreen == "game":
+                playGame = GameArea(self.infoScreen, self.screen, self.ratio)
                 self.nextScreen = playGame.play()
             elif self.nextScreen == "lobby":
+                #Lobby was getting errors with variables not being reset
+                lobby = Lobby(self.fontOp, self.screen, self.ratio)
                 self.nextScreen = lobby.run()
             elif self.nextScreen == "Olobby":
                 self.nextScreen = Olobby.run()
@@ -92,6 +96,7 @@ class Game(object):
                 if self.nextScreen == "start":
                     startMenu.backToStart()
             elif self.nextScreen == "options":
+                optionsMenu = Options(self.screen, self.infoScreen, self.fontOp, self.yOffset, self.bgMusic, self.click)
                 self.nextScreen = optionsMenu.run()
                 if self.nextScreen == "start":
                     startMenu.backToStart()

@@ -33,9 +33,28 @@ class CheckBox(object):
             return True
         return False
 
+    def getX(self):
+        return self.x
+
+    def getY(self):
+        return self.y
+
+    def setX(self, val):
+        self.x = val
+
+    def setY(self, val):
+        self.y = val
+
     def getChecked(self):
         '''getChecked() returns the value of self.checked'''
         return self.checked
 
     def undoChecked(self):
         self.checked = False
+
+    def changePosition(self, x, y, w, screen):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.w = w
+        

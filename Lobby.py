@@ -27,7 +27,8 @@ class Lobby():
         self.parent = parent
         self.screen = pygame.Surface((self.width, self.height))
 
-
+        #sound
+        self.click = pygame.mixer.Sound(os.path.join('sound','click.wav')) 
 
         #booleans
         self.enterForm = False
@@ -39,13 +40,13 @@ class Lobby():
         #return on exit
         self.nextScreen = ''
 
+        self.clock = pygame.time.Clock()
+
 
     def load(self, gameOpt):
         '''Loads the images and text needed for the base screen to draw on takes game option code
-to determine the inital screen'''
+        to determine the inital screen'''
         self.bg = pygame.image.load(os.path.join("img","menu_bg4.png"))
-
-  
 
 
         #Start Game button
@@ -53,15 +54,13 @@ to determine the inital screen'''
         self.startButton = Button(self.screen, buttonRect, "Start Game")
         buttonRect= Rect(300*self.scale , self.height -80*self.scale, 300*self.scale, 80*self.scale)
         self.backButton = Button(self.screen, buttonRect, "Back")
-        buttonRect= Rect(600*self.scale , self.height -80*self.scale, 300*self.scale, 80*self.scale)
-        self.optButton = Button(self.screen, buttonRect, "Options")
         
         #init screens
         self.hostScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
         self.offset1 = [self.width/10, self.height/3]
         self.lfgScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*5/8, self.height*2/3-self.height/10)
-        self.localScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
-        self.offset3 = [self.width/10, self.height/3]
+        self.localScreen = self.screen.subsurface(self.width/10, self.height/4, self.width*8/10, self.height/2)
+        self.offset3 = [self.width/10, self.height/4]
         
         #chat Box
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
@@ -83,40 +82,64 @@ to determine the inital screen'''
         #Local Form Fields
         self.localAttributes = EntryBoxSet(self.scale)
         currHeight = self.localScreen.get_height()/24
-        boxRect = Rect(self.localScreen.get_width()/7, currHeight,50*self.scale,30*self.scale)
+        boxRect = Rect(self.localScreen.get_width()/5, currHeight,50*self.scale,40*self.scale)
         self.localAttributes.newDropDown(self.localScreen, boxRect, self.font_op, self.scale, self.offset3, ['2', '3', '4', '5', '6'])
         #self.localAttributes.getBox('0').setMaxChar(1)
         for i in range(6):
             currHeight += self.localScreen.get_height()/7
-            boxRect = Rect(self.localScreen.get_width()/7, currHeight,160*self.scale,30*self.scale)
+            boxRect = Rect(self.localScreen.get_width()/6, currHeight,200*self.scale,40*self.scale)
             self.localAttributes.createNew(self.localScreen, 8,boxRect, self.font_op, self.offset3, 'Player ' + str(i+1))
             self.localAttributes.getBox(str(i+1)).setMaxChar(8)
 
         #Boxes for Dean Selection
         self.boxNum = 6
-        currPos = [self.localScreen.get_width()/4 + self.localScreen.get_width()/20,\
+        width = self.localScreen.get_width()/3 - self.localScreen.get_width()/16
+        height = self.localScreen.get_height()/5
+        
+        currPos = [self.localScreen.get_width()/3 + self.localScreen.get_width()/20,\
                              self.localScreen.get_height()/4]
-        width = self.localScreen.get_width()/4 - self.localScreen.get_width()/16
-        height = self.localScreen.get_height()/4
         rect1 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] += self.localScreen.get_width()/4
+
+        currPos[1] = self.localScreen.get_height()/2
         rect2 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] += self.localScreen.get_width()/4
+        
+        currPos[1] = self.localScreen.get_height()*3/4
         rect3 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] = self.localScreen.get_width()/4 + self.localScreen.get_width()/20
-        currPos[1] += self.localScreen.get_height()/2 - self.localScreen.get_height()/6
+        
+        currPos[0] += self.localScreen.get_width()/3
+        currPos[1] = self.localScreen.get_height()/4
         rect4 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] += self.localScreen.get_width()/4
+        
+        currPos[1] = self.localScreen.get_height()/2
         rect5 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] += self.localScreen.get_width()/4
+        
+        currPos[1] = self.localScreen.get_height()*3/4
         rect6 = Rect(currPos[0], currPos[1], width, height)
-        currPos[0] += self.localScreen.get_width()/4
+        '''
+        currPos[0] += self.localScreen.get_width()/3
+        rect2 = Rect(currPos[0], currPos[1], width, height)
+        
+        currPos[0] = self.localScreen.get_width()/3 + self.localScreen.get_width()/20
+        currPos[1] = self.localScreen.get_height()/2
+        rect3 = Rect(currPos[0], currPos[1], width, height)
+        
+        currPos[0] += self.localScreen.get_width()/3
+        rect4 = Rect(currPos[0], currPos[1], width, height)
+        
+        currPos[0] = self.localScreen.get_width()/3 + self.localScreen.get_width()/20
+        currPos[1] = self.localScreen.get_height()*3/4
+        rect5 = Rect(currPos[0], currPos[1], width, height)
+        
+        currPos[0] += self.localScreen.get_width()/3
+        rect6 = Rect(currPos[0], currPos[1], width, height)
+        '''
+        
         self.deanBoxes = DeanBoxes(self.localScreen, self.font_op, self.scale, self.offset3, width, height)
-        default1 = 'Arts and Letters'
-        default2 = 'Business'
+        default1 = 'Natural and Applied Sciences'
+        default2 = 'Arts and Letters'
         default3 = 'Education'
-        default4 = 'Health and Human Services'
-        default5 = 'Humanities and Public Affairs'
+        default4 = 'Humanities and Public Affairs'
+        default5 = 'Health and Human Services'
         default6 = 'Agriculture'
         self.deanBoxes.newBox(rect1, default1)
         self.deanBoxes.newBox(rect2, default2)
@@ -141,21 +164,21 @@ to determine the inital screen'''
         self.hostText = self.font_op(40*self.scale, 'berlin').render("Please select game attributes.",1,(0,0,0))
         self.lfgText = self.font_op(40*self.scale, 'berlin').render("Please select a game to join.",1,(0,0,0))
         self.CheckBoxText = self.font_op(40*self.scale, 'berlin').render("Click on Checkboxes to Select or Deselect Dean",1,(0,0,0))
-        self.playersNumText = self.font_op(20*self.scale, 'berlin').render("Number of Players",1,(0,0,0))
-        self.player1Text = self.font_op(20*self.scale, 'berlin').render("Player 1 Name",1,(0,0,0))
-        self.player2Text = self.font_op(20*self.scale, 'berlin').render("Player 2 Name",1,(0,0,0))
-        self.player3Text = self.font_op(20*self.scale, 'berlin').render("Player 3 Name",1,(0,0,0))
-        self.player4Text = self.font_op(20*self.scale, 'berlin').render("Player 4 Name",1,(0,0,0))
-        self.player5Text = self.font_op(20*self.scale, 'berlin').render("Player 5 Name",1,(0,0,0))
-        self.player6Text = self.font_op(20*self.scale, 'berlin').render("Player 6 Name",1,(0,0,0))
+        self.playersNumText = self.font_op(30*self.scale, 'berlin').render("Number of Players",1,(0,0,0))
+        self.player1Text = self.font_op(30*self.scale, 'berlin').render("Player 1 Name",1,(0,0,0))
+        self.player2Text = self.font_op(30*self.scale, 'berlin').render("Player 2 Name",1,(0,0,0))
+        self.player3Text = self.font_op(30*self.scale, 'berlin').render("Player 3 Name",1,(0,0,0))
+        self.player4Text = self.font_op(30*self.scale, 'berlin').render("Player 4 Name",1,(0,0,0))
+        self.player5Text = self.font_op(30*self.scale, 'berlin').render("Player 5 Name",1,(0,0,0))
+        self.player6Text = self.font_op(30*self.scale, 'berlin').render("Player 6 Name",1,(0,0,0))
         self.playerTextList = [self.player1Text, self.player2Text, self.player3Text, self.player4Text, self.player5Text, self.player6Text]
         self.gameNameText = self.font_op(20*self.scale, 'berlin').render("Name of Game",1,(0,0,0))
         self.hostNameText = self.font_op(20*self.scale, 'berlin').render("Name of Host",1,(0,0,0))
 
-        
-
-
-        
+        #Animation
+        self.imgLeft = pygame.image.load(os.path.join("img","bgLeft.png")).convert_alpha()
+        self.imgRight = pygame.image.load(os.path.join("img","bgRight.png")).convert_alpha()
+        self.bearSound = pygame.mixer.Sound(os.path.join('sound','growl.wav'))
 
 
     def buttonClick(self):
@@ -167,6 +190,7 @@ to determine the inital screen'''
             for i in range(len(self.checkBoxes)):
                 if i <= self.boxNum: #If box is displayed check it
                     if self.checkBoxes[i].setChecked(mouseX - self.offset3[0], mouseY - self.offset3[1]):
+                        self.click.play()
                         self.deanBoxes.lock(i)
                         currInd = self.deanBoxes.getBox(i).getCurrIndex()
                         currLock = self.deanBoxes.getBox(i).getIsLocked()
@@ -203,18 +227,21 @@ to determine the inital screen'''
                 else:
                     self.canStart = True
                 if self.canStart:
+                    self.click.play()
                     self.gameExit = True
                     self.nextScreen = 'game'
                     GameInfo.ONLINEGAME = False
                     GameInfo.PLAYERNUM = self.boxNum
+                    GameInfo.PLAYERS = [] #Reset player information if starting a new game after one already done
+                    GameInfo.PLAYERDEANS = []
                     for i in range(self.boxNum):
                         GameInfo.PLAYERS.append(self.localAttributes.getBox(str(i+1)).getText())
                         GameInfo.PLAYERDEANS.append(self.deanBoxes.getBox(i).getCurrDean())
-                    self.setFlags()
                     return
                 else:
                     self.errorMessageDisplayed = True
             if self.backButton.wasClicked(mouseX, mouseY):
+                self.click.play()
                 self.gameExit = True
                 self.nextScreen = 'start'
                 return
@@ -246,7 +273,6 @@ to determine the inital screen'''
         self.screen.blit(self.bg, (0,0))
         self.startButton.redraw()
         self.backButton.redraw()
-        self.optButton.redraw()
         #self.chatBox.redraw()
         
         
@@ -288,6 +314,8 @@ to determine the inital screen'''
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
         CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
         focusedBox = self.localAttributes.getFocused()
+        if focusedBox.firstEntry():
+            focusedBox.setText("")
         if event.key == K_ESCAPE:
             self.enterForm = False
         elif event.key == K_BACKSPACE:
@@ -334,14 +362,9 @@ to determine the inital screen'''
         self.okButton.blit(okText, textRect)
         errorScreen.blit(self.okButton, (errorScreen.get_width()/2 - self.okButton.get_width()/2, 4*errorScreen.get_height()/5))
         self.okPos = [errorScreen.get_width()/2 - self.okButton.get_width()/2 + self.width/4,\
-                      4*errorScreen.get_height()/5 + self.height/4, self.okButton.get_width(), self.okButton.get_height()]
+                      4*errorScreen.get_height()/5 + self.height/4, self.okButton.get_width(), self.okButton.get_height()]      
 
-    def setFlags(self):
-        File = open('FlagFile.txt', 'w')
-        File.write("Players:"+self.localAttributes.getBox('0').getText())
-        File.close()
-    
-    def run(self):
+    def run(self): 
         '''Draw lobby and handle lobby events'''
         CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
         CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
@@ -350,6 +373,12 @@ to determine the inital screen'''
         #server = gameClient()
         #result = cmdList.get()
         pygame.key.set_repeat(75, 75)
+
+        soundTime = pygame.time.get_ticks()/1000.0
+        widthX = 0
+        stopAnimation = False
+        soundPlayed = False
+        
         while not self.gameExit:
             pygame.time.Clock().tick(30)
             for event in pygame.event.get():
@@ -369,6 +398,39 @@ to determine the inital screen'''
             if self.errorMessageDisplayed:
                 self.displayError()
             self.parent.blit(self.screen, (0,0))
+
+            #Start animation--------------------------------------------------------------------------------------------
+            if not stopAnimation:
+                self.clock.tick(60)
+                time = pygame.time.get_ticks()/1000. - soundTime
+            
+                if time < 1:
+                    self.parent.blit(pygame.transform.scale(self.imgLeft,(self.width//2, self.height)),(0,0))
+                    self.parent.blit(pygame.transform.scale(self.imgRight,(self.width//2, self.height)),(self.width//2,0))
+
+                if time >= 1 and widthX < self.width//2:
+                    self.screen.blit(self.bg, (0,0))
+                    self.startButton.redraw()
+                    self.backButton.redraw()           
+                    self.parent.blit(pygame.transform.scale(self.imgLeft,(self.width//2, self.height)),(0 - widthX,0))
+                    self.parent.blit(pygame.transform.scale(self.imgRight,(self.width//2, self.height)),(self.width//2 + widthX,0))
+                    if not soundPlayed:
+                        self.bearSound.play()
+                        soundPlayed = True
+
+                    if self.scale == .5:
+                        widthX += 25
+                    if self.scale > .5 and self.scale < .7:
+                        widthX += 34
+                    if self.scale > .7 and self.scale < .9:
+                        widthX += 42
+                    if self.scale == 1:
+                        widthX += 50
+
+                if widthX > self.width//2:
+                    stopAnimation = True
+            #-----------------------------------------------------------------------------------------------------------
+                    
             pygame.display.update()
         #remove these when integrating
         return self.nextScreen  

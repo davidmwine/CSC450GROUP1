@@ -9,12 +9,22 @@ class Cards():
         self.area = parent.subsurface((self.parent.get_width()//2 - self.width//2), 
                 (self.parent.get_height()//2 - self.height//2), self.width, self.height)
         self.cardDeck = []
-        self.cardsInDeck = 2  #Number of cards in the deck
+        self.cardsInDeck = 8  #Number of cards in the deck
         self.cardPos = 0  #Card position(index) in the deck
         self.initDeck()
         self.loadImages()
 
         self.movementCard = False
+        self.feeCard = False
+
+        self.batSound = pygame.mixer.Sound(os.path.join('sound','baseball.wav'))
+        self.awwSound = pygame.mixer.Sound(os.path.join('sound','aww.wav'))
+        self.screamSound = pygame.mixer.Sound(os.path.join('sound','scream.wav'))
+        self.cashSound = pygame.mixer.Sound(os.path.join('sound','cash.wav'))
+        self.buildingSound = pygame.mixer.Sound(os.path.join('sound','building.wav'))
+        self.carSound = pygame.mixer.Sound(os.path.join('sound','car.wav'))
+        self.computerSound = pygame.mixer.Sound(os.path.join('sound','computer.wav'))
+        self.scoobySound = pygame.mixer.Sound(os.path.join('sound','scooby.wav'))
 
     def getXPosition(self):
         return self.area.get_offset()[0]
@@ -47,33 +57,53 @@ class Cards():
     def cardDescription(self, card):
         if card == 0:
             text = "Go to Accreditation Review."
+            self.screamSound.play()
         if card == 1:
             text = "Go enjoy a baseball game at Hammons Field."
-            
-        '''
-        if card == 0:
-            text = "Move back 3 spaces and stuff. You are going the wrong way."
-        if card == 1:
-            text = "Here's a nice puppy to play with."
+            self.batSound.play()
         if card == 2:
-            text = "Another place holder. Really is."
+            self.cashSound.play()
+            text = "Hold alumni fundraiser and raise $100,000."
         if card == 3:
-            text = "More card stuff with fancy people words."
-        if card == 4:    
-            text = "Proceed to the dump."
+            self.awwSound.play()
+            text = "Rap artist arrested. Cancel concert, refund tickets, lose $50,000."
+        if card == 4:
+            self.buildingSound.play()
+            text = "Summer Classes: Get one Graduate Point per building"
         if card == 5:
-            text = "Get abducted by aliens... again."
-        '''    
+            self.carSound.play()
+            text = "Faculty Only Lot, go to Bear Park South."
+        if card == 6:
+            self.computerSound.play()
+            text = "Computer Science cross class listing, go to Cheek Hall"
+        if card == 7:
+            self.scoobySound.play()
+            text = "Fraternity Scandal lose 5 graduate points"  
         return text
 
 
     def performAction(self, card, player):
         """Performs the action printed on the card that was drawn."""
         self.player = player    # the player who drew the card
+    
         if card == 0:
             self.goToSpace("Accreditation Review")
         if card == 1:
             self.goToSpace("Hammons Field")
+        if card == 2:
+            self.player.addDollars(100000)
+        if card == 3:
+            self.player.subtractDollars(50000)    
+            self.feeCard = True
+        if card == 4:
+            self.player.addPoints(self.player.getNumBuildings())
+        if card == 5:
+            self.goToSpace("Bear Park South")
+        if card == 6:
+            self.goToSpace("Cheek Hall")
+        if card == 7:
+            self.player.addPoints(-5)
+        
 
 
     def displayCard(self, card, scale):
@@ -90,7 +120,7 @@ class Cards():
             #Print text on cards   
             lineText=""
             word = ""
-            textEdge = 15 #Text boundary on card -> right side 
+            textEdge = 14 #Text boundary on card -> right side 
             characterCounter = 0 
             fontSize = int(27*scale)
             padding = 0
@@ -144,7 +174,7 @@ class Cards():
         the destination space.
         """
         playerPosition = self.player.getPosition()
-        destinationPosition = Buildings().getBuildingNames().index(destination)
+        destinationPosition = Buildings().getBuilding(destination).getSequence()
         if destinationPosition > playerPosition:
             spaces = destinationPosition - playerPosition
         else:
