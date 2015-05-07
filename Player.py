@@ -77,7 +77,9 @@ class Player(object):
 
     def addPointsPerRound(self, pointsToAdd):
         self.pointsPerRound += pointsToAdd
-
+        
+    def subtractPointsPerRound (self, pointsToSubtract):
+        self.pointsPerRound -= pointsToSubtract
         
     def addBuilding(self, building):
         

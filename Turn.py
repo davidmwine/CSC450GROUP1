@@ -508,15 +508,33 @@ class Turn(object):
                 for building in yourTradeBuildings:
                     self.player.buildings.remove(building)
                     if building.purpose == 'academic':
+                        if building.degreeLvl == 'Associate':
+                            self.player.subtractPointsPerRound(1)
+                        elif building.degreeLvl == 'Bachelor':
+                            self.player.subtractPointsPerRound(2)
+                        elif building.degreeLvl == 'Master':
+                            self.player.subtractPointsPerRound(3)
+                        elif building.degreeLvl == 'Doctoral':
+                            self.player.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
                     self.otherPlayer.buildings.append(building)
+                    self.otherPlayer.addPointsPerRound(1)
 
                 # take buildings from "theirTradeBuildings" to initial players building list
                 for building in theirTradeBuildings:
                     self.otherPlayer.buildings.remove(building)
                     if building.purpose == 'academic':
+                        if building.degreeLvl == 'Associate':
+                            self.otherPlayer.subtractPointsPerRound(1)
+                        elif building.degreeLvl == 'Bachelor':
+                            self.otherPlayer.subtractPointsPerRound(2)
+                        elif building.degreeLvl == 'Master':
+                            self.otherPlayer.subtractPointsPerRound(3)
+                        elif building.degreeLvl == 'Doctoral':
+                            self.otherPlayer.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
                     self.player.buildings.append(building)
+                    self.player.addPointsPerRound(1)
 
                 # set owners/colors of buildings to their new owners/colors
                 for building in self.player.buildings:
