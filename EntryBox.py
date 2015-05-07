@@ -17,6 +17,7 @@ class EntryBox():
         self.y_start = position[1]
         self.area = parent.subsurface(position)
         self.focus = False
+        self.firstClick = True
         self.scale = scale
         self.offset = offset #For isClick to know proper location
         self.maxChar = maxChar
@@ -28,6 +29,12 @@ class EntryBox():
         pygame.draw.rect(self.area,(0,0,0), (0,0, self.area.get_width(),
                                               self.area.get_height()), 2)
         self.area.blit(boxText, (0,0))
+
+    def firstEntry(self):
+        result = self.firstClick
+        if self.firstClick:
+            self.firstClick = not self.firstClick
+        return result
 
     def setMaxChar(self, num):
         self.maxChar = num
