@@ -156,9 +156,9 @@ class Rules(object):
                                'border around their trapezoid. If a player lands on a',
                                'sports venue that is currently unowned, he or she can',
                                'buy it. If it is owned by another player, the player who',
-                               'lands on it pays the owner a fee of $1000 times the',
-                               'number of Graduate Points earned so far by player',
-                               'who landed on the sports venue.']
+                               'lands on it pays the owner a fee of $50000 plus',
+                               '$10000 times the number of Graduate Points earned so',
+                               'far by player who landed on the sports venue.']
 
         if self.rulesPage == 7:
             self.rulesHeader = 'Stealable Buildings'
@@ -197,7 +197,7 @@ class Rules(object):
 
         if self.rulesPage == 11:
             self.rulesHeader = 'Carrington Hall'
-            self.rulesWords = ['Each player receives $200,000 and the appropriate',
+            self.rulesWords = ['Each player receives $300,000 and the appropriate',
                                'number of Graduate Points when passing',
                                'Carrington Hall.']
 
@@ -245,10 +245,10 @@ class Rules(object):
                                'are an increased number of Graduate Points and',
                                'receiving increased fees when other players land on',
                                'the building:',
-                               '\u2022 Associate level: 10% of current building cost',
-                               '\u2022 Bachelor level: 20% of current building cost',
-                               '\u2022 Master level: 30% of current building cost',
-                               '\u2022 Doctoral level: 40% of current building cost']
+                               '\u2022 Associate level: 20% of current building cost',
+                               '\u2022 Bachelor level: 40% of current building cost',
+                               '\u2022 Master level: 60% of current building cost',
+                               '\u2022 Doctoral level: 80% of current building cost']
 
         if self.rulesPage == 16:
             self.rulesHeader = 'Graduate Points'
