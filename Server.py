@@ -3,21 +3,19 @@ from socket import *
 from select import *
 #import socketserver
 import threading
-#from ServerHandler import *
+from queue import *
+from ServerHandler import *
 
-# Use these for binding our server
-# when ready for WAN testing replace with:
-# socket.gethostbyname(socket.gethostname()) ##ip x.x.x.x
+##globals for server and client handling
 HOST = "127.0.0.1"
 PORT = 10205
 BUFFER = 4096
 globalClients = []
-gameClients = []
+games = []
+cmdList = Queue(maxsize = 0)
 
 ## Send any incoming message to all clients connected to the server
 def broadcast(server, message):
-    ## special case: if only 1 user it will say broadcasting to 2 users
-    ## when first connecting, aside from very first connection
     print("Broadcasting:",message,". To", len(globalClients)-1, "users.")
     for socket in globalClients:
         if len(message) < 1:
@@ -25,17 +23,24 @@ def broadcast(server, message):
         else:
             if socket != server: ## omit the server from clients list
                 try:
+                    ##message should already be a string
                     message = str(message) ## not necessary but may be useful
                     socket.send(message.encode())
                 except:
                     socket.close() ## Unable to communicate with the client
                     if socket in globalClients:
                         globalClients.remove(socket)
-    print("leaving broadcast")
-  
+    print("leaving broadcast\n\n")
 
-## Create the server
+def isInGame(sockfd):
+    for i in games:
+        for j in i:
+            if j[0].getpeername() == sockfd.getpeername():
+                return True
+    return False
+ 
 def gameServer():
+    ## Create the server
     server = socket(AF_INET, SOCK_STREAM)
     server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     server.bind((HOST, PORT))
@@ -45,33 +50,61 @@ def gameServer():
            \nWaiting for connections......")
 
     while(True):
+        ##select for read.... we will manually write by command
         read, write, err = select(globalClients, [], [])
-        ##print("Client List: ", globalClients)
 
+        ##allow all users to write to the server
         for sock in read:
+            ##if the incomming socket has server address its new
             if sock == server:
+                ##connect the new client to the server
                 sockfd, addr = server.accept()
                 globalClients.append(sockfd)
                 message = "Client %s %s has connected" % addr
-                print(message)
+                print(message, "\n")
+                ##only use this broadcast for debugging only
                 broadcast(server, message)
 
-            else:#incomming data to server
+            ##else a user is trying to send data to the server
+            else:
+                ##receive the data
                 try:
                     data = sock.recv(BUFFER)
                     data = data.decode()
+                    ##process the data
                     if data and len(data) > 1:
                         print("getting data ", data)
-                        broadcast(server, data)
+                        ##send the data to the serverhandler
+                        ##the server handler will do the work
+                        ##action return what we need
+                        handler = ServerHandler(data, sockfd)
+                        action = handler.run()
+                        print("after handler.run: ", action)
+                        ##send the action to all user
+                        if isInGame(sockfd):
+                            for i in games:
+                                for j in i:
+                                    if j[0].getpeername() == sockfd.getpeername() and i[4] == True:
+                                        broadcast(i, action)
+                        else:
+                            broadcast(server, action)
+                        
                     else:
+                        ##detect if a user is still connected
+                        ##also need to check if in a game and remove
                         if sock in globalClients:
                             globalClients.remove(sock)
                             broadcast(server, "Client (%s, %s) is offline\n" % sock)
                 except:
+                    ##detect if a user had chosen to leave
+                    ##detect if in game and remove
                     if sock in globalClients:
                         globalClients.remove(sock)
                     broadcast(server, "Client (%s, %s) went offline" % addr)
                     continue
+    ##no more use for connections, break all processes, server side
+    ##this will make you client go into an infinite receive if still connected
+    ##ie the sever has crashed
     server.close()
 
 

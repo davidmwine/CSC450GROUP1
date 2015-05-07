@@ -36,8 +36,8 @@ class SignIn():
         self.selected = ''
         
         self.text1 = self.font_op(20,'berlin').render(
-            "Please Sign in or select local Game",1,(255,255,255))
-        self.text2 = self.font_op(20,'berlin').render("New User:",1,(220,146,40))
+            "Please Sign in or select local Game",1,(0,0,0))
+        self.text2 = self.font_op(20,'berlin').render("New User:",1,(0,0,0))
         temprect = Rect(self.text2.get_width()+10, self.text1.get_height()+13,
                         self.area.get_width()/2, self.text2.get_height() +4 )
         self.newUserEntry = EntryBox(self.area, 15, temprect ,self.font_op
@@ -101,7 +101,7 @@ class SignIn():
             self.selected = ''
             with open("userlist.txt" , 'w') as file:
                 for i in self.userList:
-                    file.write(i +'\n')   
+                    file.write(i +'\n')
 
     def textClick(self, xoffset, yoffset):
         mousex, mousey = pygame.mouse.get_pos()
@@ -113,7 +113,7 @@ class SignIn():
                 return
             else:
                 self.userTextList[i] = self.font_op(20,'berlin').render(self.userList[i],1,Colors.BLACK ,Colors.WHITE)
-                self.selected = ''                   
+                self.selected = ''
 
     def draw(self):
         self.area.blit(self.bg, (0,0))
@@ -125,11 +125,12 @@ class SignIn():
         self.userListArea.fill((255,255,255))
         #print('bg',self.bg,'\nt1',self.text1,'\nt2',self.text2,'\nEntry',self.newUserEntry)
         try:
-            textHT = self.userTextList[0].get_height()        
+            textHT = self.userTextList[0].get_height()
+            
         except IndexError:
             pass
         for i in range(len(self.userTextList)):
-            self.userListArea.blit(self.userTextList[i], (3,i*textHT))
+            self.userListArea.blit(self.userTextList[i], (0,i*textHT))
         
     def run(self):
         self.load()
@@ -152,6 +153,7 @@ class SignIn():
                         sys.exit()
                         return 0
             self.draw()
+            pygame.display.update()
 
             time = pygame.time.get_ticks()/1000. - soundTime
             if time < 1:
