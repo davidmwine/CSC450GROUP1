@@ -1,18 +1,20 @@
+'''Start menu with game options, rules, and lobby '''
 import pygame
 from pygame.locals import *
 import os
 import sys
 import random
+from SignIn import SignIn
 
 class Start(object):
-    def __init__(self, screen, fontOp, yOffset, intro, click, bgMusic):
+    def __init__(self, screen, fontOp, yOffset, intro, bgMusic, click):
         self.screen = screen
         self.fontOp = fontOp
         self.yOffset = yOffset
         self.gameActive = 0  #Is the game running or not
         self.percentOfMax = self.screen.get_height()/1080
         #self.quitGame = False
-        self.soundRunning = 0
+        self.soundRunning = pygame.mixer.get_busy() 
         self.loadImages()
         self.menuOn = True
         self.rulesOn = False
@@ -259,3 +261,8 @@ class Start(object):
             return "options"
         if self.gameOn:
             return "lobby"
+            #self.screen.fill((0,0,0))
+            #self.screen.blit(pygame.transform.scale(self.imgMenuBG,(self.screen.get_width(),\
+            #            int(self.screen.get_height()-(2*self.yOffset)))),(0,self.yOffset))
+            #signIn = SignIn(self.screen, self.fontOp)
+            #return signIn.run()

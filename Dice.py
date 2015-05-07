@@ -23,6 +23,18 @@ class Dice():
         self.numbers = [self.one, self.two, self.three, self.four,
                          self.five, self.six] #Method variables to display each value on dice
 
+    def getXPosition(self):
+        return self.area.get_offset()[0]
+
+    def getYPosition(self):
+        return self.area.get_offset()[1]
+
+    def getWidth(self):
+        return self.width
+
+    def getHeight(self):
+        return self.height
+
     def rect(self):
         return pygame.Rect(self.parent.get_width()//2, self.parent.get_height()//2,
                     self.parent.get_width()/8,self.parent.get_width()//16)

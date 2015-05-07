@@ -26,6 +26,9 @@ class OnlineLobby():
 
         #list for determining which screen to draw
 
+        #sound
+        self.click = pygame.mixer.Sound(os.path.join('sound','click.wav'))
+        
         #booleans
         self.enterForm = False
 
@@ -96,10 +99,12 @@ to determine the inital screen'''
         if self.startButton.wasClicked(mouseX, mouseY):
             self.gameExit = True
             self.nextScreen = 'game'
+            self.click.play()
             return
         if self.backButton.wasClicked(mouseX, mouseY):
             self.gameExit = True
             self.nextScreen = 'start'
+            self.click.play()
             return
         if self.hostAttributes.isClicked(mouseX, mouseY):
             self.enterForm = True
@@ -177,7 +182,7 @@ to determine the inital screen'''
                     self.buttonClick()
                 if event.type == KEYDOWN:
                     if self.enterForm:
-                        self.enteringForm(event)
+                        self.hostAttributes.getFocused().textEntry(event)
                     if event.key == K_ESCAPE and not self.enterForm:
                         pygame.quit()
                         sys.exit()

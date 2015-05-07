@@ -1,26 +1,30 @@
+''' Sound and resolution options in start menu '''
 import pygame
 from pygame.locals import *
 import os
 import sys
 from RadioButton import RadioGroup
 from StartMenu import Start
-
+import GameInfo
 
 class Options(object):
-    def __init__(self, screen, infoScreen, fontOp, yOffset, click, bgMusic):
+    def __init__(self, screen, infoScreen, fontOp, yOffset, bgMusic, click):
         self.screen = screen
         self.infoScreen = infoScreen
         self.fontOp = fontOp
         self.yOffset = yOffset
-        self.resolutionOption = 0
+        resIndex = {960: 0, 1280: 1, 1600: 2, 1920: 3}
+        self.resolutionOption = resIndex[self.screen.get_width()]
         self.soundEffectsOff = False
-        self.musicOff = False
+        self.musicOff = pygame.mixer.get_busy()
         self.loadImages()
         self.loadText()
         self.loadButtons(self.resolutionOption)
         self.screenModes = [(960, 540), (1280, 720), (1600, 900), (1920, 1080), (960, 720)]
         self.click = click
         self.bgMusic = bgMusic
+        self.sonarSound = pygame.mixer.Sound(os.path.join('sound','sonar.wav'))   #Sound option button
+        self.btsound = pygame.mixer.Sound(os.path.join('sound','button.wav'))     #Screen resolution option button
 
     def loadButtons(self, resolutionOption):
         #Radio button group
@@ -49,7 +53,7 @@ class Options(object):
         self.resoultion_text_3 = self.fontOp(18, "berlin").render("1600x900", True, (255, 255, 255))
         self.resoultion_text_4 = self.fontOp(18, "berlin").render("1920x1080", True, (255, 255, 255))
         self.audio_options = self.fontOp(26, "berlin").render("Sound", True, (220,146,40))
-        self.text_sound_effect_option = self.fontOp(18, "berlin").render("Effects", True, (255, 255, 255))
+        #self.text_sound_effect_option = self.fontOp(18, "berlin").render("Effects", True, (255, 255, 255))
         self.text_music_option = self.fontOp(18, "berlin").render("Music", True, (255, 255, 255))
 
     def drawCircles(self):
@@ -81,6 +85,7 @@ class Options(object):
     def buttonClick(self):
         mouseX, mouseY = pygame.mouse.get_pos()
 
+        #Exit button
         if mouseX > self.screen.get_width() / 2 + 105 \
                 and mouseX < self.screen.get_width() / 2 + 180 \
                 and mouseY > self.screen.get_height() / 2 - 125 + self.yOffset \
@@ -89,7 +94,7 @@ class Options(object):
             return False
 
         if self.resolutionButtons.checkButton(mouseX, mouseY):
-            self.click.play()
+            self.btsound.play()
             self.resolutionOption = self.resolutionButtons.getCurrent()
             if self.infoScreen.current_h == self.screenModes[self.resolutionButtons.getCurrent()][1]\
                and self.infoScreen.current_w == self.screenModes[self.resolutionButtons.getCurrent()][0]:
@@ -97,7 +102,7 @@ class Options(object):
             else:
                 self.screen = pygame.display.set_mode(self.screenModes[self.resolutionButtons.getCurrent()])
 
-        #Effects button
+        '''#Effects button
         if mouseX > self.screen.get_width() / 2 + 132 \
                 and mouseX < self.screen.get_width() / 2 + 177 \
                 and mouseY > self.screen.get_height() / 2 + 186 + self.yOffset \
@@ -105,17 +110,22 @@ class Options(object):
             self.click.play()
             self.soundEffectsOff = not self.soundEffectsOff
             self.click.setSound('click')
-            self.click.play()
+            self.click.play()'''
+
 
         #Music button
         if mouseX > self.screen.get_width() / 2 + 132 \
                 and mouseX < self.screen.get_width() / 2 + 177 \
                 and mouseY > self.screen.get_height() / 2 + 160 + self.yOffset \
                 and mouseY < self.screen.get_height() / 2 + 181 + self.yOffset:
-            self.click.play()
-            self.musicOff = not self.musicOff
-            self.bgMusic.setSound('start_menu')
-            self.bgMusic.play()
+            #self.bgMusic.setSound('start_menu')
+            if GameInfo.SOUNDON:
+                pygame.mixer.stop()
+                GameInfo.SOUNDON = False
+            else:
+                self.bgMusic.play()
+                GameInfo.SOUNDON = True
+            self.sonarSound.play()
                 
         return True
 
@@ -150,20 +160,20 @@ class Options(object):
                                                   self.screen.get_height() / 2 + 123 + self.yOffset))
             self.screen.blit(self.text_music_option, (self.screen.get_width() / 2 + 78, \
                                                   self.screen.get_height()/2 + 162 + self.yOffset))
-            self.screen.blit(self.text_sound_effect_option, (self.screen.get_width() / 2 + 78, \
-                                                  self.screen.get_height()/2 + 184 + self.yOffset))
+            #self.screen.blit(self.text_sound_effect_option, (self.screen.get_width() / 2 + 78, \
+                                                  #self.screen.get_height()/2 + 184 + self.yOffset))
 
             #Audio on/off buttons      
-            if self.musicOff == False:
+            if GameInfo.SOUNDON:
                 self.screen.blit(self.img_on,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 163 + self.yOffset))
             else:
                 self.screen.blit(self.img_off,(self.screen.get_width()/2+ 133,self.screen.get_height()/2 + 163 + self.yOffset))
 
-            if self.soundEffectsOff == False:
+            '''if self.soundEffectsOff == False:
                 self.screen.blit(self.img_on,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 186 + self.yOffset))
             else:
                 self.screen.blit(self.img_off,(self.screen.get_width()/2 + 133,self.screen.get_height()/2 + 186 + self.yOffset))
-
+            '''
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:

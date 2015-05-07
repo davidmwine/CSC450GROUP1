@@ -21,19 +21,18 @@ def displayMsg(scale, smallRect, largeRect, font, msg):
     padding = 5*scale
     lines = wrapLine(msg, font, smallRect.width - 2*padding)
     lineHeight = font.get_linesize()
-    textHeight = 1.5 * lineHeight * (len(lines)-1) + lineHeight + 2*padding
-    if(textHeight <= smallRect.height):
+    textHeight = 1.3 * lineHeight * (len(lines)-1) + lineHeight + 2*padding
+    if textHeight <= smallRect.height:
         msgBox = pygame.Surface((smallRect.width, smallRect.height))
     else:
         msgBox = pygame.Surface((largeRect.width, largeRect.height))
         lines = wrapLine(msg, font, largeRect.width - 2*padding)
         size = "large"
-        
     msgBox.fill(Colors.LIGHTGRAY)
     
     i = 0
     for line in lines:
-        lineYpos = 1.5 * i * lineHeight + padding     # 1.5 is line spacing
+        lineYpos = 1.3 * i * lineHeight + padding     # 1.3 is line spacing
         line = font.render(line, True, Color("black"))
         msgBox.blit(line, (padding, lineYpos))
         i += 1
