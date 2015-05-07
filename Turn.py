@@ -515,7 +515,7 @@ class Turn(object):
                             self.player.subtractPointsPerRound(2)
                         elif building.degreeLvl == 'Master':
                             self.player.subtractPointsPerRound(3)
-                        elif building.degreeLvl == 'Doctoral':
+                        elif building.degreeLvl == 'Doctorate':
                             self.player.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
                         self.otherPlayer.addPointsPerRound(1) #Only update graduate points if academic
@@ -534,7 +534,7 @@ class Turn(object):
                             self.otherPlayer.subtractPointsPerRound(2)
                         elif building.degreeLvl == 'Master':
                             self.otherPlayer.subtractPointsPerRound(3)
-                        elif building.degreeLvl == 'Doctoral':
+                        elif building.degreeLvl == 'Doctorate':
                             self.otherPlayer.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
                         self.player.addPointsPerRound(1) #Only update graduate points if academic
