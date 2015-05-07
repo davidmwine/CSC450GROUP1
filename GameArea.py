@@ -91,10 +91,16 @@ class GameArea(object):
         self.boardArea = self.area.subsurface(rect)
         self.boardArea.fill(Colors.MAROON) 
         
-        # Chat Box
+        # Chat Box(Logo Now)
         rect = pygame.Rect((1440*self.scale, 810*self.scale),
                            (480*self.scale, 270*self.scale))
-        self.chatBox = ChatBox(self.scale,self.area, rect)
+        self.chatArea = self.area.subsurface(rect)
+        self.chatArea.fill(Colors.MAROON)
+        self.imgLogo = pygame.transform.scale(pygame.image.load(os.path.join("img","MSUWordMark.png")).convert_alpha(),(int(466*self.scale), int(218*self.scale)))
+        #self.chatArea.blit(self.imgLogo, (int(self.chatArea.get_width()/2-233/self.scale) ,int(self.chatArea.get_height()/2-109*self.scale)))
+        self.chatArea.blit(self.imgLogo, (0 ,(self.chatArea.get_height()-218*self.scale)/2))
+        #self.chatBox = ChatBox(self.scale,self.area, rect)
+        
         
         # Controls
         rect = pygame.Rect((0, 1020*self.scale),
@@ -133,20 +139,20 @@ class GameArea(object):
         # menu not open
         if not self.popupMenu.getPopupActive():             
             #chatBox
-            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
-            and mouseY > self.chatBox.getTopType()\
-            and mouseY < self.chatBox.getBottomType():
-                self.typing = True
-            else:
-                self.typing = False
+            #if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            #and mouseY > self.chatBox.getTopType()\
+            #and mouseY < self.chatBox.getBottomType():
+            #    self.typing = True
+            #else:
+            #    self.typing = False
 
             #Scrolling in chatBox
-            if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
-            and mouseY < self.chatBox.getTopType() and mouseY > self.chatBox.getTop():
-                if event.button == 4:
-                    self.chatBox.displayText(-1)
-                elif event.button == 5:
-                    self.chatBox.displayText(1)
+            #if mouseX > self.chatBox.getLeft() and mouseX < self.chatBox.getRight()\
+            #and mouseY < self.chatBox.getTopType() and mouseY > self.chatBox.getTop():
+            #    if event.button == 4:
+            #        self.chatBox.displayText(-1)
+            #    elif event.button == 5:
+            #        self.chatBox.displayText(1)
 
             # Menu Button
             if mouseX > 0 and mouseX < self.controls.getWidth() / 4 \
@@ -724,36 +730,36 @@ class GameArea(object):
         self.area.blit(price, (xPosition, yPosition))
         
 
-    def chatting(self, event):
-        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
-        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
-        
-        if event.key == K_ESCAPE:
-            self.typing = False
-            self.gameExit = True
-        elif event.key == K_RETURN:
-            self.chatBox.submitText()
-        elif event.key == K_BACKSPACE:
-            self.chatBox.deleteText()
-        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
-            #self.chatBox.typeText(pygame.key.name(event.key))
-            #self.chatBox.typeText(chr(event.key))
-            self.typeSound.play()
-            checkCaps = pygame.key.get_pressed()
-            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
-                index = CHARS.index(chr(event.key))
-                if CHARSCAPS[index] not in ['{', '}']:
-                    self.chatBox.typeText(CHARSCAPS[index])
-                else:
-                    self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
-            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
-                index = CHARS.index(chr(event.key))
-                if index < 26: #Only caps lock regular alphabet
-                    self.chatBox.typeText(CHARSCAPS[index])
-                else:
-                    self.chatBox.typeText(chr(event.key))
-            else:
-                self.chatBox.typeText(chr(event.key))
+##    def chatting(self, event):
+##        CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789-=[];\'\\,./`'
+##        CHARSCAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ)!@#$%^&*(_+{}:"|<>?~'
+##        
+##        if event.key == K_ESCAPE:
+##            self.typing = False
+##            self.gameExit = True
+##        elif event.key == K_RETURN:
+##            self.chatBox.submitText()
+##        elif event.key == K_BACKSPACE:
+##            self.chatBox.deleteText()
+##        elif event.key <= 127 and event.key >= 32: #Only accept regular ascii characters (ignoring certain special characters)
+##            #self.chatBox.typeText(pygame.key.name(event.key))
+##            #self.chatBox.typeText(chr(event.key))
+##            self.typeSound.play()
+##            checkCaps = pygame.key.get_pressed()
+##            if checkCaps[K_RSHIFT] or checkCaps[K_LSHIFT] and chr(event.key) in CHARS:
+##                index = CHARS.index(chr(event.key))
+##                if CHARSCAPS[index] not in ['{', '}']:
+##                    self.chatBox.typeText(CHARSCAPS[index])
+##                else:
+##                    self.chatBox.typeText(CHARSCAPS[index] + CHARSCAPS[index])
+##            elif checkCaps[K_CAPSLOCK] and chr(event.key) in CHARS:
+##                index = CHARS.index(chr(event.key))
+##                if index < 26: #Only caps lock regular alphabet
+##                    self.chatBox.typeText(CHARSCAPS[index])
+##                else:
+##                    self.chatBox.typeText(chr(event.key))
+##            else:
+##                self.chatBox.typeText(chr(event.key))
 
 
     def play(self):
@@ -813,8 +819,8 @@ class GameArea(object):
                     if event.key == K_ESCAPE:
                         self.gameExit = True
                         break
-                if event.type == KEYDOWN and self.typing:
-                    self.chatting(event)
+                #if event.type == KEYDOWN and self.typing:
+                #    self.chatting(event)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()

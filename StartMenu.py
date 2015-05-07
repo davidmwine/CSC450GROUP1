@@ -260,8 +260,9 @@ class Start(object):
         if self.optionsOn:
             return "options"
         if self.gameOn:
+            return "lobby"
             #self.screen.fill((0,0,0))
-            self.screen.blit(pygame.transform.scale(self.imgMenuBG,(self.screen.get_width(),\
-                        int(self.screen.get_height()-(2*self.yOffset)))),(0,self.yOffset))
-            signIn = SignIn(self.screen, self.fontOp)
-            return signIn.run()
+            #self.screen.blit(pygame.transform.scale(self.imgMenuBG,(self.screen.get_width(),\
+            #            int(self.screen.get_height()-(2*self.yOffset)))),(0,self.yOffset))
+            #signIn = SignIn(self.screen, self.fontOp)
+            #return signIn.run()

@@ -91,6 +91,8 @@ class GameBoard(object):
                         '''
                         self.board.blit(self.boardfont.render('?', True, Colors.WHITE),
                                         (x_pos + cellWidth/2 - self.boardfont.size('?')[0]/2, y_pos + cellHeight))
+                    if buildings[building].getPurpose() in ['card', 'utility']:
+                        pygame.draw.polygon(self.board, Colors.WHITE, pointList, 1)
                         
                     
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
@@ -130,6 +132,7 @@ class GameBoard(object):
                         self.board.blit(self.boardfont.render('?', True, Colors.WHITE),
                             (x_pos - polysize/2 - self.boardfont.size('?')[0]/2,
                              y_pos + cellHeight/2 - self.boardfont.size('?')[1]/2))
+                        pygame.draw.polygon(self.board, Colors.WHITE, pointList, 1)
                     
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
@@ -169,6 +172,8 @@ class GameBoard(object):
                         self.board.blit(self.boardfont.render('?', True, Colors.WHITE),
                                         (x_pos + cellWidth/2 - self.boardfont.size('?')[0]/2,
                                          y_pos - polysize))
+                    if buildings[building].getPurpose() in ['card', 'utility']:
+                        pygame.draw.polygon(self.board, Colors.WHITE, pointList, 1)
                     
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 
@@ -206,8 +211,9 @@ class GameBoard(object):
 
                     if buildings[building].getPurpose() == 'card':                        
                         self.board.blit(self.boardfont.render('?', True, Colors.WHITE),
-                            (x_pos + cellWidth + self.boardfont.size('?')[0]/2,
+                            (x_pos + cellWidth + self.boardfont.size('?')[0]/3,
                              y_pos + cellHeight/2 - self.boardfont.size('?')[1]/2))
+                        pygame.draw.polygon(self.board, Colors.WHITE, pointList, 1)
                     
                 rect = pygame.draw.rect(self.board, Colors.BLACK, (x_pos, y_pos, cellWidth, cellHeight),margin)
 

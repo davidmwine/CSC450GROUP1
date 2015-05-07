@@ -11,6 +11,7 @@ class DeanBox(object):
         self.rect = rect
         self.area = parent.subsurface(self.rect)
         self.scale = scale
+        self.playerNum = playerNum
         self.offset = offset #Determine click location
         self.locked = False
         self.lockedIndices = []
@@ -18,17 +19,43 @@ class DeanBox(object):
         self.colleges = list(Colors.COLLEGEABBR.keys())
         self.colleges.sort()
         self.currIndex = self.colleges.index(self.currColl)
-        self.currText = self.font_op(20*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,(0,0,0))
+        #self.setTextColor()
+        #self.currText = self.font_op(30*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1, self.textColor)
         self.currColor = Colors.COLLEGECOLORS[self.currColl]
-        self.playerText = self.font_op(20*self.scale, 'berlin').render("Player " + str(playerNum),1,(0,0,0))
+        #self.playerText = self.font_op(30*self.scale, 'berlin').render("Player " + str(self.playerNum),1,self.textColor)
+
+    '''
+    def setTextColor(self):
+        if self.currColl in ['Education', 'Health and Human Services', 'Natural and Applied Sciences']:
+            self.textColor = Colors.BLACK
+        else:
+            self.textColor = Colors.WHITE
+    '''
+    
 
     def draw(self):
         self.area.fill(Colors.COLLEGECOLORS[self.currColl])
         pygame.draw.rect(self.area, (0, 0, 0), (0, 0, self.area.get_width(), self.area.get_height()), 2)
+
+        self.playerTextOutline = self.font_op(30*self.scale, 'berlin').render("Player " + str(self.playerNum),1,Colors.BLACK)
+        self.playerText = self.font_op(30*self.scale, 'berlin').render("Player " + str(self.playerNum),1,Colors.WHITE)
+        self.currTextOutline = self.font_op(30*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,Colors.BLACK)
+        self.currText = self.font_op(30*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,Colors.WHITE)
+        
         textRect = (self.area.get_width()/2 - self.playerText.get_width()/2, self.area.get_height()/3 - self.playerText.get_height()/2)
+        self.area.blit(self.playerTextOutline, (textRect[0] - 1, textRect[1] - 1))
+        self.area.blit(self.playerTextOutline, (textRect[0] - 1, textRect[1] + 1))
+        self.area.blit(self.playerTextOutline, (textRect[0] + 1, textRect[1] - 1))
+        self.area.blit(self.playerTextOutline, (textRect[0] + 1, textRect[1] + 1))
         self.area.blit(self.playerText, textRect)
+        
         textRect = (self.area.get_width()/2 - self.currText.get_width()/2, 2*self.area.get_height()/3 - self.currText.get_height()/2)
+        self.area.blit(self.currTextOutline, (textRect[0] - 1, textRect[1] - 1))
+        self.area.blit(self.currTextOutline, (textRect[0] - 1, textRect[1] + 1))
+        self.area.blit(self.currTextOutline, (textRect[0] + 1, textRect[1] - 1))
+        self.area.blit(self.currTextOutline, (textRect[0] + 1, textRect[1] + 1))
         self.area.blit(self.currText, textRect)
+        
         if not self.locked:
             pygame.draw.polygon(self.area, (0, 0, 0), ((self.area.get_width()/16,\
                                                         self.area.get_height()/2),\
@@ -77,7 +104,9 @@ class DeanBox(object):
             self.currIndex += 1
             self.currIndex %= len(self.colleges)
         self.currColl = self.colleges[self.currIndex]
-        self.currText = self.font_op(20*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,(0,0,0))
+        #self.setTextColor()
+        #self.playerText = self.font_op(30*self.scale, 'berlin').render("Player " + str(self.playerNum),1,self.textColor)
+        #self.currText = self.font_op(30*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,self.textColor)
 
     def isClicked(self, mousex, mousey):
         top = self.rect.top
@@ -92,7 +121,9 @@ class DeanBox(object):
                 self.currIndex -= 1
                 self.currIndex %= len(self.colleges)
             self.currColl = self.colleges[self.currIndex]
-            self.currText = self.font_op(20*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,(0,0,0))
+            #self.setTextColor()
+            #self.playerText = self.font_op(30*self.scale, 'berlin').render("Player " + str(self.playerNum),1,self.textColor)
+            #self.currText = self.font_op(30*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,self.textColor)
             return True
         elif left + (right - left)/2 < mousex < right and\
              top < mousey < bottom and not self.locked:
@@ -102,7 +133,9 @@ class DeanBox(object):
                 self.currIndex += 1
                 self.currIndex %= len(self.colleges)
             self.currColl = self.colleges[self.currIndex]
-            self.currText = self.font_op(20*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,(0,0,0))
+            #self.setTextColor()
+            #self.playerText = self.font_op(30*self.scale, 'berlin').render("Player " + str(self.playerNum),1,self.textColor)
+            #self.currText = self.font_op(30*self.scale, 'berlin').render(Colors.COLLEGEABBR[self.currColl],1,self.textColor)
             return True
         return False
 
