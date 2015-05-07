@@ -242,8 +242,10 @@ class PopupMenu(object):
 
         if pageNum == 11:
             self.rulesHeader = 'Carrington Hall'
-            self.rulesWords = ['Each player receives $300,000 and the appropriate',
-                               'number of Graduate Points when passing',
+            self.rulesWords = ['Each time around the board represents a semester,',
+                               'and passing Carrington Hall represents graduation.',
+                               'So each player receives the appropriate number of',
+                               'Graduate Points, as well as $300,000, when passing',
                                'Carrington Hall.']
 
         if pageNum == 12:

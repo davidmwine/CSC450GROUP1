@@ -109,10 +109,10 @@ class PlayersDisplay(object):
         # Points per round
         points = self.players[i].getPointsPerRound()
         if points == 1:
-            text = font.render(str(points) + ' point / round', True, Color('black'))
+            text = font.render(str(points) + ' point / semester', True, Color('black'))
         else:
-            text = font.render(str(points) + ' points / round', True, Color('black'))
-        self.pd[i].blit(text, (250*c, 50*c))
+            text = font.render(str(points) + ' points / semester', True, Color('black'))
+        self.pd[i].blit(text, (220*c, 50*c))
 
         # Dollars
         text = font.render('${:,.0f}'.format(self.players[i].getDollars()),
