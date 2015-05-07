@@ -517,8 +517,8 @@ class Turn(object):
                         elif building.degreeLvl == 'Doctorate':
                             self.player.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
+                        self.otherPlayer.addPointsPerRound(1)
                     self.otherPlayer.buildings.append(building)
-                    self.otherPlayer.addPointsPerRound(1)
 
                 # take buildings from "theirTradeBuildings" to initial players building list
                 for building in theirTradeBuildings:
@@ -533,8 +533,8 @@ class Turn(object):
                         elif building.degreeLvl == 'Doctorate':
                             self.otherPlayer.subtractPointsPerRound(4)
                         building.degreeLvl = 'Associate'
+                        self.player.addPointsPerRound(1)
                     self.player.buildings.append(building)
-                    self.player.addPointsPerRound(1)
 
                 # set owners/colors of buildings to their new owners/colors
                 for building in self.player.buildings:
