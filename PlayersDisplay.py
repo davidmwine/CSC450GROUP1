@@ -86,16 +86,13 @@ class PlayersDisplay(object):
         # College name
         college = self.players[i].getCollege()
         
-        # For the colleges with light colors, create a black outline.
-        if college == 'Natural and Applied Sciences' \
-           or college == 'Health and Human Services' \
-           or college == 'Education' or college == 'Business':
-            textOutline = font.render(Colors.COLLEGEABBR[college],
-                           True, Color('black'))
-            self.pd[i].blit(textOutline, (220*c - 1, 5))
-            self.pd[i].blit(textOutline, (220*c - 1, 3))
-            self.pd[i].blit(textOutline, (220*c + 1, 5))
-            self.pd[i].blit(textOutline, (220*c + 1, 3))
+        # create a black outline.
+        textOutline = font.render(Colors.COLLEGEABBR[college],
+                       True, Color('black'))
+        self.pd[i].blit(textOutline, (220*c - 1, 5))
+        self.pd[i].blit(textOutline, (220*c - 1, 3))
+        self.pd[i].blit(textOutline, (220*c + 1, 5))
+        self.pd[i].blit(textOutline, (220*c + 1, 3))
         
         text = font.render(Colors.COLLEGEABBR[college],
                            True, Colors.COLLEGECOLORS[college])
@@ -112,10 +109,10 @@ class PlayersDisplay(object):
         # Points per round
         points = self.players[i].getPointsPerRound()
         if points == 1:
-            text = font.render(str(points) + ' point / round', True, Color('black'))
+            text = font.render(str(points) + ' point / semester', True, Color('black'))
         else:
-            text = font.render(str(points) + ' points / round', True, Color('black'))
-        self.pd[i].blit(text, (250*c, 50*c))
+            text = font.render(str(points) + ' points / semester', True, Color('black'))
+        self.pd[i].blit(text, (220*c, 50*c))
 
         # Dollars
         text = font.render('${:,.0f}'.format(self.players[i].getDollars()),

@@ -350,8 +350,20 @@ class GameArea(object):
                             self.gameBoard.colorBuilding(building)
                         for i, player in enumerate(self.players):
                             self.playersDisplay.updatePlayer(i)
+                        self.playersDisplay.selectPlayer(self.playerIndex)
                         self.refreshPlayersDisplay()
+
+                        # Redraw game board so grad icons are erased appropriately.
+                        self.gameBoard = GameBoard(self.scale, self.buildings, True)
+                        self.gameBoard.restoreOwnerColors()
+                        for player in self.players:
+                            player.createToken(self.gameBoard.getGB(), self.scale)
+                            player.startToken()     # These undo each other, but are needed
+                            player.removeToken()    # to initialize instance variables.
+                            self.gameBoard.addPlayerGradIcons(player)
+                        self.updatePlayerPosition()
                         self.refreshGameBoard()
+                        
                         self.refreshDisplay()
                         self.resumeTurn()
                         self.turn.tradeDisplayed = False

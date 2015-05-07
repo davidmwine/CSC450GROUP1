@@ -54,8 +54,6 @@ class Lobby():
         self.startButton = Button(self.screen, buttonRect, "Start Game")
         buttonRect= Rect(300*self.scale , self.height -80*self.scale, 300*self.scale, 80*self.scale)
         self.backButton = Button(self.screen, buttonRect, "Back")
-        buttonRect= Rect(600*self.scale , self.height -80*self.scale, 300*self.scale, 80*self.scale)
-        self.optButton = Button(self.screen, buttonRect, "Options")
         
         #init screens
         self.hostScreen = self.screen.subsurface(self.width/10, self.height/3,self.width*8/10, self.height/3)
@@ -275,7 +273,6 @@ class Lobby():
         self.screen.blit(self.bg, (0,0))
         self.startButton.redraw()
         self.backButton.redraw()
-        self.optButton.redraw()
         #self.chatBox.redraw()
         
         
@@ -414,8 +411,7 @@ class Lobby():
                 if time >= 1 and widthX < self.width//2:
                     self.screen.blit(self.bg, (0,0))
                     self.startButton.redraw()
-                    self.backButton.redraw()
-                    self.optButton.redraw()             
+                    self.backButton.redraw()           
                     self.parent.blit(pygame.transform.scale(self.imgLeft,(self.width//2, self.height)),(0 - widthX,0))
                     self.parent.blit(pygame.transform.scale(self.imgRight,(self.width//2, self.height)),(self.width//2 + widthX,0))
                     if not soundPlayed:
